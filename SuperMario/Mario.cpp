@@ -6,6 +6,7 @@
 #include "Game.h"
 
 #include "Goomba.h"
+#include "Koopas.h"
 #include "Portal.h"
 
 CMario::CMario(float x, float y) : CGameObject()
@@ -107,7 +108,46 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 					}
 				}
-			} // if Goomba
+			} // if Koopas
+			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
+			{
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+
+				// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
+				if (e->ny < 0)
+				{
+					DebugOut(L"1\n");
+						if (koopas->GetState() != KOOPAS_STATE_DIE)
+					{
+						koopas->SetState(KOOPAS_STATE_DIE);
+						vy = -0.2;
+					}
+				}
+				else if (e->nx != 0)
+				{
+					//DebugOut(L"2\n");
+					if (untouchable == 0)
+					{
+						if (koopas->GetState() != KOOPAS_STATE_DIE)
+						{
+							//DebugOut(L"3\n");
+							if (level > MARIO_LEVEL_SMALL)
+							{
+								level = MARIO_LEVEL_SMALL;
+								StartUntouchable();
+							}
+							else
+								SetState(MARIO_STATE_DIE);
+						}
+						else 
+						{
+							//DebugOut(L"7\n");
+
+							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+						}
+					}
+				}
+			} // if Koopas
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
@@ -115,9 +155,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}
-
+	DebugOut(L"4\n");
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	DebugOut(L"5\n");
+
 }
 
 void CMario::Render()
