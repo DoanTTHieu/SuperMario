@@ -38,12 +38,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state != MARIO_STATE_DIE)
 		CalcPotentialCollisions(coObjects, coEvents);
 
+	
+
 	// reset untouchable timer if untouchable time has passed
-	if (GetTickCount() - untouchable_start > 1000)
+	if (GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+
+	checkenemies(coObjects);
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -66,9 +70,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// block every object first!
 		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;
+		y += min_ty * dy + ny * 0.4f;// tuong tu koopas cho nay cung chua chinh nef
 
-		if (nx != 0) vx = 0;
+		//if (nx != 0) vx = 0;
 		if (ny != 0) vy = 0;
 
 
@@ -109,45 +113,40 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			} // if Koopas
-			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
-			{
-				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+			//else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
+			//{
+			//	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 
-				// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
-				if (e->ny < 0)
-				{
-					DebugOut(L"1\n");
-						if (koopas->GetState() != KOOPAS_STATE_DIE)
-					{
-						koopas->SetState(KOOPAS_STATE_DIE);
-						vy = -0.2;
-					}
-				}
-				else if (e->nx != 0)
-				{
-					//DebugOut(L"2\n");
-					if (untouchable == 0)
-					{
-						if (koopas->GetState() != KOOPAS_STATE_DIE)
-						{
-							//DebugOut(L"3\n");
-							if (level > MARIO_LEVEL_SMALL)
-							{
-								level = MARIO_LEVEL_SMALL;
-								StartUntouchable();
-							}
-							else
-								SetState(MARIO_STATE_DIE);
-						}
-						else 
-						{
-							//DebugOut(L"7\n");
-
-							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
-						}
-					}
-				}
-			} // if Koopas
+			//	// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
+			//	if (e->ny < 0)
+			//	{
+			//		if (koopas->GetState() != KOOPAS_STATE_DIE)
+			//		{
+			//			koopas->SetState(KOOPAS_STATE_DIE);
+			//			vy = -0.2;
+			//		}
+			//	}
+			//	else if (e->nx != 0)
+			//	{
+			//		if (untouchable == 0)
+			//		{
+			//			if (koopas->GetState() != KOOPAS_STATE_DIE)
+			//			{
+			//				if (level > MARIO_LEVEL_SMALL)
+			//				{
+			//					level = MARIO_LEVEL_SMALL;
+			//					StartUntouchable();
+			//				}
+			//				else
+			//					SetState(MARIO_STATE_DIE);
+			//			}
+			//			else 
+			//			{
+			//				koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+			//			}
+			//		}
+			//	}
+			//} // if Koopas
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
@@ -155,11 +154,50 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 	}
-	DebugOut(L"4\n");
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
-	DebugOut(L"5\n");
 
+}
+
+
+void CMario::checkenemies(vector<LPGAMEOBJECT>* listenemies)
+{
+	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
+	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
+
+
+	for (UINT i = 0; i < listenemies->size(); i++)
+	{
+		LPGAMEOBJECT e = listenemies->at(i);
+		if (dynamic_cast<CKoopas*>(e))
+		{
+			CKoopas* koopas = dynamic_cast<CKoopas*>(e);
+			koopas->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
+			if (CGameObject::AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario))
+			{
+				if (untouchable == 0)
+				{
+					if (koopas->GetState() != KOOPAS_STATE_DIE)
+					{
+						if (level > MARIO_LEVEL_SMALL)
+						{
+							level = MARIO_LEVEL_SMALL;
+							StartUntouchable();
+						}
+						else
+							SetState(MARIO_STATE_DIE);
+					}
+					else
+					{
+						DebugOut(L"co va cham\n");
+
+						koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+					}
+				}
+			}
+
+		}
+	}
 }
 
 void CMario::Render()
