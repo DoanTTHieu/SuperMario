@@ -13,6 +13,8 @@
 #define MARIO_STATE_WALKING_LEFT	200
 #define MARIO_STATE_JUMP			300
 #define MARIO_STATE_DIE				400
+#define MARIO_STATE_SIT				500
+
 
 #define MARIO_ANI_BIG_IDLE_RIGHT		0
 #define MARIO_ANI_BIG_IDLE_LEFT			1
@@ -25,11 +27,14 @@
 #define MARIO_ANI_SMALL_WALKING_LEFT		7
 
 #define MARIO_ANI_DIE				8
+#define MARIO_ANI_SIT_RIGHT				9
+#define MARIO_ANI_SIT_LEFT				10
+
 
 #define	MARIO_LEVEL_SMALL	1
 #define	MARIO_LEVEL_BIG		2
 
-#define MARIO_BIG_BBOX_WIDTH  15
+#define MARIO_BIG_BBOX_WIDTH  14
 #define MARIO_BIG_BBOX_HEIGHT 27
 
 #define MARIO_SMALL_BBOX_WIDTH  13
@@ -46,12 +51,14 @@ class CMario : public CGameObject
 
 	float start_x;			// initial position of Mario at scene
 	float start_y;
+
+	vector<LPGAMEOBJECT> interactableObject;
 public:
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
-
-
+	bool IsAABB(LPGAMEOBJECT object);
+	void CheckInteraction();
 	void checkenemies(vector<LPGAMEOBJECT>* listenemies);
 	void SetState(int state);
 	void SetLevel(int l) { level = l; }

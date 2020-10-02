@@ -24,7 +24,7 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-	vy += 0.2 * dt;
+	vy += 0.02 * dt;
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -59,15 +59,18 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		//if (nx != 0) vx = 0;
 		if (ny != 0) vy = 0;
+		//DebugOut(L"size:%d \n", coEvents.size());
+		if (coEvents.size() >= 3) 
+			vx *= -1;
 	}
 
-	if (vx < 0 && x < 0) {
-		x = 0; vx = -vx;
-	}
+	//if (vx < 0 && x < 0) {
+	//	x = 0; vx = -vx;
+	//}
 
-	if (vx > 0 && x > 290) {
-		x = 290; vx = -vx;
-	}
+	//if (vx > 0 && x > 290) {
+	//	x = 290; vx = -vx;
+	//}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
@@ -103,15 +106,18 @@ void CKoopas::SetState(int state)
 	{
 	case KOOPAS_STATE_DIE_MOVE:	
 		vx = KOOPAS_DIE_MOVE_SPEED;
+		isInteractable = false;
 		//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		break;
 	case KOOPAS_STATE_DIE:
 		//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
+		isInteractable = true;
 		//vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
 		vx = KOOPAS_WALKING_SPEED;
+		isInteractable = false;
 	}
 
 }

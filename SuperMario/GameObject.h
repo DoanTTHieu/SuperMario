@@ -61,6 +61,7 @@ public:
 	DWORD dt;
 
 	LPANIMATION_SET animation_set;
+	bool isInteractable;
 
 public:
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }

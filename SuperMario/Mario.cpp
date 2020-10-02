@@ -38,7 +38,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (state != MARIO_STATE_DIE)
 		CalcPotentialCollisions(coObjects, coEvents);
 
-	
+	interactableObject.clear();
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		if (coObjects->at(i)->isInteractable)
+		{
+			interactableObject.push_back(coObjects->at(i));
+		}
+	}
+	CheckInteraction();
+
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -47,7 +56,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable = 0;
 	}
 
-	checkenemies(coObjects);
+	//checkenemies(coObjects);
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -113,52 +122,72 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			} // if Koopas
-			//else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
-			//{
-			//	CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
+			{
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+				
+				// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
+				if (untouchable == 0)
+				{
+					if (e->ny < 0)
+					{
+						if (koopas->GetState() != KOOPAS_STATE_DIE)
+						{
+							koopas->SetState(KOOPAS_STATE_DIE);
+							vy = -0.6;
+						}
 
-			//	// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
-			//	if (e->ny < 0)
-			//	{
-			//		if (koopas->GetState() != KOOPAS_STATE_DIE)
-			//		{
-			//			koopas->SetState(KOOPAS_STATE_DIE);
-			//			vy = -0.2;
-			//		}
-			//	}
-			//	else if (e->nx != 0)
-			//	{
-			//		if (untouchable == 0)
-			//		{
-			//			if (koopas->GetState() != KOOPAS_STATE_DIE)
-			//			{
-			//				if (level > MARIO_LEVEL_SMALL)
-			//				{
-			//					level = MARIO_LEVEL_SMALL;
-			//					StartUntouchable();
-			//				}
-			//				else
-			//					SetState(MARIO_STATE_DIE);
-			//			}
-			//			else 
-			//			{
-			//				koopas->SetState(KOOPAS_STATE_DIE_MOVE);
-			//			}
-			//		}
-			//	}
-			//} // if Koopas
+					}
+					else if (e->nx != 0)
+					{
+						if (untouchable == 0)
+						{
+							if (koopas->GetState() != KOOPAS_STATE_DIE)
+							{
+								if (level > MARIO_LEVEL_SMALL)
+								{
+									level = MARIO_LEVEL_SMALL;
+									StartUntouchable();
+								}
+								else
+									SetState(MARIO_STATE_DIE);
+							}
+							else
+							{
+								koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+							}
+						}
+					}
+				}
+			} // if Koopas
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
-				CPortal* p = dynamic_cast<CPortal*>(e->obj);
-				CGame::GetInstance()->SwitchScene(p->GetSceneId());
+				/*CPortal* p = dynamic_cast<CPortal*>(e->obj);
+				CGame::GetInstance()->SwitchScene(p->GetSceneId());*/
 			}
 		}
+
 	}
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
 }
 
+
+void CMario::CheckInteraction()
+{
+	if (interactableObject.size() > 0)
+	{
+		for (auto object : interactableObject)
+		{
+			if (IsAABB(object))
+				if (dynamic_cast<CKoopas*>(object))
+				{
+					object->SetState(KOOPAS_STATE_DIE_MOVE);
+				}
+		}
+	}
+}
 
 void CMario::checkenemies(vector<LPGAMEOBJECT>* listenemies)
 {
@@ -205,6 +234,11 @@ void CMario::Render()
 	int ani = -1;
 	if (state == MARIO_STATE_DIE)
 		ani = MARIO_ANI_DIE;
+	else if (state == MARIO_STATE_SIT)
+		if (vx < 0)
+			ani = MARIO_ANI_SIT_LEFT;
+		else
+			ani = MARIO_ANI_SIT_RIGHT;
 	else
 		if (level == MARIO_LEVEL_BIG)
 		{
@@ -237,6 +271,15 @@ void CMario::Render()
 	RenderBoundingBox();
 }
 
+bool CMario::IsAABB(LPGAMEOBJECT object)
+{
+	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
+	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
+	object->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
+	return AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario);
+
+}
+
 void CMario::SetState(int state)
 {
 	CGameObject::SetState(state);
@@ -258,6 +301,9 @@ void CMario::SetState(int state)
 	case MARIO_STATE_IDLE:
 		vx = 0;
 		break;
+	case MARIO_STATE_SIT:
+		vx = 0;
+		break;
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
@@ -273,6 +319,11 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	{
 		right = x + MARIO_BIG_BBOX_WIDTH;
 		bottom = y + MARIO_BIG_BBOX_HEIGHT;
+		//if (state == MARIO_STATE_SIT)
+		//{
+		//	top += MARIO_SMALL_BBOX_HEIGHT;
+		//	//bottom += 
+		//}
 	}
 	else
 	{
