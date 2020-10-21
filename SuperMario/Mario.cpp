@@ -13,8 +13,13 @@ CMario::CMario(float x, float y) : CGameObject()
 {
 	level = MARIO_LEVEL_BIG;
 	untouchable = 0;
-	SetState(MARIO_STATE_IDLE);
-
+	Idle();
+	//SetState(MARIO_STATE_IDLE_RIGHT);
+	
+	jumpStart = 0;
+	isOnGround = true;
+	isSiting = false;
+	jumpHigh = false;
 	start_x = x;
 	start_y = y;
 	this->x = x;
@@ -28,6 +33,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
+	
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -63,6 +69,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		x += dx;
 		y += dy;
+
 	}
 	else
 	{
@@ -79,10 +86,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// block every object first!
 		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;// tuong tu koopas cho nay cung chua chinh nef
+		y += min_ty * dy + ny * 0.4f;
 
 		//if (nx != 0) vx = 0;
-		if (ny != 0) vy = 0;
+
+
+		if (ny != 0)
+		{
+			vy = 0;
+			if (ny == -1)
+			{
+				if (!isOnGround)//cham dat thi het nhay
+					isOnGround = true;
+				jumpStart = 0;
+			}
+		}
 
 
 		//
@@ -189,79 +207,208 @@ void CMario::CheckInteraction()
 	}
 }
 
-void CMario::checkenemies(vector<LPGAMEOBJECT>* listenemies)
-{
-	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
-	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
-
-
-	for (UINT i = 0; i < listenemies->size(); i++)
-	{
-		LPGAMEOBJECT e = listenemies->at(i);
-		if (dynamic_cast<CKoopas*>(e))
-		{
-			CKoopas* koopas = dynamic_cast<CKoopas*>(e);
-			koopas->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
-			if (CGameObject::AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario))
-			{
-				if (untouchable == 0)
-				{
-					if (koopas->GetState() != KOOPAS_STATE_DIE)
-					{
-						if (level > MARIO_LEVEL_SMALL)
-						{
-							level = MARIO_LEVEL_SMALL;
-							StartUntouchable();
-						}
-						else
-							SetState(MARIO_STATE_DIE);
-					}
-					else
-					{
-						DebugOut(L"co va cham\n");
-
-						koopas->SetState(KOOPAS_STATE_DIE_MOVE);
-					}
-				}
-			}
-
-		}
-	}
-}
-
 void CMario::Render()
 {
 	int ani = -1;
-	if (state == MARIO_STATE_DIE)
-		ani = MARIO_ANI_DIE;
-	else if (state == MARIO_STATE_SIT)
-		if (vx < 0)
-			ani = MARIO_ANI_SIT_LEFT;
-		else
-			ani = MARIO_ANI_SIT_RIGHT;
+	if (GetLevel() == MARIO_LEVEL_FIRE)
+	{
+		switch (state)
+		{
+		case MARIO_STATE_DIE:
+			ani = MARIO_ANI_DIE;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = FIRE_ANI_WALK_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = FIRE_ANI_WALK_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (isSiting)
+			{
+				if (nx > 0)
+					ani = FIRE_ANI_SIT_RIGHT;
+				else
+					ani = FIRE_ANI_SIT_LEFT;
+			}
+			else
+				if (vy < 0)
+				{
+					if (nx > 0)
+						ani = FIRE_ANI_JUMP_RIGHT;
+					else
+						ani = FIRE_ANI_JUMP_LEFT;
+				}
+				else
+				{
+					if (nx > 0)
+						ani = FIRE_ANI_FALL_RIGHT;
+					else
+						ani = FIRE_ANI_FALL_LEFT;
+				}
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0)
+				ani = FIRE_ANI_SIT_RIGHT;
+			else
+				ani = FIRE_ANI_SIT_LEFT;
+			break;
+		default:
+			if (!isOnGround)
+			{
+				break;
+			}
+			else if (nx > 0)
+				ani = FIRE_ANI_IDLE_RIGHT;
+			else
+				ani = FIRE_ANI_IDLE_LEFT;
+			break;
+		}
+
+	}
+	else if (GetLevel() == MARIO_LEVEL_RACCOON)
+	{
+		switch (state)
+		{
+		case MARIO_STATE_DIE:
+			ani = MARIO_ANI_DIE;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = RACCOON_ANI_WALK_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = RACCOON_ANI_WALK_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (isSiting)
+			{
+				if (nx > 0)
+					ani = RACCOON_ANI_SIT_RIGHT;
+				else
+					ani = RACCOON_ANI_SIT_LEFT;
+			}
+			else
+				if (vy < 0)
+				{
+					if (nx > 0)
+						ani = RACCOON_ANI_JUMP_RIGHT;
+					else
+						ani = RACCOON_ANI_JUMP_LEFT;
+				}
+				else
+				{
+					if (nx > 0)
+						ani = RACCOON_ANI_FALL_RIGHT;
+					else
+						ani = RACCOON_ANI_FALL_LEFT;
+				}
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0)
+				ani = RACCOON_ANI_SIT_RIGHT;
+			else
+				ani = RACCOON_ANI_SIT_LEFT;
+			break;
+		default:
+			if (!isOnGround)
+			{
+				break;
+			}
+			else if (nx > 0)
+				ani = RACCOON_ANI_IDLE_RIGHT;
+			else
+				ani = RACCOON_ANI_IDLE_LEFT;
+			break;
+		}
+
+	}
+	else if (GetLevel() == MARIO_LEVEL_BIG)
+	{
+		switch (state)
+		{
+		case MARIO_STATE_DIE:
+			ani = MARIO_ANI_DIE;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = MARIO_ANI_WALK_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = MARIO_ANI_WALK_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (isSiting)
+			{
+				if (nx > 0)
+					ani = MARIO_ANI_SIT_RIGHT;
+				else
+					ani = MARIO_ANI_SIT_LEFT;
+			}
+			else
+				if (vy < 0)
+				{
+					if (nx > 0)
+						ani = MARIO_ANI_JUMP_RIGHT;
+					else
+						ani = MARIO_ANI_JUMP_LEFT;
+				}
+				else
+				{
+					if (nx > 0)
+						ani = MARIO_ANI_FALL_RIGHT;
+					else
+						ani = MARIO_ANI_FALL_LEFT;
+				}
+			break;
+		case MARIO_STATE_SIT:
+			if (nx > 0)
+				ani = MARIO_ANI_SIT_RIGHT;
+			else
+				ani = MARIO_ANI_SIT_LEFT;
+			break;
+		default:
+			if (!isOnGround)
+			{
+				break;
+			}
+			else if (nx > 0)
+				ani = MARIO_ANI_IDLE_RIGHT;
+			else
+				ani = MARIO_ANI_IDLE_LEFT;
+			break;
+		}
+
+	}
 	else
-		if (level == MARIO_LEVEL_BIG)
+	{
+		switch (state)
 		{
-			if (vx == 0)
+		case MARIO_STATE_DIE:
+			ani = MARIO_ANI_DIE;
+			break;
+		case MARIO_STATE_WALKING_RIGHT:
+			ani = mario_ANI_WALK_RIGHT;
+			break;
+		case MARIO_STATE_WALKING_LEFT:
+			ani = mario_ANI_WALK_LEFT;
+			break;
+		case MARIO_STATE_JUMP:
+			if (nx > 0)
+				ani = mario_ANI_JUMP_RIGHT;
+			else
+				ani = mario_ANI_JUMP_LEFT;
+			break;
+		default:
+			if (!isOnGround)
 			{
-				if (nx > 0) ani = MARIO_ANI_BIG_IDLE_RIGHT;
-				else ani = MARIO_ANI_BIG_IDLE_LEFT;
+				break;
 			}
-			else if (vx > 0)
-				ani = MARIO_ANI_BIG_WALKING_RIGHT;
-			else ani = MARIO_ANI_BIG_WALKING_LEFT;
+			else if (nx > 0)
+				ani = mario_ANI_IDLE_RIGHT;
+			else
+				ani = mario_ANI_IDLE_LEFT;
+			break;
 		}
-		else if (level == MARIO_LEVEL_SMALL)
-		{
-			if (vx == 0)
-			{
-				if (nx > 0) ani = MARIO_ANI_SMALL_IDLE_RIGHT;
-				else ani = MARIO_ANI_SMALL_IDLE_LEFT;
-			}
-			else if (vx > 0)
-				ani = MARIO_ANI_SMALL_WALKING_RIGHT;
-			else ani = MARIO_ANI_SMALL_WALKING_LEFT;
-		}
+	}
 
 	int alpha = 255;
 	if (untouchable) alpha = 128;
@@ -295,19 +442,31 @@ void CMario::SetState(int state)
 		nx = -1;
 		break;
 	case MARIO_STATE_JUMP:
-		// TODO: need to check if Mario is *current* on a platform before allowing to jump again
 		vy = -MARIO_JUMP_SPEED_Y;
+		y -= 5;
 		break;
 	case MARIO_STATE_IDLE:
-		vx = 0;
+		if (vx > 0) {
+			vx -= 0.003 * dt;
+			if (vx < 0)
+				vx = 0;
+		}
+		else if (vx < 0) {
+			vx += 0.003 * dt;
+			if (vx > 0)
+				vx = 0;
+		}
+
+		//vx = 0;
 		break;
 	case MARIO_STATE_SIT:
-		vx = 0;
 		break;
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
+	
 	}
+	
 }
 
 void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -315,15 +474,17 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	left = x;
 	top = y;
 
-	if (level == MARIO_LEVEL_BIG)
+	if (level == MARIO_LEVEL_RACCOON)
+	{
+		right = x + MARIO_RACCOON_BBOX_WIDTH;
+		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
+	}
+	else if (level == MARIO_LEVEL_BIG|| level == MARIO_LEVEL_FIRE )
 	{
 		right = x + MARIO_BIG_BBOX_WIDTH;
 		bottom = y + MARIO_BIG_BBOX_HEIGHT;
-		//if (state == MARIO_STATE_SIT)
-		//{
-		//	top += MARIO_SMALL_BBOX_HEIGHT;
-		//	//bottom += 
-		//}
+		// chua xu ly bbox khi ngoi
+
 	}
 	else
 	{
@@ -337,9 +498,51 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 */
 void CMario::Reset()
 {
-	SetState(MARIO_STATE_IDLE);
+	Idle();
+	//SetState(MARIO_STATE_IDLE_RIGHT);
 	SetLevel(MARIO_LEVEL_BIG);
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
 }
 
+void CMario::Raccoon()
+{
+	Idle();
+	SetLevel(MARIO_LEVEL_RACCOON);
+	SetPosition(start_x, start_y);
+	SetSpeed(0, 0);
+}
+
+void CMario::FireMario()
+{
+	Idle();
+	SetLevel(MARIO_LEVEL_FIRE);
+	SetPosition(start_x, start_y);
+	SetSpeed(0, 0);
+}
+
+
+void CMario::Jump() {
+	SetState(MARIO_STATE_JUMP);
+	isOnGround = false;
+}
+
+void CMario::Sit() {
+	SetState(MARIO_STATE_SIT);
+	isSiting = true;
+}
+
+void CMario::Idle() {
+	SetState(MARIO_STATE_IDLE);
+	isOnGround = true;
+}
+
+void CMario::ToRight() {
+	vx = MARIO_WALKING_SPEED;
+	nx = 1;
+}
+
+void CMario::ToLeft() {
+	vx = -MARIO_WALKING_SPEED;
+	nx = -1;
+}
