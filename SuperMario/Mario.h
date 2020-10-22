@@ -13,16 +13,23 @@
 #define MARIO_WALKING_SPEED				0.08f
 #define MARIO_JUMP_SPEED_Y				0.25f
 #define MARIO_JUMP_DEFLECT_SPEED		0.1f
-#define MARIO_GRAVITY					0.0006f
+#define MARIO_GRAVITY					0.0005f
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f
+#define MARIO_RUN_SPEED_THRESH			0.24f
+#define MARIO_ACCELERATION				0.0003f
 
 #define MARIO_STATE_IDLE				0
 #define MARIO_STATE_WALKING_RIGHT		1
 #define MARIO_STATE_WALKING_LEFT		2
 #define MARIO_STATE_JUMP				3
-#define MARIO_STATE_DIE					4
-#define MARIO_STATE_SIT					5
+#define MARIO_STATE_JUMP_LOW			4
+#define MARIO_STATE_DIE					5
+#define MARIO_STATE_SIT					6
+#define MARIO_STATE_RUN_RIGHT			8
+#define MARIO_STATE_RUN_LEFT			9
+#define MARIO_STATE_FLY					10
+
 
 #define MARIO_ANI_IDLE_RIGHT				0
 #define MARIO_ANI_WALK_RIGHT				1
@@ -137,24 +144,25 @@ public:
 	virtual void Render();
 	bool IsAABB(LPGAMEOBJECT object);
 	void CheckInteraction();
-	DWORD jumpStart;
 
 	void SetState(int state);
 	
 	void SetLevel(int l) { level = l; }
 	int GetLevel() { return level; }
-	
+	DWORD startRun;
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 	bool isOnGround;
-	bool jumpHigh;
 	bool isSiting;
+	bool isblockJump;
 
 
 	void Jump();
+	void JumpX();
 	void ToRight();
 	void ToLeft();
 	void Idle();
 	void Sit();
+	void Fly();
 	void Reset();
 	void Raccoon();
 	void FireMario();
