@@ -14,6 +14,8 @@
 
 using namespace std;
 
+#define SCREEN_WIDTH 300
+#define SCREEN_HEIGHT 300
 #define KEYBOARD_BUFFER_SIZE 1024
 
 class CGame
@@ -35,8 +37,6 @@ class CGame
 
 	LPKEYEVENTHANDLER keyHandler;
 
-	float cam_x = 0.0f;
-	float cam_y = 0.0f;
 
 	int screen_width;
 	int screen_height;
@@ -48,6 +48,8 @@ class CGame
 	void _ParseSection_SCENES(string line);
 
 public:
+	float cam_x = 0.0f;
+	float cam_y = 0.0f;
 	void InitKeyboard();
 	void SetKeyHandler(LPKEYEVENTHANDLER handler) { keyHandler = handler; }
 	void Init(HWND hWnd);
@@ -83,6 +85,8 @@ public:
 	LPD3DXSPRITE GetSpriteHandler() { return this->spriteHandler; }
 
 	void SetCamPos(float x, float y) { cam_x = x; cam_y = y; }
+	float GetCamPosX() { return cam_x; }
+	float GetCamPosY() { return cam_y; }
 
 	static CGame* GetInstance();
 

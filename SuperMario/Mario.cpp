@@ -5,6 +5,7 @@
 #include "Mario.h"
 #include "Game.h"
 
+#include "Bullet.h"
 #include "Goomba.h"
 #include "Koopas.h"
 #include "Portal.h"
@@ -19,6 +20,8 @@ CMario::CMario(float x, float y) : CGameObject()
 	isOnGround = true;
 	isSiting = false;
 	isblockJump = false;
+	isFly = false;
+	isAttack = false;
 
 	start_x = x;
 	start_y = y;
@@ -34,9 +37,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 	
+	if (isAttack)
+	{
+		if (nx > 0)
+			listBullet.push_back(CreateBullet(x + 10, y + 6, nx));
+		else
+			listBullet.push_back(CreateBullet(x -6 , y + 6 , nx));
+		isAttack = false;
+	}
+	for (int i = 0; i < listBullet.size(); i++)
+		listBullet[i]->Update(dt, coObjects);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
+
 
 	coEvents.clear();
 
@@ -90,19 +104,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		//if (nx != 0) vx = 0;
 
-
 		if (ny != 0)
 		{
 			vy = 0;
 			if (ny == -1)
 			{
-				
 				if (!isOnGround)//cham dat thi het nhay
 					isOnGround = true;
 				isblockJump = false;
+				isFly = false;
 			}
 		}
-
 
 		//
 		// Collision logic with other objects
@@ -153,9 +165,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						if (koopas->GetState() != KOOPAS_STATE_DIE)
 						{
 							koopas->SetState(KOOPAS_STATE_DIE);
-							vy = -0.6;
+							vy = -0.2;
 						}
-
 					}
 					else if (e->nx != 0)
 					{
@@ -185,7 +196,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());*/
 			}
 		}
-
 	}
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
@@ -236,6 +246,12 @@ void CMario::Render()
 				ani = FIRE_ANI_WALK_LEFT;
 			else
 				ani = FIRE_ANI_RUN_LEFT;
+			break;
+		case MARIO_STATE_ATTACK:
+			if (nx > 0)
+				ani = FIRE_ANI_ATTACK_RIGHT;
+			else
+				ani = FIRE_ANI_ATTACK_LEFT;
 			break;
 		case MARIO_STATE_JUMP:
 		case MARIO_STATE_JUMP_LOW:
@@ -389,10 +405,20 @@ void CMario::Render()
 		case MARIO_STATE_DIE:
 			ani = MARIO_ANI_DIE;
 			break;
+		case MARIO_STATE_STOP:
+			if (nx>0)
+				ani = RACCOON_ANI_STOP_RIGHT;
+			else
+				ani = RACCOON_ANI_STOP_LEFT;
+			break;
 		case MARIO_STATE_WALKING_RIGHT:
+			/*if (vx < 0)
+				ani = MARIO_ANI_STOP_RIGHT;*/
 			ani = MARIO_ANI_WALK_RIGHT;
 			break;
 		case MARIO_STATE_WALKING_LEFT:
+			/*if (vx > 0)
+				ani = MARIO_ANI_STOP_LEFT;*/
 			ani = MARIO_ANI_WALK_LEFT;
 			break;
 		case MARIO_STATE_RUN_RIGHT:
@@ -526,7 +552,10 @@ void CMario::Render()
 
 	animation_set->at(ani)->Render(x, y, alpha);
 
-	RenderBoundingBox();
+	for (int i = 0; i < listBullet.size(); i++)
+		listBullet[i]->Render();
+
+	//RenderBoundingBox();
 }
 
 bool CMario::IsAABB(LPGAMEOBJECT object)
@@ -566,10 +595,10 @@ void CMario::SetState(int state)
 		break;
 	case MARIO_STATE_FLY:
 		if(vx>0)
-			vx += MARIO_JUMP_SPEED_Y*10;
+			vx = MARIO_WALKING_SPEED;
 		else
-			vx -= MARIO_JUMP_SPEED_Y*10;
-		vy -= MARIO_JUMP_SPEED_Y*1.5;
+			vx = -MARIO_WALKING_SPEED;
+		vy = -MARIO_JUMP_SPEED_Y;
 		//y -= 5;
 		break;
 	case MARIO_STATE_JUMP:
@@ -580,23 +609,43 @@ void CMario::SetState(int state)
 		vy = -MARIO_JUMP_SPEED_Y*0.75;
 		y -= 5;
 		break;
+	case MARIO_STATE_STOP:
+		vx = 0;
+		break;
+	case MARIO_STATE_ATTACK:
+		break;
 	case MARIO_STATE_IDLE:
 	case MARIO_STATE_SIT:
-		if (vx > 0) {
-			vx -= 0.00018 * dt;
-			if (vx < 0)
-				vx = 0;
+		if (vx > 0.08)
+		{
+			if (vx > 0) {
+				vx -= 0.00054 * dt;
+				if (vx < 0)
+					vx = 0;
+			}
+			else if (vx < 0) {
+				vx += 0.00054 * dt;
+				if (vx > 0)
+					vx = 0;
+			}		
 		}
-		else if (vx < 0) {
-			vx += 0.00018 * dt;
-			if (vx > 0)
-				vx = 0;
+		else
+		{
+			if (vx > 0) {
+				vx -= 0.00018 * dt;
+				if (vx < 0)
+					vx = 0;
+			}
+			else if (vx < 0) {
+				vx += 0.00018 * dt;
+				if (vx > 0)
+					vx = 0;
+			}
 		}
 		break;
 	case MARIO_STATE_DIE:
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
-	
 	}
 	
 }
@@ -666,6 +715,18 @@ void CMario::JumpX() {
 void CMario::Fly() {
 	SetState(MARIO_STATE_FLY);
 	isOnGround = false;
+	isFly = true;
+}
+
+void CMario::Stop() {
+	SetState(MARIO_STATE_STOP);
+	isOnGround = true;
+}
+
+void CMario::Attack() {
+	SetState(MARIO_STATE_ATTACK);
+	isAttack = true;
+	attackStart = GetTickCount();
 }
 
 void CMario::Sit() {
@@ -678,6 +739,7 @@ void CMario::Idle() {
 	SetState(MARIO_STATE_IDLE);
 	isOnGround = true;
 	isSiting = false;
+	isFly = false;
 }
 
 void CMario::ToRight() {
