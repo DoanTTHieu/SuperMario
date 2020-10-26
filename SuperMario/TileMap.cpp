@@ -7,21 +7,20 @@ CTileMap::CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Map_
 	this->MapPNG = FilePath_tex;
 	this->MapFilePath = FilePath_data;
 
+	this->Num_Rows = Map_rows;
+	this->Num_Cols = Map_cols;
+
 	this->num_row_read = Num_row_read;
 	this->num_col_read = Num_col_read;
 	
 	this->Tile_Width = Tile_width;
 	this->Tile_Height = Tile_height;
 
-	this->Num_Rows = Map_rows;
-	this->Num_Cols = Map_cols;
-
 	LoadMap();
 	Load();
 }
 void CTileMap::Load()
 {
-	
 	DebugOut(L"[INFO] Start loading map resources from : %s \n", MapFilePath);
 	ifstream f;
 	f.open(MapFilePath);

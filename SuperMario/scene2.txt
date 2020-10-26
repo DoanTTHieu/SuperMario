@@ -431,7 +431,7 @@
 #GOOMBA
 2	240	400	3
 # KOOPAS
-3	260	300	4
+#3	260	300	4
 
 # BRICK 
 # --- platform (hint: I created the list using Excel!) ----

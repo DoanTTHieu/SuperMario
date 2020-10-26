@@ -13,7 +13,6 @@ class CTileMap
 	CSprites* sprites = CSprites::GetInstance();
 	LPCWSTR MapFilePath;
 	LPCWSTR MapPNG;
-	//int Map_Width, Map_Height;
 	int Num_Rows, Num_Cols;
 	int num_row_read, num_col_read;
 	int Tile_Width, Tile_Height;
@@ -28,7 +27,7 @@ public:
 	void Load();
 	void LoadMap();
 	void Draw();
-	int GetMapWidth() { return (Num_Cols - 32)* Tile_Width; }
+	int GetMapWidth() { return Num_Cols * Tile_Width; }
 };
 
 typedef CTileMap* LPTILEMAP;

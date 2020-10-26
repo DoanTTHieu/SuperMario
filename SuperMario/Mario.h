@@ -12,15 +12,12 @@ class CMario : public CGameObject
 	float start_x;			// initial position of Mario at scene
 	float start_y;
 
-	//CBullet* bullet;
 	vector<LPGAMEOBJECT> interactableObject;
 	vector< LPGAMEOBJECT> listBullet;
 
 	CBullet* CreateBullet(float x, float y, int nx)
 	{
 		CBullet* bullet = new CBullet({ x, y }, nx);
-		//CBullet* a = new CBullet({ x, y }, nx);
-		//a->SetPosition(x, y);
 		return bullet;
 	}
 public:
@@ -34,7 +31,6 @@ public:
 	
 	void SetLevel(int l) { level = l; }
 	int GetLevel() { return level; }
-	DWORD attackStart;
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 	bool isOnGround;
 	bool isSiting;

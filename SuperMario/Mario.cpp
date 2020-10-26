@@ -202,7 +202,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 }
 
-
 void CMario::CheckInteraction()
 {
 	if (interactableObject.size() > 0)
@@ -726,7 +725,6 @@ void CMario::Stop() {
 void CMario::Attack() {
 	SetState(MARIO_STATE_ATTACK);
 	isAttack = true;
-	attackStart = GetTickCount();
 }
 
 void CMario::Sit() {
