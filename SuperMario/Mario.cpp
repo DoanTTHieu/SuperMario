@@ -22,6 +22,9 @@ CMario::CMario(float x, float y) : CGameObject()
 	isblockJump = false;
 	isFly = false;
 	isAttack = false;
+	isWaggingTail = false;
+
+	attackStart = 0;
 
 	start_x = x;
 	start_y = y;
@@ -45,6 +48,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			listBullet.push_back(CreateBullet(x -6 , y + 6 , nx));
 		isAttack = false;
 	}
+
+	
+	if (attackStart && GetTickCount() - attackStart <= 300)
+	{
+		SetState(MARIO_STATE_ATTACK);
+	}
+	else
+	{
+		attackStart = 0;
+	}
+
 	for (int i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Update(dt, coObjects);
 
@@ -113,6 +127,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					isOnGround = true;
 				isblockJump = false;
 				isFly = false;
+				isWaggingTail = false;
 			}
 		}
 
@@ -142,13 +157,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						if (goomba->GetState() != GOOMBA_STATE_DIE)
 						{
-							if (level > MARIO_LEVEL_SMALL)
-							{
-								level = MARIO_LEVEL_SMALL;
-								StartUntouchable();
-							}
-							else
-								SetState(MARIO_STATE_DIE);
+							UpdateLevel();
 						}
 					}
 				}
@@ -174,13 +183,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							if (koopas->GetState() != KOOPAS_STATE_DIE)
 							{
-								if (level > MARIO_LEVEL_SMALL)
-								{
-									level = MARIO_LEVEL_SMALL;
-									StartUntouchable();
-								}
-								else
-									SetState(MARIO_STATE_DIE);
+								UpdateLevel();
 							}
 							else
 							{
@@ -340,6 +343,12 @@ void CMario::Render()
 			else
 				ani = RACCOON_ANI_FLY_LEFT;
 			break;
+		case MARIO_STATE_ATTACK:
+			if (nx > 0)
+				ani = RACCOON_ANI_FIGHT_IDLE_RIGHT;
+			else
+				ani = RACCOON_ANI_FIGHT_IDLE_LEFT;
+			break;
 		case MARIO_STATE_JUMP:
 		case MARIO_STATE_JUMP_LOW:
 			if (isSiting)
@@ -359,10 +368,20 @@ void CMario::Render()
 				}
 				else
 				{
-					if (nx > 0)
-						ani = RACCOON_ANI_FALL_RIGHT;
+					if (isWaggingTail)
+					{
+						if (nx > 0)
+							ani = RACCOON_ANI_WAG_TAIL_RIGHT;
+						else
+							ani = RACCOON_ANI_WAG_TAIL_LEFT;
+					}
 					else
-						ani = RACCOON_ANI_FALL_LEFT;
+					{
+						if (nx > 0)
+							ani = RACCOON_ANI_FALL_RIGHT;
+						else
+							ani = RACCOON_ANI_FALL_LEFT;
+					}
 				}
 			break;
 		case MARIO_STATE_SIT:
@@ -569,6 +588,8 @@ bool CMario::IsAABB(LPGAMEOBJECT object)
 void CMario::SetState(int state)
 {
 	CGameObject::SetState(state);
+	if (attackStart > 0)
+		return;
 
 	switch (state)
 	{
@@ -700,6 +721,23 @@ void CMario::FireMario()
 	SetSpeed(0, 0);
 }
 
+//level giam
+void CMario::UpdateLevel() {
+	
+	if (level > MARIO_LEVEL_BIG)
+	{
+		level = MARIO_LEVEL_BIG;
+		StartUntouchable();
+	}
+	else if (level == MARIO_LEVEL_BIG)
+	{
+		level = MARIO_LEVEL_SMALL;
+		StartUntouchable();
+	}
+	else
+		SetState(MARIO_STATE_DIE);
+
+}
 
 void CMario::Jump() {
 	SetState(MARIO_STATE_JUMP);
@@ -723,8 +761,16 @@ void CMario::Stop() {
 }
 
 void CMario::Attack() {
+	//if (attackStart > 0)
+	//	return;
+
+	ResetAnimation();
+
 	SetState(MARIO_STATE_ATTACK);
-	isAttack = true;
+	if(GetLevel()==MARIO_LEVEL_FIRE)
+		isAttack = true;
+
+	attackStart = GetTickCount();
 }
 
 void CMario::Sit() {

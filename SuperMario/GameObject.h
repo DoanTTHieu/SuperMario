@@ -62,6 +62,7 @@ public:
 	DWORD dt;
 
 	LPANIMATION_SET animation_set;
+
 	bool isInteractable;
 
 public:
@@ -97,6 +98,7 @@ public:
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
 
+	virtual void ResetAnimation();
 
 	~CGameObject();
 };

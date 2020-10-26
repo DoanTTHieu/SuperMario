@@ -121,6 +121,11 @@ void CGameObject::FilterCollision(
 	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
 }
 
+void CGameObject::ResetAnimation()
+{
+	for (int i = 0; i < animation_set->size(); i++)
+		animation_set->at(i)->Reset();
+}
 
 void CGameObject::RenderBoundingBox()
 {
@@ -143,5 +148,5 @@ void CGameObject::RenderBoundingBox()
 
 CGameObject::~CGameObject()
 {
-
+	// Delete animations
 } 

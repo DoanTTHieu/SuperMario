@@ -316,7 +316,13 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			mario->Fly();
 		else
 			if (mario->isOnGround && !mario->isFly)
+			{
 				mario->Jump();
+			}
+		if (mario->GetLevel() == MARIO_LEVEL_RACCOON && mario->vy > 0)
+		{
+			mario->isWaggingTail = true;
+		}
 		break;
 	case DIK_X:
 		if (mario->isOnGround)
@@ -335,7 +341,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_A:
-		if (mario->GetLevel() == MARIO_LEVEL_FIRE)
+		if (mario->GetLevel() == MARIO_LEVEL_FIRE|| mario->GetLevel() == MARIO_LEVEL_RACCOON)
 			mario->Attack();
 		break;
 
@@ -350,6 +356,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_S:
 		if (mario->isblockJump == true)
 			return;
+
 		if (mario->isFly)
 		{
 			if (mario->vx > 0)
@@ -359,19 +366,26 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 			mario->vy -= (MARIO_JUMP_SPEED_Y * 0.05 * mario->dt );
 			DebugOut(L"\nVy %f: ", mario->vy);
 		}
-		else mario->vy = 0;
+		else 
+		{
+			mario->vy = 0;//
+		}
+
 		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
+		{
 			mario->isblockJump = false;
+		}
 		else
+		{
 			mario->isblockJump = true;
+		}
+		mario->isWaggingTail = false;
 		break;
 	case DIK_DOWN:
 		if(mario->isOnGround)
 			mario->isSiting = false;
 		break;
 	case DIK_A:
-		//if (mario->GetLevel() == MARIO_LEVEL_FIRE)
-		//	mario->isAttack = false;
 		break;
 	case DIK_SPACE:
 		break;

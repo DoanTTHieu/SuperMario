@@ -30,7 +30,9 @@ class CAnimation
 public:
 	CAnimation(int defaultTime = 100) { this->defaultTime = defaultTime; lastFrameTime = -1; currentFrame = -1; }
 	void Add(int spriteId, DWORD time = 0);
-
+	void Reset() { lastFrameTime = -1; currentFrame = -1; }
+	int GetCurrentFrame() { return currentFrame; }
+	void SetCurrentFrame(int frame) { this->currentFrame = frame; }
 	void Render(float x, float y, int alpha = 255);
 };
 

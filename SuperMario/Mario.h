@@ -37,6 +37,9 @@ public:
 	bool isblockJump;
 	bool isFly;
 	bool isAttack;
+	bool isWaggingTail;
+
+	DWORD attackStart;
 
 	void Jump();
 	void JumpX();
@@ -47,6 +50,8 @@ public:
 	void Fly();
 	void Attack();
 	void Stop();
+
+	void UpdateLevel();
 
 	void Reset();
 	void Raccoon();
