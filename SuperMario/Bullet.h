@@ -3,8 +3,10 @@
 
 #define BULLET_BBOX_WIDTH	8
 #define BULLET_BBOX_HEIGHT	8
-#define BULLET_GRAVITY		0.00008f
-#define BULLET_SPEED_X		0.16f
+//#define BULLET_GRAVITY		0.00005f
+//#define BULLET_SPEED_X		0.08f
+#define BULLET_GRAVITY		0.0002f
+#define BULLET_SPEED_X		0.1f
 #define FIRE_BALL		1
 
 class CBullet :

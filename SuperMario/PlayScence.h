@@ -8,6 +8,7 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include "TileMap.h"
+#include "Ground.h"
 
 class CPlayScene : public CScene
 {

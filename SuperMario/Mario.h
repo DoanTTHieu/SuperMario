@@ -38,8 +38,10 @@ public:
 	bool isFly;
 	bool isAttack;
 	bool isWaggingTail;
+	bool isWaitingForAni;
 
 	DWORD attackStart;
+	DWORD stopStart;
 
 	void Jump();
 	void JumpX();

@@ -17,6 +17,9 @@ void CAnimation::Add(int spriteId, DWORD time)
 
 	LPANIMATION_FRAME frame = new CAnimationFrame(sprite, t);
 	frames.push_back(frame);
+	totalFrameTime += time;
+	
+	//DebugOut(L"[TIME]%d %d\n", this->,totalFrameTime);
 }
 
 // NOTE: sometimes Animation object is NULL ??? HOW ??? 
@@ -53,6 +56,8 @@ CAnimations* CAnimations::GetInstance()
 void CAnimations::Add(int id, LPANIMATION ani)
 {
 	animations[id] = ani;
+	
+	//DebugOut(L"[TIME]%d %d\n", id , animations[id]->totalFrameTime);
 }
 
 LPANIMATION CAnimations::Get(int id)

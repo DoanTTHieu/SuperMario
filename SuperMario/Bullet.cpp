@@ -17,7 +17,6 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	vx = nx * BULLET_SPEED_X;
 	vy += (BULLET_GRAVITY * dt);
-
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 	

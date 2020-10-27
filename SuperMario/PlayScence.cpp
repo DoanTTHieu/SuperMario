@@ -139,7 +139,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
-	case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	//case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 	{
@@ -147,6 +147,13 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float b = atof(tokens[5].c_str());
 		int scene_id = atoi(tokens[6].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
+	}
+	break;
+	case OBJECT_TYPE_GROUND:
+	{
+		int w = atof(tokens[4].c_str());
+		int h = atof(tokens[5].c_str());
+		obj = new CGround(w, h);
 	}
 	break;
 	default:
@@ -399,6 +406,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (mario->GetState() == MARIO_STATE_DIE)
 		return;
+	if (mario->isWaitingForAni)
+		return;
 
 	if (mario->isOnGround)
 	{
@@ -412,14 +421,14 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_RIGHT))
 		{	
-			//if (mario->vx < 0)
-			//	mario->Stop();
+			if (mario->vx < 0)
+				mario->Stop();
 			mario->SetState(MARIO_STATE_WALKING_RIGHT);
 		}
 		else if (game->IsKeyDown(DIK_LEFT))
 		{
-			//if (mario->vx > 0)
-			//	mario->Stop();
+			if (mario->vx > 0)
+				mario->Stop();
 			mario->SetState(MARIO_STATE_WALKING_LEFT);
 		}
 		else if (game->IsKeyDown(DIK_DOWN))

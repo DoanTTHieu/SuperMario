@@ -23,17 +23,26 @@ typedef CAnimationFrame* LPANIMATION_FRAME;
 
 class CAnimation
 {
+public:
+	DWORD aniStartTime;
 	DWORD lastFrameTime;
+	DWORD totalFrameTime;
 	int currentFrame;
 	int defaultTime;
 	vector<LPANIMATION_FRAME> frames;
 public:
 	CAnimation(int defaultTime = 100) { this->defaultTime = defaultTime; lastFrameTime = -1; currentFrame = -1; }
 	void Add(int spriteId, DWORD time = 0);
+
 	void Reset() { lastFrameTime = -1; currentFrame = -1; }
+
 	int GetCurrentFrame() { return currentFrame; }
 	void SetCurrentFrame(int frame) { this->currentFrame = frame; }
+	
+
 	void Render(float x, float y, int alpha = 255);
+	void SetAniStartTime(DWORD t) { aniStartTime = t; }
+	bool IsFinished() { return GetTickCount() - aniStartTime >= totalFrameTime; }
 };
 
 typedef CAnimation* LPANIMATION;
