@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "Define.h"
 #include "Bullet.h"
+#include "Timer.h"
 
 class CMario : public CGameObject
 {
@@ -35,13 +36,11 @@ public:
 	bool isOnGround;
 	bool isSiting;
 	bool isblockJump;
-	bool isFly;
 	bool isAttack;
 	bool isWaggingTail;
 	bool isWaitingForAni;
 
-	DWORD attackStart;
-	DWORD stopStart;
+	Timer* flyTimer = new Timer(TIME_FLY);
 
 	void Jump();
 	void JumpX();

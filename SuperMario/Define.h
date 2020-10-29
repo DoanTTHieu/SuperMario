@@ -1,6 +1,4 @@
 #pragma once
-
-
 //play scene
 #define SCENE_SECTION_UNKNOWN -1
 #define SCENE_SECTION_TEXTURES 2
@@ -20,14 +18,7 @@
 #define MAX_SCENE_LINE 1024
 
 //mario
-//#define MARIO_WALKING_SPEED		0.12f 
-////0.1f
-//#define MARIO_JUMP_SPEED_Y		0.35f
-//#define MARIO_JUMP_DEFLECT_SPEED 0.2f
-//#define MARIO_GRAVITY			0.001f
-//#define MARIO_DIE_DEFLECT_SPEED	 0.5f
-//#define MARIO_ACCELERATION		0.002f
-
+#define TIME_FLY					5000
 #define MARIO_TIME_ATTACK			300
 #define MARIO_TIME_STOP				100
 
@@ -39,7 +30,7 @@
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f
 #define MARIO_RUN_SPEED_THRESH			0.16f
-#define MARIO_ACCELERATION				0.0003f
+#define MARIO_ACCELERATION				0.00006f
 
 #define MARIO_STATE_IDLE				0
 #define MARIO_STATE_WALKING_RIGHT		1

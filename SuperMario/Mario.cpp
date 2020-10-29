@@ -20,7 +20,6 @@ CMario::CMario(float x, float y) : CGameObject()
 	isOnGround = true;
 	isSiting = false;
 	isblockJump = false;
-	isFly = false;
 	isAttack = false;
 	isWaggingTail = false;
 
@@ -38,6 +37,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 	
+	if (flyTimer->IsTimeUp())
+		flyTimer->Stop();
+
 	//khoi tao list dan cua mario
 	if (isAttack)
 	{
@@ -112,7 +114,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// block every object first!
 		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;
+		y += min_ty * dy + ny * 0.25f;
 
 		//if (nx != 0) vx = 0;
 
@@ -124,8 +126,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				if (!isOnGround)//cham dat thi het nhay
 					isOnGround = true;
 				isblockJump = false;
-				isFly = false;
 				isWaggingTail = false;
+
 			}
 		}
 
@@ -235,7 +237,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MARIO_STATE_STOP:
-			if (nx > 0)
+			if (vx < 0)
 				ani = FIRE_ANI_STOP_RIGHT;
 			else
 				ani = FIRE_ANI_STOP_LEFT;
@@ -339,34 +341,54 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MARIO_STATE_STOP:
-			if (nx > 0)
+			if (vx < 0)
 				ani = RACCOON_ANI_STOP_RIGHT;
 			else
 				ani = RACCOON_ANI_STOP_LEFT;
 			break;
 		case MARIO_STATE_WALKING_RIGHT:
-			ani = RACCOON_ANI_WALK_RIGHT;
+			ani = RACCOON_ANI_WALK_RIGHT;//
 			break;
 		case MARIO_STATE_WALKING_LEFT:
-			ani = RACCOON_ANI_WALK_LEFT;
+			ani = RACCOON_ANI_WALK_LEFT;//
 			break;
 		case MARIO_STATE_RUN_RIGHT:
 			if (vx < MARIO_RUN_SPEED_THRESH)
-				ani = RACCOON_ANI_WALK_RIGHT;
+				ani = RACCOON_ANI_WALK_RIGHT;//
 			else
 				ani = RACCOON_ANI_RUN_RIGHT;
 			break;
 		case MARIO_STATE_RUN_LEFT:
 			if (vx > -MARIO_RUN_SPEED_THRESH)
-				ani = RACCOON_ANI_WALK_LEFT;
+				ani = RACCOON_ANI_WALK_LEFT;//
 			else
 				ani = RACCOON_ANI_RUN_LEFT;
 			break;
 		case MARIO_STATE_FLY:
-			if (vx > 0)
-				ani = RACCOON_ANI_FLY_RIGHT;
+			if (vy < 0)
+			{
+				if (vx > 0)
+					ani = RACCOON_ANI_FLY_RIGHT;
+				else
+					ani = RACCOON_ANI_FLY_LEFT;
+			}
 			else
-				ani = RACCOON_ANI_FLY_LEFT;
+			{
+				if (isWaggingTail)
+				{
+					if (nx > 0)
+						ani = RACCOON_ANI_WAG_TAIL_RIGHT;
+					else
+						ani = RACCOON_ANI_WAG_TAIL_LEFT;
+				}
+				else
+				{
+					if (nx > 0)
+						ani = RACCOON_ANI_FALL_RIGHT;
+					else
+						ani = RACCOON_ANI_FALL_LEFT;
+				}
+			}
 			break;
 		case MARIO_STATE_ATTACK:
 			if (nx > 0)
@@ -449,19 +471,15 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MARIO_STATE_STOP:
-			if (nx>0)
+			if (vx<0)
 				ani = MARIO_ANI_STOP_RIGHT;
 			else
 				ani = MARIO_ANI_STOP_LEFT;
 			break;
 		case MARIO_STATE_WALKING_RIGHT:
-			/*if (vx < 0)
-				ani = MARIO_ANI_STOP_RIGHT;*/
 			ani = MARIO_ANI_WALK_RIGHT;
 			break;
 		case MARIO_STATE_WALKING_LEFT:
-			/*if (vx > 0)
-				ani = MARIO_ANI_STOP_LEFT;*/
 			ani = MARIO_ANI_WALK_LEFT;
 			break;
 		case MARIO_STATE_RUN_RIGHT:
@@ -541,7 +559,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MARIO_STATE_STOP:
-			if (nx > 0)
+			if (vx < 0)
 				ani = mario_ANI_STOP_RIGHT;
 			else
 				ani = mario_ANI_STOP_LEFT;
@@ -619,8 +637,6 @@ bool CMario::IsAABB(LPGAMEOBJECT object)
 void CMario::SetState(int state)
 {
 	CGameObject::SetState(state);
-	if (attackStart > 0)
-		return;
 
 	switch (state)
 	{
@@ -633,17 +649,19 @@ void CMario::SetState(int state)
 		nx = -1;
 		break;
 	case MARIO_STATE_RUN_RIGHT:
-		nx = 1;
+		//isOnGround = true;
 		vx += MARIO_ACCELERATION * dt;
 		if (vx >= MARIO_RUN_SPEED_THRESH)
 			vx = MARIO_RUN_SPEED_THRESH;
+		nx = 1;
 		break;
 	case MARIO_STATE_RUN_LEFT:
-		nx = -1;
+		//isOnGround = true;
 		vx -= MARIO_ACCELERATION * dt;
 		if (vx <= -MARIO_RUN_SPEED_THRESH)
 			vx = -MARIO_RUN_SPEED_THRESH;
 		break;
+		nx = -1;
 	case MARIO_STATE_FLY:
 		if(vx>0)
 			vx = MARIO_WALKING_SPEED;
@@ -664,9 +682,14 @@ void CMario::SetState(int state)
 	case MARIO_STATE_ATTACK:
 		break;
 	case MARIO_STATE_STOP:
-		//vx = 0;
+		if (vx > 0)
+			nx = -1;
+		else
+			nx = 1;
 		//break;
 	case MARIO_STATE_IDLE:
+	/*	if (vx == 0)
+			break;*/
 	case MARIO_STATE_SIT:
 		if (vx > 0.08)
 		{
@@ -696,6 +719,7 @@ void CMario::SetState(int state)
 		}
 		break;
 	case MARIO_STATE_DIE:
+		flyTimer->Stop();
 		vy = -MARIO_DIE_DEFLECT_SPEED;
 		break;
 	}
@@ -784,7 +808,7 @@ void CMario::JumpX() {
 void CMario::Fly() {
 	SetState(MARIO_STATE_FLY);
 	isOnGround = false;
-	isFly = true;
+	flyTimer->Start();
 }
 
 void CMario::Stop() {
@@ -792,8 +816,8 @@ void CMario::Stop() {
 	SetState(MARIO_STATE_STOP);
 	isOnGround = true;
 
-	ResetAnimation();
-	isWaitingForAni = true;
+	//ResetAnimation();
+	//isWaitingForAni = true;
 }
 
 void CMario::Attack() {
@@ -817,15 +841,24 @@ void CMario::Idle() {
 	SetState(MARIO_STATE_IDLE);
 	isOnGround = true;
 	isSiting = false;
-	isFly = false;
 }
 
 void CMario::ToRight() {
-	vx = MARIO_WALKING_SPEED;
+	if (vx == 0)
+		vx = MARIO_WALKING_SPEED;
+	if(vx>0)
+		vx -= MARIO_WALKING_SPEED * 0.0003 * dt ;
+	if(vx<=0)
+		vx = 0;
 	nx = 1;
 }
 
 void CMario::ToLeft() {
-	vx = -MARIO_WALKING_SPEED;
+	if (vx == 0)
+		vx = -MARIO_WALKING_SPEED;
+	if (vx < 0)
+		vx += MARIO_WALKING_SPEED * 0.0003 * dt ;
+	if(vx>=0)
+		vx = 0;
 	nx = -1;
 }
