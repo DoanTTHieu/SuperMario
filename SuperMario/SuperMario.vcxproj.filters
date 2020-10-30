@@ -67,6 +67,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Ground.h" />
+    <ClInclude Include="Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SuperMushroom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SuperLeaf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico">
@@ -123,6 +132,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Ground.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SuperMushroom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SuperLeaf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

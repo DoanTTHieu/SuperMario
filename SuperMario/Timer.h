@@ -2,13 +2,13 @@
 #pragma once
 #include <Windows.h>
 
-class Timer
+class CTimer
 {
 	int start;
 	int limitedTime;
 
 public:
-	Timer(int limitedTime) { this->limitedTime = limitedTime; start = 0; }
+	CTimer(int limitedTime) { this->limitedTime = limitedTime; start = 0; }
 
 	void Start() { start = GetTickCount(); }
 	void Stop() { start = 0; }

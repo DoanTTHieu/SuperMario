@@ -40,7 +40,7 @@ public:
 	bool isWaggingTail;
 	bool isWaitingForAni;
 
-	Timer* flyTimer = new Timer(TIME_FLY);
+	CTimer* flyTimer = new CTimer(TIME_FLY);
 
 	void Jump();
 	void JumpX();

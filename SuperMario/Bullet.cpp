@@ -1,6 +1,7 @@
 #include "Bullet.h"
 #include "Goomba.h"
 #include "Koopas.h"
+#include "Define.h"
 
 CBullet::CBullet(D3DXVECTOR2 position, int nx)
 {
@@ -59,11 +60,12 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (e->ny != 0 || e->nx != 0)
 				{
-					if (goomba->GetState() != GOOMBA_STATE_DIE)
+					if (goomba->GetState() != STATE_DESTROYED)
 					{
-						goomba->SetState(GOOMBA_STATE_DIE);
+						goomba->SetState(STATE_DESTROYED);
 						vy = -0.2;
 					}
+					state = STATE_DESTROYED;
 				}
 			}
 			else if (dynamic_cast<CKoopas*>(e->obj))
@@ -76,6 +78,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						koopas->SetState(KOOPAS_STATE_DIE);
 						vy = -0.6;
 					}
+					state = STATE_DESTROYED;
 				}
 			} // if Koopas
 		}

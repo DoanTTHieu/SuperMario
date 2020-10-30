@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Define.h"
 
 #define GOOMBA_WALKING_SPEED 0.05f;
 
@@ -8,7 +9,7 @@
 #define GOOMBA_BBOX_HEIGHT_DIE 9
 
 #define GOOMBA_STATE_WALKING 100
-#define GOOMBA_STATE_DIE 200
+//#define STATE_DESTROYED 200
 
 #define GOOMBA_ANI_WALKING 0
 #define GOOMBA_ANI_DIE 1

@@ -139,7 +139,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
-	//case OBJECT_TYPE_BRICK: obj = new CBrick(); break;
+	case OBJECT_TYPE_BRICK: obj = new CBrick({ x,y }); break;
 	case OBJECT_TYPE_KOOPAS: obj = new CKoopas(); break;
 	case OBJECT_TYPE_PORTAL:
 	{
@@ -153,7 +153,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		int w = atof(tokens[4].c_str());
 		int h = atof(tokens[5].c_str());
-		obj = new CGround(w, h);
+		int i = atof(tokens[6].c_str());
+		obj = new CGround(w, h, i);
 	}
 	break;
 	default:
@@ -268,6 +269,15 @@ void CPlayScene::Update(DWORD dt)
 		objects[i]->Update(dt, &coObjects);
 	}
 
+	//xoa may cai da chet
+	for (int i = 0; i < objects.size(); i++)
+	{
+		if (objects[i]->GetState() == STATE_DESTROYED)
+		{
+			objects.erase(objects.begin() + i);
+			i--;
+		}
+	}
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
@@ -413,8 +423,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (mario->isOnGround)
 	{
-		if ((game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT))
-			|| (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
+		if (/*(game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT))//bo nay vao thi render idle khi dang stop 
+			||*/ (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
 		{
 			mario->Idle();
 		}
@@ -429,7 +439,9 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		else if (game->IsKeyDown(DIK_LEFT))
 		{
 			if (mario->vx > 0)
+			{
 				mario->Stop();
+			}
 			else
 			{
 				mario->SetState(MARIO_STATE_WALKING_LEFT);
@@ -438,7 +450,10 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		else if (game->IsKeyDown(DIK_RIGHT))
 		{	
 			if (mario->vx < 0)
+			{
 				mario->Stop();
+			}
+				
 			else
 			{
 				mario->SetState(MARIO_STATE_WALKING_RIGHT);

@@ -10,6 +10,7 @@
 #include "Koopas.h"
 #include "Portal.h"
 #include "Ground.h"
+#include "Brick.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -61,6 +62,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//update list dan trong mario
 	for (int i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Update(dt, coObjects);
+	//xoa vien dan bien mat
+	for (int i = 0; i < listBullet.size(); i++)
+		if (listBullet[i]->GetState() == STATE_DESTROYED)
+		{
+			listBullet.erase(listBullet.begin() + i);
+			i--;
+		}
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -145,9 +153,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				// jump on top >> kill Goomba and deflect a bit 
 				if (e->ny < 0)
 				{
-					if (goomba->GetState() != GOOMBA_STATE_DIE)
+					if (goomba->GetState() != STATE_DESTROYED)
 					{
-						goomba->SetState(GOOMBA_STATE_DIE);
+						goomba->SetState(STATE_DESTROYED);
 						vy = -0.2;
 					}
 				}
@@ -155,7 +163,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					if (untouchable == 0)
 					{
-						if (goomba->GetState() != GOOMBA_STATE_DIE)
+						if (goomba->GetState() != STATE_DESTROYED)
 						{
 							UpdateLevel();
 						}
@@ -193,10 +201,35 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			} // if Koopas
+			else if (dynamic_cast<CBrick*>(e->obj)) // if e->obj is Koopas 
+			{
+				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+
+				if (e->ny == 1)
+				{
+					if (!brick->isBroken)
+					{
+						brick->isBroken = true;
+					}
+				}
+			}
 			else if (dynamic_cast<CGround*>(e->obj))
 			{
-				isOnGround = true;
+				CGround* ground = dynamic_cast<CGround*>(e->obj);
 				
+				
+				if (e->ny < 0)
+				{
+					isOnGround = true;
+				}
+
+				if (ground->interact)
+				{
+					if (e->nx != 0)
+					{
+						x += dx;
+					}
+				}
 			}
 			else if (dynamic_cast<CPortal*>(e->obj))
 			{
@@ -315,18 +348,13 @@ void CMario::Render()
 			else
 			{
 				if (vx > 0)
-				{
 					ani = FIRE_ANI_WALK_RIGHT;
-				}
 				else if (vx < 0)
-				{
 					ani = FIRE_ANI_WALK_LEFT;
-				}
+				else if (nx > 0)
+					ani = FIRE_ANI_IDLE_RIGHT;
 				else
-					if (nx > 0)
-						ani = FIRE_ANI_IDLE_RIGHT;
-					else
-						ani = FIRE_ANI_IDLE_LEFT;
+					ani = FIRE_ANI_IDLE_LEFT;
 			}
 			break;
 		}
@@ -365,7 +393,7 @@ void CMario::Render()
 				ani = RACCOON_ANI_RUN_LEFT;
 			break;
 		case MARIO_STATE_FLY:
-			if (vy < 0)
+			if (!flyTimer->IsTimeUp())
 			{
 				if (vx > 0)
 					ani = RACCOON_ANI_FLY_RIGHT;
@@ -445,18 +473,15 @@ void CMario::Render()
 			else
 			{
 				if (vx > 0)
-				{
 					ani = RACCOON_ANI_WALK_RIGHT;
-				}
 				else if (vx < 0)
-				{
 					ani = RACCOON_ANI_WALK_LEFT;
+				else if (nx > 0)
+				{
+					ani = RACCOON_ANI_IDLE_RIGHT;
 				}
 				else
-					if (nx > 0)
-						ani = RACCOON_ANI_IDLE_RIGHT;
-					else
-						ani = RACCOON_ANI_IDLE_LEFT;
+					ani = RACCOON_ANI_IDLE_LEFT;
 			}
 			break;
 		}
@@ -533,18 +558,13 @@ void CMario::Render()
 			else
 			{
 				if (vx > 0)
-				{
 					ani = MARIO_ANI_WALK_RIGHT;
-				}
 				else if (vx < 0)
-				{
 					ani = MARIO_ANI_WALK_LEFT;
-				}
+				else if (nx > 0)
+					ani = MARIO_ANI_IDLE_RIGHT;
 				else
-					if (nx > 0)
-						ani = MARIO_ANI_IDLE_RIGHT;
-					else
-						ani = MARIO_ANI_IDLE_LEFT;
+					ani = MARIO_ANI_IDLE_LEFT;
 			}
 			break;
 		}
@@ -597,18 +617,13 @@ void CMario::Render()
 			else
 			{
 				if (vx > 0)
-				{
 					ani = mario_ANI_WALK_RIGHT;
-				}
 				else if (vx < 0)
-				{
 					ani = mario_ANI_WALK_LEFT;
-				}
+				else if (nx > 0)
+					ani = mario_ANI_IDLE_RIGHT;
 				else
-					if (nx > 0)
-						ani = mario_ANI_IDLE_RIGHT;
-					else
-						ani = mario_ANI_IDLE_LEFT;
+					ani = mario_ANI_IDLE_LEFT;
 			}
 			break;
 		}
@@ -649,15 +664,13 @@ void CMario::SetState(int state)
 		nx = -1;
 		break;
 	case MARIO_STATE_RUN_RIGHT:
-		//isOnGround = true;
-		vx += MARIO_ACCELERATION * dt;
+		vx += mario_ACCELERATION * 0.2 * dt;
 		if (vx >= MARIO_RUN_SPEED_THRESH)
 			vx = MARIO_RUN_SPEED_THRESH;
 		nx = 1;
 		break;
 	case MARIO_STATE_RUN_LEFT:
-		//isOnGround = true;
-		vx -= MARIO_ACCELERATION * dt;
+		vx -= mario_ACCELERATION * 0.2 * dt;
 		if (vx <= -MARIO_RUN_SPEED_THRESH)
 			vx = -MARIO_RUN_SPEED_THRESH;
 		break;
@@ -688,18 +701,16 @@ void CMario::SetState(int state)
 			nx = 1;
 		//break;
 	case MARIO_STATE_IDLE:
-	/*	if (vx == 0)
-			break;*/
 	case MARIO_STATE_SIT:
-		if (vx > 0.08)
+		if (abs(vx) > 0.08)
 		{
 			if (vx > 0) {
-				vx -= 0.00054 * dt;
+				vx -= MARIO_ACCELERATION * dt;
 				if (vx < 0)
 					vx = 0;
 			}
 			else if (vx < 0) {
-				vx += 0.00054 * dt;
+				vx += MARIO_ACCELERATION * dt;
 				if (vx > 0)
 					vx = 0;
 			}		
@@ -707,12 +718,12 @@ void CMario::SetState(int state)
 		else
 		{
 			if (vx > 0) {
-				vx -= 0.00018 * dt;
+				vx -= mario_ACCELERATION * dt;
 				if (vx < 0)
 					vx = 0;
 			}
 			else if (vx < 0) {
-				vx += 0.00018 * dt;
+				vx += mario_ACCELERATION * dt;
 				if (vx > 0)
 					vx = 0;
 			}
@@ -846,9 +857,9 @@ void CMario::Idle() {
 void CMario::ToRight() {
 	if (vx == 0)
 		vx = MARIO_WALKING_SPEED;
-	if(vx>0)
-		vx -= MARIO_WALKING_SPEED * 0.0003 * dt ;
-	if(vx<=0)
+	if (vx > 0)
+		vx -= MARIO_WALKING_SPEED * mario_ACCELERATION * dt;
+	if (vx <= 0)
 		vx = 0;
 	nx = 1;
 }
@@ -857,8 +868,9 @@ void CMario::ToLeft() {
 	if (vx == 0)
 		vx = -MARIO_WALKING_SPEED;
 	if (vx < 0)
-		vx += MARIO_WALKING_SPEED * 0.0003 * dt ;
-	if(vx>=0)
+		vx += MARIO_WALKING_SPEED * mario_ACCELERATION * dt ;
+	if (vx >= 0)
 		vx = 0;
 	nx = -1;
 }
+
