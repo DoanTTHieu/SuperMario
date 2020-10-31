@@ -2,6 +2,8 @@
 #include "Goomba.h"
 #include "Koopas.h"
 #include "Define.h"
+#include "Ground.h"
+#include "Brick.h"
 
 CBullet::CBullet(D3DXVECTOR2 position, int nx)
 {
@@ -81,6 +83,27 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					state = STATE_DESTROYED;
 				}
 			} // if Koopas
+			else if (dynamic_cast<CGround*>(e->obj))
+			{
+				CGround* ground = dynamic_cast<CGround*>(e->obj);
+				if (e->nx != 0)
+				{
+					if (ground->interact)
+					{
+						x += dx;
+					}
+					else
+						state = STATE_DESTROYED;
+				}
+			}
+			else if (dynamic_cast<CBrick*>(e->obj))
+			{
+				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+				if (e->nx != 0)
+				{
+					state = STATE_DESTROYED;
+				}
+			}
 		}
 	}
 

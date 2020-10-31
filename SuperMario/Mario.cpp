@@ -741,24 +741,44 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 {
 	left = x;
 	top = y;
-
-	if (level == MARIO_LEVEL_RACCOON)
+	switch (level)
 	{
+	case MARIO_LEVEL_RACCOON:
 		right = x + MARIO_RACCOON_BBOX_WIDTH;
 		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
-	}
-	else if (level == MARIO_LEVEL_BIG|| level == MARIO_LEVEL_FIRE )
-	{
+		//if (isSiting)
+		//{
+		//	top = y + MARIO_SIT_BBOX_WIDTH;
+		//	bottom = top + MARIO_SIT_BBOX_HEIGHT;
+		//}
+		if (nx > 0)
+		{
+			left = x + MARIO_SIT_BBOX_WIDTH;
+			right = left + MARIO_RACCOON_BBOX_WIDTH;
+		}
+		else
+		{
+			left = x + 7;
+			right = left + MARIO_RACCOON_BBOX_WIDTH;
+		}
+
+		break;
+	case MARIO_LEVEL_FIRE:
+	case MARIO_LEVEL_BIG:
 		right = x + MARIO_BIG_BBOX_WIDTH;
 		bottom = y + MARIO_BIG_BBOX_HEIGHT;
-		// chua xu ly bbox khi ngoi
-
-	}
-	else
-	{
+		if (isSiting)
+		{
+			top = y + MARIO_SIT_BBOX_WIDTH;
+			bottom = top + MARIO_SIT_BBOX_HEIGHT;
+		}
+		break;
+	default:
 		right = x + MARIO_SMALL_BBOX_WIDTH;
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
+		break;
 	}
+
 }
 
 /*
