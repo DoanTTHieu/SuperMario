@@ -114,12 +114,12 @@ CBullet::~CBullet()
 {
 }
 
-void CBullet::GetBoundingBox(float& l, float& t, float& r, float& b)
+void CBullet::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	l = x;
-	t = y - BULLET_BBOX_HEIGHT;
-	r = x + BULLET_BBOX_WIDTH;
-	b = y;
+	left = x;
+	top = y;
+	right = x + BULLET_BBOX_WIDTH;
+	bottom = y + BULLET_BBOX_HEIGHT;
 
 }
 
@@ -129,4 +129,5 @@ void CBullet::Render()
 	//ani = nx > 0 ? 1 : 2;
 	int alpha = 255;
 	animation_set->at(0)->Render(x, y, alpha);
+	RenderBoundingBox();
 }

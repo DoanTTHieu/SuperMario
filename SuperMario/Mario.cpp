@@ -19,7 +19,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	Idle();
 	
 	isOnGround = true;
-	isSiting = false;
+	isSitting = false;
 	isblockJump = false;
 	isAttack = false;
 	isWaggingTail = false;
@@ -44,15 +44,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//khoi tao list dan cua mario
 	if (isAttack)
 	{
-		if (nx > 0)
-			listBullet.push_back(CreateBullet(x + 10, y + 6, nx));
-		else
-			listBullet.push_back(CreateBullet(x -6 , y + 6 , nx));
+		if (listBullet.size() < 2)
+		{
+			if (nx > 0)
+				listBullet.push_back(CreateBullet(x + 10, y + 6, nx));
+			else
+				listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+		}
 		isAttack = false;
 	}
 
 
-	if (isWaitingForAni && animation_set->at(state)->IsFinished())
+	if (isWaitingForAni && animation_set->at(ani)->IsFinished())
 	{
 		//SetState(MARIO_STATE_ATTACK);
 		isWaitingForAni = false;
@@ -135,7 +138,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					isOnGround = true;
 				isblockJump = false;
 				isWaggingTail = false;
-
 			}
 		}
 
@@ -207,21 +209,26 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 				if (e->ny == 1)
 				{
-					if (!brick->isBroken)
+					DebugOut(L"y1\n");
+					/*if (!brick->isBroken)
 					{
 						brick->isBroken = true;
-					}
+						DebugOut(L"Broken: %d\n", brick->isBroken);
+					}*/
 				}
+				if (e->ny == -1) DebugOut(L"y-1\n");
+				if (e->nx == -1) DebugOut(L"x-1\n");
+				if (e->nx == 1) DebugOut(L"x1\n");
+				DebugOut(L"level: %d \n", GetLevel());
 			}
 			else if (dynamic_cast<CGround*>(e->obj))
 			{
-				CGround* ground = dynamic_cast<CGround*>(e->obj);
+				CGround* ground = dynamic_cast<CGround*>(e->obj);	
 				
-				
-				if (e->ny < 0)
-				{
-					isOnGround = true;
-				}
+				//if (e->ny < 0)
+				//{
+				//	isOnGround = true;
+				//}
 
 				if (ground->interact)
 				{
@@ -260,7 +267,8 @@ void CMario::CheckInteraction()
 
 void CMario::Render()
 {
-	int ani = -1;
+	//DebugOut(L"ani id khi vao render %d\n", ani);
+	//int ani = -1;
 	//con lua
 	if (GetLevel() == MARIO_LEVEL_FIRE)
 	{
@@ -311,7 +319,7 @@ void CMario::Render()
 			break;
 		case MARIO_STATE_JUMP:
 		case MARIO_STATE_JUMP_LOW:
-			if (isSiting)
+			if (isSitting)
 			{
 				if (nx > 0)
 					ani = FIRE_ANI_SIT_RIGHT;
@@ -419,6 +427,7 @@ void CMario::Render()
 			}
 			break;
 		case MARIO_STATE_ATTACK:
+			DebugOut(L"set ani 30");
 			if (nx > 0)
 				ani = RACCOON_ANI_FIGHT_IDLE_RIGHT;
 			else
@@ -426,7 +435,7 @@ void CMario::Render()
 			break;
 		case MARIO_STATE_JUMP:
 		case MARIO_STATE_JUMP_LOW:
-			if (isSiting)
+			if (isSitting)
 			{
 				if (nx > 0)
 					ani = RACCOON_ANI_SIT_RIGHT;
@@ -521,7 +530,7 @@ void CMario::Render()
 			break;
 		case MARIO_STATE_JUMP:
 		case MARIO_STATE_JUMP_LOW:
-			if (isSiting)
+			if (isSitting)
 			{
 				if (nx > 0)
 					ani = MARIO_ANI_SIT_RIGHT;
@@ -637,7 +646,7 @@ void CMario::Render()
 	for (int i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 bool CMario::IsAABB(LPGAMEOBJECT object)
@@ -701,33 +710,10 @@ void CMario::SetState(int state)
 			nx = 1;
 		//break;
 	case MARIO_STATE_IDLE:
+		DecreaseSpeedToStop();
+		break;
 	case MARIO_STATE_SIT:
-		if (abs(vx) > 0.08)
-		{
-			if (vx > 0) {
-				vx -= MARIO_ACCELERATION * dt;
-				if (vx < 0)
-					vx = 0;
-			}
-			else if (vx < 0) {
-				vx += MARIO_ACCELERATION * dt;
-				if (vx > 0)
-					vx = 0;
-			}		
-		}
-		else
-		{
-			if (vx > 0) {
-				vx -= mario_ACCELERATION * dt;
-				if (vx < 0)
-					vx = 0;
-			}
-			else if (vx < 0) {
-				vx += mario_ACCELERATION * dt;
-				if (vx > 0)
-					vx = 0;
-			}
-		}
+		DecreaseSpeedToStop();
 		break;
 	case MARIO_STATE_DIE:
 		flyTimer->Stop();
@@ -746,14 +732,10 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 	case MARIO_LEVEL_RACCOON:
 		right = x + MARIO_RACCOON_BBOX_WIDTH;
 		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
-		//if (isSiting)
-		//{
-		//	top = y + MARIO_SIT_BBOX_WIDTH;
-		//	bottom = top + MARIO_SIT_BBOX_HEIGHT;
-		//}
+
 		if (nx > 0)
 		{
-			left = x + MARIO_SIT_BBOX_WIDTH;
+			left = x + 7;
 			right = left + MARIO_RACCOON_BBOX_WIDTH;
 		}
 		else
@@ -761,17 +743,20 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 			left = x + 7;
 			right = left + MARIO_RACCOON_BBOX_WIDTH;
 		}
-
+		if (isSitting)
+		{
+			top = y + 10;
+		}
 		break;
 	case MARIO_LEVEL_FIRE:
 	case MARIO_LEVEL_BIG:
 		right = x + MARIO_BIG_BBOX_WIDTH;
 		bottom = y + MARIO_BIG_BBOX_HEIGHT;
-		if (isSiting)
+		if (isSitting)
 		{
-			top = y + MARIO_SIT_BBOX_WIDTH;
-			bottom = top + MARIO_SIT_BBOX_HEIGHT;
+			top = y + 10;
 		}
+
 		break;
 	default:
 		right = x + MARIO_SMALL_BBOX_WIDTH;
@@ -845,18 +830,17 @@ void CMario::Fly() {
 void CMario::Stop() {
 
 	SetState(MARIO_STATE_STOP);
-	isOnGround = true;
-
+	//isOnGround = true;
+	isSitting = false;
 	//ResetAnimation();
 	//isWaitingForAni = true;
 }
 
 void CMario::Attack() {
-
+	DebugOut(L"attack function\n");
 	SetState(MARIO_STATE_ATTACK);
 	if (GetLevel() == MARIO_LEVEL_FIRE)
 		isAttack = true;
-
 	ResetAnimation();
 	isWaitingForAni = true;
 
@@ -864,14 +848,26 @@ void CMario::Attack() {
 
 void CMario::Sit() {
 	SetState(MARIO_STATE_SIT);
-	isSiting = true;
+	isSitting = true;
 }
 
 
 void CMario::Idle() {
 	SetState(MARIO_STATE_IDLE);
-	isOnGround = true;
-	isSiting = false;
+	//isOnGround = true;
+	isSitting = false;
+}
+
+void CMario::WalkingLeft() {
+	SetState(MARIO_STATE_WALKING_LEFT);
+	//isOnGround = true;
+	isSitting = false;
+}
+
+void CMario::WalkingRight() {
+	SetState(MARIO_STATE_WALKING_RIGHT);
+	//isOnGround = true;
+	isSitting = false;
 }
 
 void CMario::ToRight() {
@@ -894,3 +890,32 @@ void CMario::ToLeft() {
 	nx = -1;
 }
 
+void CMario::DecreaseSpeedToStop()
+{
+	if (abs(vx) > 0.08)
+	{
+		if (vx > 0) {
+			vx -= MARIO_ACCELERATION * dt;
+			if (vx < 0)
+				vx = 0;
+		}
+		else if (vx < 0) {
+			vx += MARIO_ACCELERATION * dt;
+			if (vx > 0)
+				vx = 0;
+		}
+	}
+	else
+	{
+		if (vx > 0) {
+			vx -= mario_ACCELERATION * dt;
+			if (vx < 0)
+				vx = 0;
+		}
+		else if (vx < 0) {
+			vx += mario_ACCELERATION * dt;
+			if (vx > 0)
+				vx = 0;
+		}
+	}
+}
