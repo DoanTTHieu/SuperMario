@@ -34,7 +34,8 @@ public:
 	int GetLevel() { return level; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
 	bool isOnGround;
-	bool isSiting;
+	bool isSitting;
+		
 	bool isblockJump;
 	bool isAttack;
 	bool isWaggingTail;
@@ -51,8 +52,10 @@ public:
 	void Fly();
 	void Attack();
 	void Stop();
-
+	void DecreaseSpeedToStop();
 	void UpdateLevel();
+	void WalkingRight();
+	void WalkingLeft();
 
 	void Reset();
 	void Raccoon();
