@@ -402,7 +402,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		break;
 	case DIK_DOWN:
 		if(mario->isOnGround)
-			mario->isSiting = false;
+			mario->isSitting = false;
 		break;
 	case DIK_A:
 		break;
@@ -423,8 +423,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (mario->isOnGround)
 	{
-		if (/*(game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT))//bo nay vao thi render idle khi dang stop 
-			||*/ (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
+		if ((game->IsKeyDown(DIK_LEFT) && game->IsKeyDown(DIK_RIGHT))//bo nay vao thi render idle khi dang stop 
+			|| (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
 		{
 			mario->Idle();
 		}
@@ -444,7 +444,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			}
 			else
 			{
-				mario->SetState(MARIO_STATE_WALKING_LEFT);
+				mario->WalkingLeft();
 			}
 		}
 		else if (game->IsKeyDown(DIK_RIGHT))
@@ -456,7 +456,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				
 			else
 			{
-				mario->SetState(MARIO_STATE_WALKING_RIGHT);
+				mario->WalkingRight();
 			}
 
 		}

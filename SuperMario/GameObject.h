@@ -58,6 +58,7 @@ public:
 	int ny;
 
 	int state;
+	int ani;
 
 	DWORD dt;
 

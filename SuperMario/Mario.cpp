@@ -153,17 +153,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 
 				// jump on top >> kill Goomba and deflect a bit 
-				if (e->ny < 0)
+				
+				if (untouchable == 0)
 				{
-					if (goomba->GetState() != STATE_DESTROYED)
+					if (e->ny < 0)
 					{
-						goomba->SetState(STATE_DESTROYED);
-						vy = -0.2;
+						if (goomba->GetState() != STATE_DESTROYED)
+						{
+							goomba->SetState(STATE_DESTROYED);
+							vy = -0.2;
+						}
 					}
-				}
-				else if (e->nx != 0)
-				{
-					if (untouchable == 0)
+					else if (e->nx != 0)
 					{
 						if (goomba->GetState() != STATE_DESTROYED)
 						{
@@ -189,16 +190,17 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					else if (e->nx != 0)
 					{
-						if (untouchable == 0)
+						if (koopas->GetState() != KOOPAS_STATE_DIE)
 						{
-							if (koopas->GetState() != KOOPAS_STATE_DIE)
-							{
-								UpdateLevel();
-							}
-							else
-							{
-								koopas->SetState(KOOPAS_STATE_DIE_MOVE);
-							}
+							UpdateLevel();
+						}
+						else
+						{
+							koopas->nx = nx;
+							DebugOut(L"nx: %d\n", nx);
+							DebugOut(L"KOOPASnx: %d\n", koopas->nx);
+							DebugOut(L"MARIOnx: %d\n", this->nx);
+							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
 						}
 					}
 				}
@@ -224,11 +226,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			else if (dynamic_cast<CGround*>(e->obj))
 			{
 				CGround* ground = dynamic_cast<CGround*>(e->obj);	
-				
-				//if (e->ny < 0)
-				//{
-				//	isOnGround = true;
-				//}
 
 				if (ground->interact)
 				{
@@ -646,7 +643,7 @@ void CMario::Render()
 	for (int i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 bool CMario::IsAABB(LPGAMEOBJECT object)

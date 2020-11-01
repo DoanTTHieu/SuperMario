@@ -448,7 +448,7 @@
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas,
 # MARIO
-0	1380	380	1
+0	550	380	1
 #0	500	30	1
 
 #GOOMBA
@@ -457,7 +457,8 @@
 #2	830	370	3
 #2	930	370	3
 # KOOPAS
-3	1473	380	4
+3	608	380	4
+#3	1473	380	4
 
 # BRICK 
 # --- platform (hint: I created the list using Excel!) ----

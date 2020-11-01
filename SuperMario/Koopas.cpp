@@ -1,35 +1,24 @@
 #include "Koopas.h"
+#include "Ground.h"
+#include "Brick.h"
 
 CKoopas::CKoopas()
 {
 	SetState(KOOPAS_STATE_WALKING);
 }
 
-void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
-{
-	//float l, t, r, b;
-	//gomba->getbou(l, t, r, b);
-	//check(lm, tm, rm, btm, l, t, r, b);
-	//aabb
-	left = x;
-	top = y;
-	right = x + KOOPAS_BBOX_WIDTH;
 
-	if (state == KOOPAS_STATE_DIE || state == KOOPAS_STATE_DIE_MOVE)
-		bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
-	else
-		bottom = y + KOOPAS_BBOX_HEIGHT;
-}
 
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
+
+	//can define
 	vy += 0.02 * dt;
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-
 	CalcPotentialCollisions(coObjects, coEvents);
 	//
 	// TO-DO: make sure Koopas can interact with the world and to each of them too!
@@ -60,43 +49,72 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		//if (nx != 0) vx = 0;
 		if (ny != 0) vy = 0;
 		//DebugOut(L"size:%d \n", coEvents.size());
-		if (coEvents.size() >= 3) 
-			vx *= -1;
+		//if (coEvents.size() >= 3) 
+		//	vx *= -1;
+
+		//
+		// Collision logic with other objects
+		//
+		for (UINT i = 0; i < coEventsResult.size(); i++)
+		{
+			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			if (dynamic_cast<CGround*>(e->obj))
+			{
+				//DebugOut(L"GROUND\n");
+				CGround* ground = dynamic_cast<CGround*>(e->obj);
+				if (e->nx != 0)
+				{
+					//DebugOut(L"NX: %d\n", e->nx);
+					if (ground->interact)
+					{
+						x += dx;
+					}
+					else
+						vx = -vx;
+				}
+			}
+			else if (dynamic_cast<CBrick*>(e->obj))
+			{
+				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+				if (e->nx != 0)
+				{
+					vx = -vx;
+				}
+			}
+		}
+
 	}
 
-	//if (vx < 0 && x < 0) {
-	//	x = 0; vx = -vx;
-	//}
 
-	//if (vx > 0 && x > 290) {
-	//	x = 290; vx = -vx;
-	//}
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 void CKoopas::Render()
 {
-	int ani = KOOPAS_ANI_WALKING_LEFT;
-	if (state == KOOPAS_STATE_DIE_MOVE) {
-		ani = KOOPAS_ANI_DIE_MOVE;
-	}
-	else if (state == KOOPAS_STATE_DIE) {
-		ani = KOOPAS_ANI_DIE;
-	}
-	else if (vx > 0) { 
-		nx = 1;
-		ani = KOOPAS_ANI_WALKING_RIGHT; 
-	}
-	else if (vx <= 0)
+	switch (state)
 	{
-		nx = -1;
-		ani = KOOPAS_ANI_WALKING_LEFT;
+	case KOOPAS_STATE_DIE_MOVE:
+		ani = KOOPAS_ANI_DIE_MOVE;
+		break;
+	case KOOPAS_STATE_DIE:
+		ani = KOOPAS_ANI_DIE;
+		break;
+	case KOOPAS_STATE_WALKING:
+		if (vx > 0) 
+			ani = KOOPAS_ANI_WALKING_RIGHT;
+		else
+			ani = KOOPAS_ANI_WALKING_LEFT;
+		break;
+	default:
+		ani = KOOPAS_ANI_WALKING_RIGHT;
+		break;
 	}
-	
+
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -105,19 +123,30 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_DIE_MOVE:	
-		vx = KOOPAS_DIE_MOVE_SPEED;
+		DebugOut(L"nx: %d\n", nx);
+		vx = -nx * KOOPAS_DIE_MOVE_SPEED;
 		isInteractable = false;
-		//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		break;
 	case KOOPAS_STATE_DIE:
-		//y += KOOPAS_BBOX_HEIGHT - KOOPAS_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
 		isInteractable = true;
-		//vy = 0;
+		vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
-		vx = KOOPAS_WALKING_SPEED;
+		vx = -KOOPAS_WALKING_SPEED;
 		isInteractable = false;
 	}
 
+}
+
+void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& bottom)
+{
+	left = x;
+	top = y;
+	right = x + KOOPAS_BBOX_WIDTH;
+
+	if (state == KOOPAS_STATE_DIE || state == KOOPAS_STATE_DIE_MOVE)
+		bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
+	else
+		bottom = y + KOOPAS_BBOX_HEIGHT;
 }

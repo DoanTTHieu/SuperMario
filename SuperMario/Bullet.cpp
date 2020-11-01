@@ -82,7 +82,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 					state = STATE_DESTROYED;
 				}
-			} // if Koopas
+			} // if Koopa
 			else if (dynamic_cast<CGround*>(e->obj))
 			{
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
