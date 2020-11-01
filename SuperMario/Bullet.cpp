@@ -75,9 +75,9 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				if (e->ny != 0 || e->nx != 0)
 				{
-					if (koopas->GetState() != KOOPAS_STATE_DIE)
+					if (koopas->GetState() != STATE_DESTROYED)
 					{
-						koopas->SetState(KOOPAS_STATE_DIE);
+						koopas->SetState(STATE_DESTROYED);
 						vy = -0.6;
 					}
 					state = STATE_DESTROYED;
