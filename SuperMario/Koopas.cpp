@@ -4,6 +4,7 @@
 
 CKoopas::CKoopas()
 {
+	type = Type::KOOPAS;
 	SetState(KOOPAS_STATE_WALKING);
 }
 
@@ -15,6 +16,12 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	//can define
 	vy += 0.02 * dt;
+
+	if (GetState() == KOOPAS_STATE_IDLE && idleTimer->IsTimeUp())
+	{
+		idleTimer->Stop();
+		SetState(KOOPAS_STATE_WALKING);
+	}
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -97,7 +104,7 @@ void CKoopas::Render()
 	case KOOPAS_STATE_DIE_MOVE:
 		ani = KOOPAS_ANI_DIE_MOVE;
 		break;
-	case KOOPAS_STATE_DIE:
+	case KOOPAS_STATE_IDLE:
 		ani = KOOPAS_ANI_DIE;
 		break;
 	case KOOPAS_STATE_WALKING:
@@ -114,7 +121,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -127,7 +134,7 @@ void CKoopas::SetState(int state)
 		vx = -nx * KOOPAS_DIE_MOVE_SPEED;
 		isInteractable = false;
 		break;
-	case KOOPAS_STATE_DIE:
+	case KOOPAS_STATE_IDLE:
 		vx = 0;
 		isInteractable = true;
 		vy = 0;
@@ -144,9 +151,26 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	left = x;
 	top = y;
 	right = x + KOOPAS_BBOX_WIDTH;
+	bottom = y + KOOPAS_BBOX_HEIGHT;
+	switch (state)
+	{
+	case KOOPAS_STATE_IDLE:
+	case KOOPAS_STATE_DIE_MOVE:
+		top = y+ KOOPAS_BBOX_HEIGHT- KOOPAS_BBOX_HEIGHT_DIE;
+		break;
+	default:
+		break;
+	}
 
-	if (state == KOOPAS_STATE_DIE || state == KOOPAS_STATE_DIE_MOVE)
-		bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
-	else
-		bottom = y + KOOPAS_BBOX_HEIGHT;
+
+	//if (state == KOOPAS_STATE_IDLE || state == KOOPAS_STATE_DIE_MOVE)
+	//	bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
+	//else
+		
+}
+
+void CKoopas::Idle()
+{
+	SetState(KOOPAS_STATE_IDLE);
+	idleTimer->Start();
 }

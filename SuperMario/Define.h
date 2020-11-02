@@ -1,5 +1,19 @@
 #pragma once
 
+enum Type
+{
+	MARIO = 01,
+	//
+	GROUND = 02,
+	BRICK = 03,
+	//
+	GOOMBA = 04,
+	KOOPAS = 05,
+
+};
+
+
+
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16
@@ -25,7 +39,8 @@
 
 //mario
 #define TIME_FLY					3000
-#define MARIO_TIME_ATTACK			300
+#define MARIO_TIME_ATTACK			375
+#define MARIO_TIME_SHOOT			300
 #define MARIO_TIME_STOP				100
 
 #define MARIO_WALKING_SPEED				0.08f

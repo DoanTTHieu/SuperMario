@@ -2,6 +2,7 @@
 
 CGround::CGround(int w, int h, bool i)
 {
+	type = Type::GROUND;
 	this->width = w;
 	this->height = h;
 	this->interact = i;

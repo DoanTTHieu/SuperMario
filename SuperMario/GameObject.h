@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <d3dx9.h>
 #include <vector>
-
+#include "Define.h"
 #include "Sprites.h"
 #include "Animations.h"
 
@@ -59,6 +59,7 @@ public:
 
 	int state;
 	int ani;
+	Type type;
 
 	DWORD dt;
 
@@ -73,6 +74,7 @@ public:
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 
 	int GetState() { return this->state; }
+	Type GetType() { return type; }
 
 	void RenderBoundingBox();
 

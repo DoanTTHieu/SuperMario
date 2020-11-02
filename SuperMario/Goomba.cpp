@@ -5,6 +5,7 @@
 
 CGoomba::CGoomba()
 {
+	type = Type::GOOMBA;
 	SetState(GOOMBA_STATE_WALKING);
 }
 
@@ -112,7 +113,7 @@ void CGoomba::Render()
 
 	animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)

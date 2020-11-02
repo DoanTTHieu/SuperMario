@@ -15,6 +15,7 @@ class CMario : public CGameObject
 
 	vector<LPGAMEOBJECT> interactableObject;
 	vector< LPGAMEOBJECT> listBullet;
+	vector< LPGAMEOBJECT> listEffect;
 
 	CBullet* CreateBullet(float x, float y, int nx)
 	{
@@ -42,6 +43,7 @@ public:
 	bool isWaitingForAni;
 
 	CTimer* flyTimer = new CTimer(TIME_FLY);
+	DWORD attackStart;
 
 	void Jump();
 	void JumpX();

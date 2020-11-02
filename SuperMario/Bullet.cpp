@@ -5,6 +5,7 @@
 #include "Ground.h"
 #include "Brick.h"
 
+
 CBullet::CBullet(D3DXVECTOR2 position, int nx)
 {
 	x = position.x;
@@ -56,34 +57,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
-			{
-				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-
-				if (e->ny != 0 || e->nx != 0)
-				{
-					if (goomba->GetState() != STATE_DESTROYED)
-					{
-						goomba->SetState(STATE_DESTROYED);
-						vy = -0.2;
-					}
-					state = STATE_DESTROYED;
-				}
-			}
-			else if (dynamic_cast<CKoopas*>(e->obj))
-			{
-				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-				if (e->ny != 0 || e->nx != 0)
-				{
-					if (koopas->GetState() != STATE_DESTROYED)
-					{
-						koopas->SetState(STATE_DESTROYED);
-						vy = -0.6;
-					}
-					state = STATE_DESTROYED;
-				}
-			} // if Koopa
-			else if (dynamic_cast<CGround*>(e->obj))
+			if (e->obj->GetType() == Type::GROUND)
 			{
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
 				if (e->nx != 0)
@@ -96,11 +70,22 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						state = STATE_DESTROYED;
 				}
 			}
-			else if (dynamic_cast<CBrick*>(e->obj))
+			else if (e->obj->GetType() == Type::BRICK)
 			{
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 				if (e->nx != 0)
 				{
+					state = STATE_DESTROYED;
+				}
+			}
+			else//quai di chuyen: 1 phat dan la chet
+			{
+				if (e->ny != 0 || e->nx != 0)
+				{
+					if (e->obj->GetState() != STATE_DESTROYED)
+					{
+						e->obj->SetState(STATE_DESTROYED);
+						vy = -0.2;
+					}
 					state = STATE_DESTROYED;
 				}
 			}
@@ -108,6 +93,8 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	
+	
 }
 
 CBullet::~CBullet()
@@ -125,8 +112,6 @@ void CBullet::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 void CBullet::Render()
 {
-	//int ani=1;
-	//ani = nx > 0 ? 1 : 2;
 	int alpha = 255;
 	animation_set->at(0)->Render(x, y, alpha);
 	RenderBoundingBox();

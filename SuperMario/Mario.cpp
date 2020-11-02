@@ -4,6 +4,7 @@
 
 #include "Mario.h"
 #include "Game.h"
+#include "FireBallEffect.h"
 
 #include "Bullet.h"
 #include "Goomba.h"
@@ -14,15 +15,19 @@
 
 CMario::CMario(float x, float y) : CGameObject()
 {
+	type = Type::MARIO;
+
 	level = MARIO_LEVEL_BIG;
 	untouchable = 0;
 	Idle();
 	
-	isOnGround = true;
+	//isOnGround = true;
 	isSitting = false;
 	isblockJump = false;
 	isAttack = false;
 	isWaggingTail = false;
+
+	attackStart = 0;
 
 	start_x = x;
 	start_y = y;
@@ -55,21 +60,63 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 
-	if (isWaitingForAni && animation_set->at(ani)->IsFinished())
-	{
-		//SetState(MARIO_STATE_ATTACK);
-		isWaitingForAni = false;
+	//if (isWaitingForAni && animation_set->at(ani)->IsFinished())
+	//{
+	//	//SetState(MARIO_STATE_ATTACK);
+	//	isWaitingForAni = false;
 
+	//}
+	if (GetLevel() == MARIO_LEVEL_RACCOON)
+	{
+		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_ATTACK)
+		{
+			state = MARIO_STATE_ATTACK;
+		}
+		else
+			attackStart = 0;
 	}
+
+	if (GetLevel() == MARIO_LEVEL_FIRE)
+	{
+		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_SHOOT)
+		{
+			state = MARIO_STATE_ATTACK;
+		}
+		else
+			attackStart = 0;
+	}
+
 
 	//update list dan trong mario
 	for (int i = 0; i < listBullet.size(); i++)
+	{
 		listBullet[i]->Update(dt, coObjects);
+		if (listBullet[i]->GetState() == STATE_DESTROYED)
+		{
+			float bx, by;
+			listBullet[i]->GetPosition(bx, by);
+			CFireBallEffect* effect = new CFireBallEffect({ bx, by });
+			listEffect.push_back(effect);
+		}
+	}
+
+	for (int i = 0; i < listEffect.size(); i++)
+	{
+		listEffect[i]->Update(dt, coObjects);
+	}
+
 	//xoa vien dan bien mat
 	for (int i = 0; i < listBullet.size(); i++)
 		if (listBullet[i]->GetState() == STATE_DESTROYED)
 		{
 			listBullet.erase(listBullet.begin() + i);
+			i--;
+		}
+
+	for (int i = 0; i < listEffect.size(); i++)
+		if (listEffect[i]->GetState() == STATE_DESTROYED)
+		{
+			listEffect.erase(listEffect.begin() + i);
 			i--;
 		}
 
@@ -108,7 +155,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		x += dx;
 		y += dy;
-
 	}
 	else
 	{
@@ -134,11 +180,11 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			vy = 0;
 			if (ny == -1)
 			{
-				if (!isOnGround)//cham dat thi het nhay
-					isOnGround = true;
+				isOnGround = true;
 				isblockJump = false;
 				isWaggingTail = false;
 			}
+
 		}
 
 		//
@@ -148,100 +194,98 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CGoomba*>(e->obj)) // if e->obj is Goomba 
-			{
-				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+			//truong hop CPortal
 
-				// jump on top >> kill Goomba and deflect a bit 
-				
-				if (untouchable == 0)
+			//if (dynamic_cast<CPortal*>(e->obj))
+			//{
+			//	CPortal* p = dynamic_cast<CPortal*>(e->obj);
+			//	CGame::GetInstance()->SwitchScene(p->GetSceneId());
+			//}
+
+			if (e->nx != 0)
+			{
+				//ko di xuyen qua duoc ne
+				//xet block, pipe,...
+				if (e->obj->GetType() == Type::GROUND || e->obj->GetType() == Type::BRICK)
 				{
-					if (e->ny < 0)
+					if (e->obj->GetType() == Type::GROUND)
 					{
-						if (goomba->GetState() != STATE_DESTROYED)
+						CGround* ground = dynamic_cast<CGround*>(e->obj);
+						if (ground->interact)
 						{
-							goomba->SetState(STATE_DESTROYED);
-							vy = -0.2;
-						}
-					}
-					else if (e->nx != 0)
-					{
-						if (goomba->GetState() != STATE_DESTROYED)
-						{
-							UpdateLevel();
+							if (e->nx != 0)
+							{
+								x += dx;
+							}
 						}
 					}
 				}
-			} // if Koopas
-			else if (dynamic_cast<CKoopas*>(e->obj)) // if e->obj is Koopas 
-			{
-				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-				
-				// jump on top >> lam cho no bat tinh(kill Koopas and deflect a bit) 
-				if (untouchable == 0)
+
+				//tinh luon truong hop untouchable = 0 -> ddi xuyeen qua
+				//xet may con di chuyen 
+				if (untouchable == 0)//chi xet voi may con di chuyen thoi
 				{
-					if (e->ny < 0)
-					{
-						if (koopas->GetState() != KOOPAS_STATE_DIE)
+					//goomba
+					if (e->obj->GetType() == Type::GOOMBA)
+						if (e->obj->GetState() != STATE_DESTROYED)
 						{
-							koopas->SetState(KOOPAS_STATE_DIE);
-							vy = -0.2;
+							UpdateLevel();
 						}
-					}
-					else if (e->nx != 0)
+					//koopas
+					if (e->obj->GetType() == Type::KOOPAS)
 					{
-						if (koopas->GetState() != KOOPAS_STATE_DIE)
+						if (e->obj->GetState() != KOOPAS_STATE_IDLE || e->obj->GetState() != STATE_DESTROYED)
 						{
 							UpdateLevel();
 						}
 						else
 						{
-							koopas->nx = nx;
-							DebugOut(L"nx: %d\n", nx);
-							DebugOut(L"KOOPASnx: %d\n", koopas->nx);
-							DebugOut(L"MARIOnx: %d\n", this->nx);
-							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+							e->obj->nx = nx;
+							e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
+						}
+					}
+					
+				}
+				else
+					x += dx;
+			}
+			if (e->ny != 0)
+			{
+				//quai di chuyen
+				if (untouchable == 0)
+				{
+					if (e->ny < 0)
+					{
+						//goomba
+						if (e->obj->GetType() == Type::GOOMBA)
+						{
+							if (e->obj->GetState() != STATE_DESTROYED)
+							{
+								e->obj->SetState(STATE_DESTROYED);
+								vy = -0.2;
+							}
+						}
+						//koopas
+						if (e->obj->GetType() == Type::KOOPAS)
+						{
+							CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+							if (koopas->GetState() != KOOPAS_STATE_IDLE)
+							{
+								koopas->Idle();
+								//koopas->SetState(KOOPAS_STATE_IDLE);
+								vy = -0.2;
+							}
 						}
 					}
 				}
-			} // if Koopas
-			else if (dynamic_cast<CBrick*>(e->obj)) // if e->obj is Koopas 
-			{
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-
-				if (e->ny == 1)
-				{
-					DebugOut(L"y1\n");
-					/*if (!brick->isBroken)
-					{
-						brick->isBroken = true;
-						DebugOut(L"Broken: %d\n", brick->isBroken);
-					}*/
-				}
-				if (e->ny == -1) DebugOut(L"y-1\n");
-				if (e->nx == -1) DebugOut(L"x-1\n");
-				if (e->nx == 1) DebugOut(L"x1\n");
-				DebugOut(L"level: %d \n", GetLevel());
+				//block, pipe,..
 			}
-			else if (dynamic_cast<CGround*>(e->obj))
-			{
-				CGround* ground = dynamic_cast<CGround*>(e->obj);	
-
-				if (ground->interact)
-				{
-					if (e->nx != 0)
-					{
-						x += dx;
-					}
-				}
-			}
-			else if (dynamic_cast<CPortal*>(e->obj))
-			{
-				/*CPortal* p = dynamic_cast<CPortal*>(e->obj);
-				CGame::GetInstance()->SwitchScene(p->GetSceneId());*/
-			}
+			//else//truong hop dang ONGROUND ma roi
+			//	if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::GROUND)
+			//		isOnGround = false;
 		}
 	}
+	
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
@@ -424,7 +468,6 @@ void CMario::Render()
 			}
 			break;
 		case MARIO_STATE_ATTACK:
-			DebugOut(L"set ani 30");
 			if (nx > 0)
 				ani = RACCOON_ANI_FIGHT_IDLE_RIGHT;
 			else
@@ -642,7 +685,8 @@ void CMario::Render()
 
 	for (int i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
-
+	for (int i = 0; i < listEffect.size(); i++)
+		listEffect[i]->Render();
 	//RenderBoundingBox();
 }
 
@@ -834,13 +878,13 @@ void CMario::Stop() {
 }
 
 void CMario::Attack() {
-	DebugOut(L"attack function\n");
 	SetState(MARIO_STATE_ATTACK);
 	if (GetLevel() == MARIO_LEVEL_FIRE)
 		isAttack = true;
-	ResetAnimation();
-	isWaitingForAni = true;
-
+	//ResetAnimation();
+	//isWaitingForAni = true;
+	
+	attackStart = GetTickCount();
 }
 
 void CMario::Sit() {

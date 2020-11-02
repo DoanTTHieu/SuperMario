@@ -1,5 +1,6 @@
 #pragma once
 #include "GameObject.h"
+#include "Define.h"
 
 #define BULLET_BBOX_WIDTH	8
 #define BULLET_BBOX_HEIGHT	8
