@@ -4,7 +4,7 @@ CFireBallEffect::CFireBallEffect(D3DXVECTOR2 position)
 {
 		x = position.x;
 		y = position.y;
-		this->SetAnimationSet(CAnimationSets::GetInstance()->Get(2));
+		this->SetAnimationSet(CAnimationSets::GetInstance()->Get(7));
 }
 
 void CFireBallEffect::Render()

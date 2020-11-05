@@ -4,6 +4,7 @@
 #include "Define.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Game.h"
 
 
 CBullet::CBullet(D3DXVECTOR2 position, int nx)
@@ -12,7 +13,6 @@ CBullet::CBullet(D3DXVECTOR2 position, int nx)
 	y = position.y;
 	this->nx = nx;
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(5));
-	//id = ID_BULLET;
 
 }
 void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -77,7 +77,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					state = STATE_DESTROYED;
 				}
 			}
-			else//quai di chuyen: 1 phat dan la chet
+			else //quai di chuyen: 1 phat dan la chet
 			{
 				if (e->ny != 0 || e->nx != 0)
 				{
@@ -116,3 +116,4 @@ void CBullet::Render()
 	animation_set->at(0)->Render(x, y, alpha);
 	RenderBoundingBox();
 }
+

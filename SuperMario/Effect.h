@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 
-#define EFFECT_TIME	500
+#define EFFECT_TIME	120
 
 class CEffect :
 	public CGameObject
