@@ -21,7 +21,7 @@
 #define KOOPAS_ANI_WALKING_RIGHT 1
 #define KOOPAS_ANI_DIE 2
 #define KOOPAS_ANI_DIE_MOVE 3
-#define KOOPAS_TIME_IDLE 4000
+#define KOOPAS_TIME_IDLE 8000
 
 class CKoopas : public CGameObject
 {

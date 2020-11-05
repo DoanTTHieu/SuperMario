@@ -102,6 +102,7 @@ public:
 	virtual void SetState(int state) { this->state = state; }
 
 	virtual void ResetAnimation();
+	bool IsOutOfCamera();
 
 	~CGameObject();
 };

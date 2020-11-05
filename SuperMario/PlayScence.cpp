@@ -291,12 +291,24 @@ void CPlayScene::Update(DWORD dt)
 
 	//CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
 	//map di theo nhan vat, ko di qua map
-	CGame::GetInstance()->cam_y = 250;
+	
+	//CGame::GetInstance()->cam_y = 250;
 	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->GetMapWidth())
 	{
 		cx = player->x - (SCREEN_WIDTH / 2);
 		CGame::GetInstance()->cam_x = cx;
 	}
+	CGame::GetInstance()->cam_y = 250;
+	//if (player->y > (SCREEN_HEIGHT / 2) && player->y + (SCREEN_HEIGHT / 2) < map->GetMapHeight())
+	//{
+	//	cy = player->y - (SCREEN_HEIGHT / 2);
+	//	CGame::GetInstance()->cam_y = cy;
+	//}
+	//else
+	//{
+	//	CGame::GetInstance()->cam_y = 250;
+	//}
+	
 }
 
 void CPlayScene::Render()
@@ -378,8 +390,12 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 			return;
 
 		if (!mario->flyTimer->IsTimeUp())
-		{
-			mario->vy = mario->vy - MARIO_GRAVITY *10 * mario->dt;
+		{	
+			mario->vy = -(MARIO_GRAVITY+0.002f*4) * mario->dt;
+			/*if (mario->GetLevel() == MARIO_LEVEL_RACCOON)*/
+				//mario->vy = mario->vy - MARIO_GRAVITY * 10 * mario->dt;
+			/*else
+				mario->vy = MARIO_JUMP_SPEED_Y*1.5f;*/
 		}
 		else 
 		{
@@ -387,6 +403,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 				mario->vy = 0;
 			else
 				mario->vy = mario->vy + MARIO_GRAVITY * mario->dt;
+				//mario->vy = +(MARIO_GRAVITY + 0.002f * 4) * mario->dt;
 		}
 		
 		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
@@ -430,11 +447,22 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT))
 		{
-			mario->SetState(MARIO_STATE_RUN_RIGHT);
+			if (mario->vx < 0)
+			{
+				mario->Stop();
+			}
+			else
+				mario->SetState(MARIO_STATE_RUN_RIGHT);
 		}
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT))
 		{
-			mario->SetState(MARIO_STATE_RUN_LEFT);
+
+			if (mario->vx > 0)
+			{
+				mario->Stop();
+			}
+			else
+				mario->SetState(MARIO_STATE_RUN_LEFT);
 		}
 		else if (game->IsKeyDown(DIK_LEFT))
 		{

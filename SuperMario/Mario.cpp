@@ -59,13 +59,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isAttack = false;
 	}
 
-
-	//if (isWaitingForAni && animation_set->at(ani)->IsFinished())
-	//{
-	//	//SetState(MARIO_STATE_ATTACK);
-	//	isWaitingForAni = false;
-
-	//}
 	if (GetLevel() == MARIO_LEVEL_RACCOON)
 	{
 		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_ATTACK)
@@ -107,12 +100,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	//xoa vien dan bien mat
 	for (int i = 0; i < listBullet.size(); i++)
-		if (listBullet[i]->GetState() == STATE_DESTROYED)
+		if (listBullet[i]->GetState() == STATE_DESTROYED || listBullet[i]->IsOutOfCamera())
 		{
 			listBullet.erase(listBullet.begin() + i);
 			i--;
 		}
-
+	//xoa effect cua vien dan
 	for (int i = 0; i < listEffect.size(); i++)
 		if (listEffect[i]->GetState() == STATE_DESTROYED)
 		{
@@ -122,23 +115,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
-
-
 	coEvents.clear();
 
 	// turn off collision when die 
 	if (state != MARIO_STATE_DIE)
 		CalcPotentialCollisions(coObjects, coEvents);
 
-	interactableObject.clear();
-	for (UINT i = 0; i < coObjects->size(); i++)
-	{
-		if (coObjects->at(i)->isInteractable)
-		{
-			interactableObject.push_back(coObjects->at(i));
-		}
-	}
-	CheckInteraction();
+
 
 
 	// reset untouchable timer if untouchable time has passed
@@ -148,7 +131,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		untouchable = 0;
 	}
 
-	//checkenemies(coObjects);
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -184,7 +166,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				isblockJump = false;
 				isWaggingTail = false;
 			}
-
 		}
 
 		//
@@ -201,7 +182,54 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			//	CPortal* p = dynamic_cast<CPortal*>(e->obj);
 			//	CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			//}
-
+			
+			//ny
+			if (e->ny != 0)
+			{
+				//quai di chuyen
+				if (e->ny < 0)
+				{
+					//goomba
+					if (e->obj->GetType() == Type::GOOMBA)
+					{
+						if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != STATE_DIE)
+						{
+							CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+							goomba->DieByCrush();
+							//e->obj->SetState(STATE_DIE);
+							vy = -0.2;
+						}
+					}
+					//koopas
+					if (e->obj->GetType() == Type::KOOPAS)
+					{
+						CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+						if (koopas->GetState() != KOOPAS_STATE_IDLE)
+						{
+							koopas->Idle();
+							//koopas->isInteractable = false;;
+							vy = -0.2;
+						}
+						else
+						{
+							float ax, ay;
+							float bx, by;
+							GetPosition(ax, ay);//mario
+							koopas->GetPosition(bx, by);
+							if ((bx - ax) > 0)
+								koopas->nx = -1;
+							else
+								koopas->nx = 1;
+							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+							koopas->isInteractable = false;
+						}
+						
+					}
+				}
+				//block, pipe,..
+			}
+			//nx
+			//else
 			if (e->nx != 0)
 			{
 				//ko di xuyen qua duoc ne
@@ -218,67 +246,63 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								x += dx;
 							}
 						}
-					}
-				}
-
-				//tinh luon truong hop untouchable = 0 -> ddi xuyeen qua
-				//xet may con di chuyen 
-				if (untouchable == 0)//chi xet voi may con di chuyen thoi
-				{
-					//goomba
-					if (e->obj->GetType() == Type::GOOMBA)
-						if (e->obj->GetState() != STATE_DESTROYED)
-						{
-							UpdateLevel();
-						}
-					//koopas
-					if (e->obj->GetType() == Type::KOOPAS)
-					{
-						if (e->obj->GetState() != KOOPAS_STATE_IDLE || e->obj->GetState() != STATE_DESTROYED)
-						{
-							UpdateLevel();
-						}
 						else
 						{
-							e->obj->nx = nx;
-							e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
+							if (e->nx != 0)//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+							{
+								if (state == MARIO_STATE_RUN_RIGHT || state == MARIO_STATE_RUN_LEFT)
+								{
+									if (vx > 0)
+										state = MARIO_STATE_WALKING_RIGHT;
+									else
+										state = MARIO_STATE_WALKING_LEFT;
+								}
+							}
 						}
 					}
-					
+					else
+					{//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+						if (state == MARIO_STATE_RUN_RIGHT || state == MARIO_STATE_RUN_LEFT)
+						{
+							if (vx > 0)
+								state = MARIO_STATE_WALKING_RIGHT;
+							else
+								state = MARIO_STATE_WALKING_LEFT;
+						}
+					}
+
 				}
 				else
-					x += dx;
-			}
-			if (e->ny != 0)
-			{
-				//quai di chuyen
-				if (untouchable == 0)
 				{
-					if (e->ny < 0)
+					//tinh luon truong hop untouchable = 0 -> ddi xuyeen qua
+					//xet may con di chuyen 
+					if (untouchable == 0)//chi xet voi may con di chuyen thoi
 					{
 						//goomba
 						if (e->obj->GetType() == Type::GOOMBA)
-						{
-							if (e->obj->GetState() != STATE_DESTROYED)
+							if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != STATE_DIE)
 							{
-								e->obj->SetState(STATE_DESTROYED);
-								vy = -0.2;
+								UpdateLevel();
 							}
-						}
 						//koopas
 						if (e->obj->GetType() == Type::KOOPAS)
 						{
-							CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-							if (koopas->GetState() != KOOPAS_STATE_IDLE)
+							if (e->obj->GetState() == KOOPAS_STATE_IDLE)
 							{
-								koopas->Idle();
-								//koopas->SetState(KOOPAS_STATE_IDLE);
-								vy = -0.2;
+								e->obj->nx = nx;
+								e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
+								e->obj->isInteractable = true;
+								
+							}
+							else if (e->obj->GetState() != KOOPAS_STATE_IDLE || e->obj->GetState() != STATE_DESTROYED)
+							{
+								UpdateLevel();
 							}
 						}
 					}
+					else
+						x += dx;
 				}
-				//block, pipe,..
 			}
 			//else//truong hop dang ONGROUND ma roi
 			//	if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::GROUND)
@@ -289,6 +313,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
+
+	interactableObject.clear();
+	for (UINT i = 0; i < coObjects->size(); i++)
+	{
+		if (coObjects->at(i)->isInteractable)
+		{
+			interactableObject.push_back(coObjects->at(i));
+		}
+	}
+	//aabb
+	CheckInteraction();
+
 }
 
 void CMario::CheckInteraction()
@@ -297,19 +333,22 @@ void CMario::CheckInteraction()
 	{
 		for (auto object : interactableObject)
 		{
-			if (IsAABB(object))
-				if (dynamic_cast<CKoopas*>(object))
-				{
-					object->SetState(KOOPAS_STATE_DIE_MOVE);
-				}
+			if (untouchable == 0)
+			{
+				if (IsAABB(object))
+					if (dynamic_cast<CKoopas*>(object))
+					{
+						if (object->GetState() != STATE_DESTROYED)
+							this->UpdateLevel();
+					}
+
+			}
 		}
 	}
 }
 
 void CMario::Render()
 {
-	//DebugOut(L"ani id khi vao render %d\n", ani);
-	//int ani = -1;
 	//con lua
 	if (GetLevel() == MARIO_LEVEL_FIRE)
 	{
@@ -687,7 +726,7 @@ void CMario::Render()
 		listBullet[i]->Render();
 	for (int i = 0; i < listEffect.size(); i++)
 		listEffect[i]->Render();
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 bool CMario::IsAABB(LPGAMEOBJECT object)
@@ -714,12 +753,16 @@ void CMario::SetState(int state)
 		nx = -1;
 		break;
 	case MARIO_STATE_RUN_RIGHT:
+		if (vx <= 0)
+			vx = MARIO_WALKING_SPEED;
 		vx += mario_ACCELERATION * 0.2 * dt;
 		if (vx >= MARIO_RUN_SPEED_THRESH)
 			vx = MARIO_RUN_SPEED_THRESH;
 		nx = 1;
 		break;
 	case MARIO_STATE_RUN_LEFT:
+		if (vx >= 0)
+			vx = -MARIO_WALKING_SPEED;
 		vx -= mario_ACCELERATION * 0.2 * dt;
 		if (vx <= -MARIO_RUN_SPEED_THRESH)
 			vx = -MARIO_RUN_SPEED_THRESH;
@@ -797,7 +840,6 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 		{
 			top = y + 10;
 		}
-
 		break;
 	default:
 		right = x + MARIO_SMALL_BBOX_WIDTH;
@@ -891,7 +933,6 @@ void CMario::Sit() {
 	SetState(MARIO_STATE_SIT);
 	isSitting = true;
 }
-
 
 void CMario::Idle() {
 	SetState(MARIO_STATE_IDLE);

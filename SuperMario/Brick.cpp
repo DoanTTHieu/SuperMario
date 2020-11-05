@@ -5,6 +5,7 @@
 
 CBrick::CBrick(D3DXVECTOR2 position)
 {
+	type = Type::BRICK;
 	this->x = position.x;
 	this->y = position.y;
 	isBroken = false;

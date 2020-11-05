@@ -121,7 +121,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -130,18 +130,18 @@ void CKoopas::SetState(int state)
 	switch (state)
 	{
 	case KOOPAS_STATE_DIE_MOVE:	
-		DebugOut(L"nx: %d\n", nx);
 		vx = -nx * KOOPAS_DIE_MOVE_SPEED;
 		isInteractable = false;
 		break;
 	case KOOPAS_STATE_IDLE:
 		vx = 0;
-		isInteractable = true;
+		isInteractable = false;
+		//isInteractable = true;
 		vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
 		vx = -KOOPAS_WALKING_SPEED;
-		isInteractable = false;
+		isInteractable = true;
 	}
 
 }
@@ -166,11 +166,11 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	//if (state == KOOPAS_STATE_IDLE || state == KOOPAS_STATE_DIE_MOVE)
 	//	bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
 	//else
-		
 }
 
 void CKoopas::Idle()
 {
 	SetState(KOOPAS_STATE_IDLE);
 	idleTimer->Start();
+
 }

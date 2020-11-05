@@ -12,13 +12,16 @@ CGoomba::CGoomba()
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
 	left = x;
-	top = y;
 	right = x + GOOMBA_BBOX_WIDTH;
-
-	if (state == STATE_DESTROYED)
-		bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
+	bottom = y + GOOMBA_BBOX_HEIGHT;
+	if (state != STATE_DIE)
+		top = y ;
 	else
-		bottom = y + GOOMBA_BBOX_HEIGHT;
+		top = y + 7;
+	//if (state == STATE_DIE)
+	//	bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
+	//else
+	//	bottom = y + GOOMBA_BBOX_HEIGHT;
 }
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -29,7 +32,11 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//// 
 
 	CGameObject::Update(dt);
-
+	if (state == STATE_DIE && dieTimer->IsTimeUp())
+	{
+		dieTimer->Stop();
+		state = STATE_DESTROYED;
+	}
 	//can define
 	vy += (MARIO_GRAVITY * dt);
 	vector<LPCOLLISIONEVENT> coEvents;
@@ -54,7 +61,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		// block every object first!
 		y += min_ty * dy + ny * 0.4f;
-		x += min_tx * dx + nx * 0.4f;
+		x += min_tx * dx + nx * 0.25f;
 
 		if (ny != 0) vy = 0;
 
@@ -107,13 +114,13 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CGoomba::Render()
 {
 	int ani = GOOMBA_ANI_WALKING;
-	if (state == STATE_DESTROYED) {
+	if (state == STATE_DIE) {
 		ani = GOOMBA_ANI_DIE;
 	}
 
 	animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)
@@ -122,12 +129,20 @@ void CGoomba::SetState(int state)
 	switch (state)
 	{
 	case STATE_DESTROYED:
-		y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
+	case STATE_DIE:
+		//y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
 		vy = 0;
 		//this.
 		break;
 	case GOOMBA_STATE_WALKING:
 		vx = -GOOMBA_WALKING_SPEED;
+		isInteractable = true;
 	}
+}
+
+void CGoomba::DieByCrush()
+{
+	SetState(STATE_DIE);
+	dieTimer->Start();
 }
