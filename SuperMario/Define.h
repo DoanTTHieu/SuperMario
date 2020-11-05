@@ -12,6 +12,29 @@ enum Type
 
 };
 
+enum MState
+{
+	Idle = 01,
+	Walk_right = 02,
+	Walk_left = 03,
+	Jump = 04,
+	Jump_low = 05,
+	Die = 06,
+	Sit = 07,
+	Run_right = 8,
+	Run_left = 9,
+	Fly = 10,
+	Stop = 11,
+	Attack = 12,
+};
+
+enum Level
+{
+	Small = 01,
+	Big = 02,
+	Raccoon = 03,
+	Fire = 04,
+};
 
 
 #define STATE_DESTROYED				99
@@ -53,20 +76,6 @@ enum Type
 #define MARIO_RUN_SPEED_THRESH			0.16f
 #define MARIO_ACCELERATION				0.0006f
 #define mario_ACCELERATION				0.0003f
-
-
-#define MARIO_STATE_IDLE				0
-#define MARIO_STATE_WALKING_RIGHT		1
-#define MARIO_STATE_WALKING_LEFT		2
-#define MARIO_STATE_JUMP				3
-#define MARIO_STATE_JUMP_LOW			4
-#define MARIO_STATE_DIE					5
-#define MARIO_STATE_SIT					6
-#define MARIO_STATE_RUN_RIGHT			8
-#define MARIO_STATE_RUN_LEFT			9
-#define MARIO_STATE_FLY					10
-#define MARIO_STATE_STOP				11
-#define MARIO_STATE_ATTACK				12
 
 #define MARIO_ANI_IDLE_RIGHT				0
 #define MARIO_ANI_WALK_RIGHT				1
@@ -141,10 +150,6 @@ enum Type
 #define FIRE_ANI_SIT_LEFT				61
 #define FIRE_ANI_FALL_LEFT				62
 
-#define	MARIO_LEVEL_SMALL	1
-#define	MARIO_LEVEL_BIG		2
-#define	MARIO_LEVEL_RACCOON	3
-#define	MARIO_LEVEL_FIRE	4
 
 #define MARIO_BIG_BBOX_WIDTH  15
 #define MARIO_BIG_BBOX_HEIGHT 27

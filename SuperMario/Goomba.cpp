@@ -6,7 +6,7 @@
 CGoomba::CGoomba()
 {
 	type = Type::GOOMBA;
-	SetState(GOOMBA_STATE_WALKING);
+	SetState(EState::WALK);
 }
 
 void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& bottom)
@@ -14,14 +14,13 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 	left = x;
 	right = x + GOOMBA_BBOX_WIDTH;
 	bottom = y + GOOMBA_BBOX_HEIGHT;
-	if (state != STATE_DIE)
-		top = y ;
-	else
+	if (state == STATE_DESTROYED|| state == EState::DIE_BY_ATTACK)
+		left = top = right = bottom = 0;
+	else if (state == EState::DIE_BY_CRUSH)
 		top = y + 7;
-	//if (state == STATE_DIE)
-	//	bottom = y + GOOMBA_BBOX_HEIGHT_DIE;
-	//else
-	//	bottom = y + GOOMBA_BBOX_HEIGHT;
+	else
+		top = y;
+		
 }
 
 void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -32,9 +31,13 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	//// 
 
 	CGameObject::Update(dt);
-	if (state == STATE_DIE && dieTimer->IsTimeUp())
+	if (state == EState::DIE_BY_CRUSH && dieByCrushTimer->IsTimeUp())
 	{
-		dieTimer->Stop();
+		dieByCrushTimer->Stop();
+		state = STATE_DESTROYED;
+	}
+	if (state == EState::DIE_BY_ATTACK && IsOutOfCamera())
+	{
 		state = STATE_DESTROYED;
 	}
 	//can define
@@ -114,8 +117,12 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CGoomba::Render()
 {
 	int ani = GOOMBA_ANI_WALKING;
-	if (state == STATE_DIE) {
-		ani = GOOMBA_ANI_DIE;
+	if (state == EState::DIE_BY_CRUSH) {
+		ani = GOOMBA_ANI_DIE_BY_CRUSH;
+	}
+	else if (state == EState::DIE_BY_ATTACK)
+	{
+		ani = GOOMBA_ANI_DIE_BY_ATTACK;
 	}
 
 	animation_set->at(ani)->Render(x, y);
@@ -129,20 +136,27 @@ void CGoomba::SetState(int state)
 	switch (state)
 	{
 	case STATE_DESTROYED:
-	case STATE_DIE:
+	case EState::DIE_BY_CRUSH:
 		//y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
 		vy = 0;
 		//this.
 		break;
-	case GOOMBA_STATE_WALKING:
+	case EState::DIE_BY_ATTACK:
+		vy = -MARIO_JUMP_SPEED_Y; 
+		if (nx > 0)
+		{
+			vx = MARIO_WALKING_SPEED;
+		}
+		else
+		{
+			vx = -MARIO_WALKING_SPEED;
+		}
+		break;
+	case EState::WALK:
 		vx = -GOOMBA_WALKING_SPEED;
 		isInteractable = true;
 	}
 }
 
-void CGoomba::DieByCrush()
-{
-	SetState(STATE_DIE);
-	dieTimer->Start();
-}
+

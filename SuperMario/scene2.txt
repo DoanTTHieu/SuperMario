@@ -10,6 +10,7 @@
 41	textures\raccoon_5.png	255 	255	255
 42	textures\fireball_right.png	0	255	255
 43	textures\fireball_left.png	0	255	255
+54	textures\enemies-5_2.png	0	255	255
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
@@ -221,6 +222,8 @@
 30002	25	14	41	29	10
 #die
 30003	45	14	61	29	10
+#die by attack
+30004	299	341	315	357	54
 
 #brick with question mark animation
 40001	300	117	316	133	20
@@ -424,6 +427,8 @@
 701	30001	100	30002	100
 # die
 702	30003	100
+# die by attack
+703	30004	100
 
 # ==== KOOPAS  =========
 #walk left
@@ -446,7 +451,7 @@
 # QUESTION MARK BRICK 
 22	602
 # GOOMBA
-3	701	702
+3	701	702	703
 #KOOPAS
 4	801	802	803	804
 #FIRE BALL

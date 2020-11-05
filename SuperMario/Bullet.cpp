@@ -81,9 +81,13 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				if (e->ny != 0 || e->nx != 0)
 				{
-					if (e->obj->GetState() != STATE_DESTROYED)
+					if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != EState::DIE_BY_CRUSH && e->obj->GetState() != EState::DIE_BY_ATTACK)
 					{
-						e->obj->SetState(STATE_DESTROYED);
+						CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
+						
+						goomba->nx = this->nx;
+						goomba->DieByAttack();
+						//e->obj->SetState(STATE_DESTROYED);
 						vy = -0.2;
 					}
 					state = STATE_DESTROYED;

@@ -272,7 +272,7 @@ void CPlayScene::Update(DWORD dt)
 	//xoa may cai da chet
 	for (int i = 0; i < objects.size(); i++)
 	{
-		if (objects[i]->GetState() == STATE_DESTROYED)
+		if (objects[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
 		{
 			objects.erase(objects.begin() + i);
 			i--;
@@ -341,7 +341,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	switch (KeyCode)
 	{
 	case DIK_S:
-		if (mario->GetLevel() == MARIO_LEVEL_RACCOON && abs(mario->vx) == MARIO_RUN_SPEED_THRESH)
+		if (mario->GetLevel() == Level::Raccoon && abs(mario->vx) == MARIO_RUN_SPEED_THRESH)
 			mario->Fly();
 		else
 		{
@@ -351,7 +351,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 			}
 		}
 			
-		if (mario->GetLevel() == MARIO_LEVEL_RACCOON && mario->vy > 0)
+		if (mario->GetLevel() == Level::Raccoon && mario->vy > 0)
 		{
 			mario->isWaggingTail = true;
 		}
@@ -373,7 +373,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_A:
-		if (mario->GetLevel() == MARIO_LEVEL_FIRE|| mario->GetLevel() == MARIO_LEVEL_RACCOON)
+		if (mario->GetLevel() == Level::Fire|| mario->GetLevel() == Level::Raccoon)
 			mario->Attack();
 		break;
 
@@ -392,21 +392,21 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		if (!mario->flyTimer->IsTimeUp())
 		{	
 			mario->vy = -(MARIO_GRAVITY+0.002f*4) * mario->dt;
-			/*if (mario->GetLevel() == MARIO_LEVEL_RACCOON)*/
+			/*if (mario->GetLevel() == Level::Raccoon)*/
 				//mario->vy = mario->vy - MARIO_GRAVITY * 10 * mario->dt;
 			/*else
 				mario->vy = MARIO_JUMP_SPEED_Y*1.5f;*/
 		}
 		else 
 		{
-			if(mario->GetLevel() == MARIO_LEVEL_RACCOON)
+			if(mario->GetLevel() == Level::Raccoon)
 				mario->vy = 0;
 			else
 				mario->vy = mario->vy + MARIO_GRAVITY * mario->dt;
 				//mario->vy = +(MARIO_GRAVITY + 0.002f * 4) * mario->dt;
 		}
 		
-		if (mario->GetLevel() == MARIO_LEVEL_RACCOON)
+		if (mario->GetLevel() == Level::Raccoon)
 		{
 			mario->isblockJump = false;
 		}
@@ -433,7 +433,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 
-	if (mario->GetState() == MARIO_STATE_DIE)
+	if (mario->GetState() == MState::Die)
 		return;
 	if (mario->isWaitingForAni)
 		return;
@@ -452,7 +452,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->Stop();
 			}
 			else
-				mario->SetState(MARIO_STATE_RUN_RIGHT);
+				mario->SetState(MState::Run_right);
 		}
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT))
 		{
@@ -462,7 +462,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 				mario->Stop();
 			}
 			else
-				mario->SetState(MARIO_STATE_RUN_LEFT);
+				mario->SetState(MState::Run_left);
 		}
 		else if (game->IsKeyDown(DIK_LEFT))
 		{
@@ -491,7 +491,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 		else if (game->IsKeyDown(DIK_DOWN))
 		{
-			if (mario->GetLevel() != MARIO_LEVEL_SMALL)
+			if (mario->GetLevel() != Level::Small)
 			{
 				mario->Sit();
 			}
