@@ -196,7 +196,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 							goomba->DieByCrush();
-							//e->obj->SetState(STATE_DIE);
 							vy = -0.2;
 						}
 					}
@@ -207,7 +206,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						if (koopas->GetState() != KOOPAS_STATE_IDLE)
 						{
 							koopas->Idle();
-							//koopas->isInteractable = false;;
 							vy = -0.2;
 						}
 						else

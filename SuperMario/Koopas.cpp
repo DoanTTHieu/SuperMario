@@ -192,10 +192,6 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 		break;
 	}
 
-
-	//if (state == KOOPAS_STATE_IDLE || state == KOOPAS_STATE_DIE_MOVE)
-	//	bottom = y + KOOPAS_BBOX_HEIGHT_DIE;
-	//else
 }
 
 void CKoopas::Idle()
