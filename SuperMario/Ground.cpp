@@ -3,8 +3,8 @@
 CGround::CGround(int w, int h, bool i)
 {
 	type = Type::GROUND;
-	this->width = w;
-	this->height = h;
+	this->width = w;//so luong vien
+	this->height = h;//so luong vien
 	this->interact = i;
 }
 

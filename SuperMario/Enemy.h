@@ -15,6 +15,7 @@ enum EState
 	//SIT = 05,
 };
 
+
 #define TIME_DIE_BY_CRUSH		300
 
 class CEnemy : public CGameObject

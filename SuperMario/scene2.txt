@@ -4,13 +4,17 @@
 20	textures\misc.png	176	224	248
 10	textures\enemies.png	3	26	110
 30	textures\enemies-2.png	0	128	128
+31	textures\enemies-2.png	0	128	128
 33	textures\effect.png	176	224	248
 999	textures\raccoon_3.png	255	255	255
 40	textures\raccoon_4.png	255	255	255
 41	textures\raccoon_5.png	255 	255	255
 42	textures\fireball_right.png	0	255	255
 43	textures\fireball_left.png	0	255	255
+52	textures\enemies-5.png	0	255	255
+53	textures\enemies-5_1.png	0	255	255
 54	textures\enemies-5_2.png	0	255	255
+55	textures\enemies-5_3.png	0	255	255
 
 # id	left	top	right	bottom	texture_id
 [SPRITES]
@@ -233,20 +237,68 @@
 
 #KOOPAS
 #walk left
-50001	205	191	221	217	30
-50002	222	191	238	217	30
+501	205	191	221	217	30
+502	222	191	238	217	30
 #walk right
-50011	187	191	202	217	30
-50012	170	191	185	217	30
-#die
-50031	239	191	255	217	30
-#50031	152	202	168	217	30
-#50031	152	202	168	217	20
-#die move
-50031	239	191	256	217	30
-50041	256	191	273	217	30
-50042	273	191	290	217	30
-50043	290	191	307	217	30
+503	187	191	202	217	30
+504	170	191	185	217	30
+#die sap
+505	239	191	255	217	30
+#dia ngua
+506	152	202	168	228	30
+#rung sap
+507	74	127	90	153	52
+#rung ngua
+508	46	269	62	285	54
+#die move sap
+509	239	191	256	217	30
+510	256	191	273	217	30
+511	273	191	290	217	30
+512	290	191	307	217	30
+#die move ngua
+513	279	188	295	224	31
+514	228	188	244	224	31
+515	262	188	278	224	31
+516	245	188	261	224	31
+
+#RED TROOPA
+# move right
+521	28	67	44	93	52
+522	47	66	63	93	52
+# move left
+523	280	67	296	93	53
+524	261	66	277	93	53
+# lay prone nam sap
+525	198	85	214	120	52
+# lay supine nam ngua
+526	114	269	130	285	54
+# vibrate prone
+527	71	75	89	91	52
+# vibrate supine
+528	235	277	253	293	54
+# spin and move prone
+#50101	218	95	244	121	52
+#50102	238	95	254	121	52
+#529	50	96	66	112	52
+#530	71	96	87	112	52
+#531	258	96	274	112	53
+#50105	29	97	45	113	52
+
+529	239	164	256	200	30
+530	256	164	273	200	30
+531	273	164	290	200	30
+532	290	164	307	200	30
+
+# spin and move supine
+533	279	216	295	252	31
+534	228	216	244	252	31
+535	262	216	278	252	31
+536	245	216	261	252	31
+
+#532	50	256	66	272	55
+#533	237	256	253	272	54
+#534	258	256	274	272	54
+#50106	279	255	295	271	54
 
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
@@ -432,13 +484,39 @@
 
 # ==== KOOPAS  =========
 #walk left
-801	50001	100	50002	100
+801	501	100	502	100
 #walk right
-802	50011	100	50012	100
-#die
-803	50031	100
-# die move
-804	50042	100	50041	100	50043	100	50031	100
+802	503	100	504	100
+#die sap
+803	505	100
+#die ngua
+804	506	100
+#rung khi nam sap
+805	507	100
+#rung khi nam ngua
+806	508	100
+# die move sap
+807	509	100	510	100	511	100	512	100
+#die move ngua
+808	513	100	514	100	515	100	516	100
+
+# ====== RED KOOPA ======
+# move right
+811	521	100	522	100
+# move left
+812	523	100	524	100
+# nam sap
+813	525	100
+# lay supsine: nam ngua
+814	526	100
+# vibrate prone: rung khi nam sap
+815	527	100
+# vibrate supine: rung khi nam ngua
+816	528	100
+# spin and move prone: xoay vong va di chuyen sap
+817	529	100	530	100	531	100	532	100
+# spin and move supine: xoay vong và di chuyen ngua
+818	533	100	534	100	535	100	536	100
 
 #
 # id	ani1	ani2	ani3
@@ -453,30 +531,37 @@
 # GOOMBA
 3	701	702	703
 #KOOPAS
-4	801	802	803	804
+4	801	802	803	804	805	806	807	808
 #FIRE BALL
 5	890
 #ITEMS
 6	901	902	903
 #EFFECT
 7	501
-
+# RED KOOPA
+8	811	812	813	814	815	816	817	818
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
-# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas,
+# type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
 # MARIO
-0	550	380	1
+0	550	360	1
 #0	500	30	1
 
 #GOOMBA
-2	336	400	3
-2	608	400	3
+#2	336	400	3
+#2	608	400	3
 2	830	370	3
-2	930	370	3
+#2	930	370	3
 # KOOPAS
-#3	608	380	4
-#3	1473	380	4
+#type	x	y	ani_set_id	type_of_koopas
+#type: 1= koopa xanh, 2= koopa do, 3 = paratroopa xanh, 4 = paratroopa do
+3	580	340	8	2
+#3	1473	380	4	1
+#3	450	380	4	1
+
+# RED KOOPAS
+#3	608	380	8
 
 # BRICK 
 # --- platform (hint: I created the list using Excel!) ----

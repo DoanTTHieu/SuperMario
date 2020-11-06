@@ -2,9 +2,10 @@
 #include "Ground.h"
 #include "Brick.h"
 
-CKoopas::CKoopas()
+CKoopas::CKoopas(int x)
 {
 	type = Type::KOOPAS;
+	Ktype = x;
 	SetState(KOOPAS_STATE_WALKING);
 }
 
@@ -15,13 +16,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	CGameObject::Update(dt, coObjects);
 
 	//can define
-	vy += 0.02 * dt;
+	vy += MARIO_GRAVITY * dt;
 
 	if (GetState() == KOOPAS_STATE_IDLE && idleTimer->IsTimeUp())
 	{
 		idleTimer->Stop();
 		SetState(KOOPAS_STATE_WALKING);
 	}
+
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
@@ -55,9 +57,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		//if (nx != 0) vx = 0;
 		if (ny != 0) vy = 0;
-		//DebugOut(L"size:%d \n", coEvents.size());
-		//if (coEvents.size() >= 3) 
-		//	vx *= -1;
 
 		//
 		// Collision logic with other objects
@@ -80,6 +79,14 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					else
 						vx = -vx;
 				}
+				if (Ktype == KoopaType::Red_troopa && GetState()!=KOOPAS_STATE_DIE_MOVE)
+				{
+					if (e->ny == -1)
+					{
+						if(x<ground->x||x>(ground->x+ ground->GetGroundWitdth()- KOOPAS_BBOX_WIDTH))
+							vx = -vx;
+					}
+				}
 			}
 			else if (dynamic_cast<CBrick*>(e->obj))
 			{
@@ -101,6 +108,9 @@ void CKoopas::Render()
 {
 	switch (state)
 	{
+	case EState::DIE_BY_ATTACK:
+		ani = KOOPAS_ANI_DIE_SUPINE;
+		break;
 	case KOOPAS_STATE_DIE_MOVE:
 		ani = KOOPAS_ANI_DIE_MOVE;
 		break;
@@ -129,6 +139,21 @@ void CKoopas::SetState(int state)
 	CGameObject::SetState(state);
 	switch (state)
 	{
+	case STATE_DESTROYED:
+		vx = 0;
+		vy = 0;
+		break;
+	case EState::DIE_BY_ATTACK:
+		vy = -MARIO_JUMP_SPEED_Y;
+		if (nx > 0)
+		{
+			vx = MARIO_WALKING_SPEED;
+		}
+		else
+		{
+			vx = -MARIO_WALKING_SPEED;
+		}
+		break;
 	case KOOPAS_STATE_DIE_MOVE:	
 		vx = -nx * KOOPAS_DIE_MOVE_SPEED;
 		isInteractable = false;
@@ -142,6 +167,7 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_WALKING:
 		vx = -KOOPAS_WALKING_SPEED;
 		isInteractable = true;
+		break;
 	}
 
 }
@@ -157,6 +183,10 @@ void CKoopas::GetBoundingBox(float& left, float& top, float& right, float& botto
 	case KOOPAS_STATE_IDLE:
 	case KOOPAS_STATE_DIE_MOVE:
 		top = y+ KOOPAS_BBOX_HEIGHT- KOOPAS_BBOX_HEIGHT_DIE;
+		break;
+	case STATE_DESTROYED:
+	case EState::DIE_BY_ATTACK:
+		left = top = right = bottom = 0;
 		break;
 	default:
 		break;

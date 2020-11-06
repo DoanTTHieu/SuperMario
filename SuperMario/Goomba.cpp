@@ -137,10 +137,8 @@ void CGoomba::SetState(int state)
 	{
 	case STATE_DESTROYED:
 	case EState::DIE_BY_CRUSH:
-		//y += GOOMBA_BBOX_HEIGHT - GOOMBA_BBOX_HEIGHT_DIE + 1;
 		vx = 0;
 		vy = 0;
-		//this.
 		break;
 	case EState::DIE_BY_ATTACK:
 		vy = -MARIO_JUMP_SPEED_Y; 
