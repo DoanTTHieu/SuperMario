@@ -45,28 +45,56 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	
 	if (flyTimer->IsTimeUp())
 		flyTimer->Stop();
+	if (!isAttack && tail)	tail->SetState(STATE_DESTROYED);
 
 	//khoi tao list dan cua mario
 	if (isAttack)
 	{
-		if (listBullet.size() < 2)
+		if (level == Level::Fire)
 		{
-			if (nx > 0)
-				listBullet.push_back(CreateBullet(x + 10, y + 6, nx));
-			else
-				listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+			if (listBullet.size() < 2)
+			{
+				if (nx > 0)
+					listBullet.push_back(CreateBullet(x + 10, y + 6, nx));
+				else
+					listBullet.push_back(CreateBullet(x - 6, y + 6, nx));
+			}
 		}
 		isAttack = false;
 	}
 
+	
 	if (GetLevel() == Level::Raccoon)
 	{
 		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_ATTACK)
 		{
 			state = MState::Attack;
+			tail->SetState(KILL_ENEMY);
+			//cap nhat nx cua mario 
+			//con thieu moot truong hop khi ani = 4
+			if (GetTickCount() - attackStart < MARIO_TIME_ATTACK / 2 && changedNx == 0)
+			{
+				nx = -nx;
+				changedNx++;
+			}
+			if (GetTickCount() - attackStart >= MARIO_TIME_ATTACK / 2 && changedNx == 1)
+			{
+				changedNx = 0;
+				nx = -nx;
+			}
 		}
 		else
+		{
+			if (!isOnGround)
+			{
+				if (!flyTimer->IsTimeUp())
+					state = MState::Fly;
+				else
+					state = MState::Jump;
+			}
+			isAttack = false;
 			attackStart = 0;
+		}
 	}
 
 	if (GetLevel() == Level::Fire)
@@ -76,9 +104,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			state = MState::Attack;
 		}
 		else
+		{
+			if (!isOnGround)
+			{
+				state = MState::Jump;
+			}
+			isAttack = false;
 			attackStart = 0;
+		}
 	}
 
+	//tail update
+	if (tail) tail->Update(dt, coObjects, {x, y}, nx);
 
 	//update list dan trong mario
 	for (int i = 0; i < listBullet.size(); i++)
@@ -97,6 +134,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	{
 		listEffect[i]->Update(dt, coObjects);
 	}
+
+
 
 	//xoa vien dan bien mat
 	for (int i = 0; i < listBullet.size(); i++)
@@ -120,9 +159,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	// turn off collision when die 
 	if (state != MState::Die)
 		CalcPotentialCollisions(coObjects, coEvents);
-
-
-
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -724,17 +760,12 @@ void CMario::Render()
 		listBullet[i]->Render();
 	for (int i = 0; i < listEffect.size(); i++)
 		listEffect[i]->Render();
-	RenderBoundingBox();
+
+	if (tail) tail->Render();
+	//RenderBoundingBox();
 }
 
-bool CMario::IsAABB(LPGAMEOBJECT object)
-{
-	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
-	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
-	object->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
-	return AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario);
 
-}
 
 void CMario::SetState(int state)
 {
@@ -911,19 +942,13 @@ void CMario::Fly() {
 void CMario::Stop() {
 
 	SetState(MState::Stop);
-	//isOnGround = true;
 	isSitting = false;
-	//ResetAnimation();
-	//isWaitingForAni = true;
 }
 
 void CMario::Attack() {
 	SetState(MState::Attack);
-	if (GetLevel() == Level::Fire)
+	/*if (GetLevel() == Level::Fire)*/
 		isAttack = true;
-	//ResetAnimation();
-	//isWaitingForAni = true;
-	
 	attackStart = GetTickCount();
 }
 
@@ -934,19 +959,16 @@ void CMario::Sit() {
 
 void CMario::Idle() {
 	SetState(MState::Idle);
-	//isOnGround = true;
 	isSitting = false;
 }
 
 void CMario::WalkingLeft() {
 	SetState(MState::Walk_left);
-	//isOnGround = true;
 	isSitting = false;
 }
 
 void CMario::WalkingRight() {
 	SetState(MState::Walk_right);
-	//isOnGround = true;
 	isSitting = false;
 }
 

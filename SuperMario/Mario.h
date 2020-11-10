@@ -3,6 +3,7 @@
 #include "Define.h"
 #include "Bullet.h"
 #include "Timer.h"
+#include "Tail.h"
 
 class CMario : public CGameObject
 {
@@ -16,17 +17,20 @@ class CMario : public CGameObject
 	vector<LPGAMEOBJECT> interactableObject;
 	vector< LPGAMEOBJECT> listBullet;
 	vector< LPGAMEOBJECT> listEffect;
+	
+	CTail* tail = new CTail();
 
 	CBullet* CreateBullet(float x, float y, int nx)
 	{
 		CBullet* bullet = new CBullet({ x, y }, nx);
 		return bullet;
 	}
+
+
 public:
 	CMario(float x = 0.0f, float y = 0.0f);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Render();
-	bool IsAABB(LPGAMEOBJECT object);
 	void CheckInteraction();
 
 	void SetState(int state);
@@ -58,6 +62,7 @@ public:
 	void UpdateLevel();
 	void WalkingRight();
 	void WalkingLeft();
+	int changedNx = 0;
 
 	void Reset();
 	void Raccoon();

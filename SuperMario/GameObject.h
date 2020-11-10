@@ -103,7 +103,7 @@ public:
 
 	virtual void ResetAnimation();
 	bool IsOutOfCamera();
-
+	bool IsAABB(LPGAMEOBJECT object);
 	~CGameObject();
 };
 

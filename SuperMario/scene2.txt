@@ -378,7 +378,7 @@
 #stop right
 44	88	150
 #fight idle right
-45	89	75	90	75	91	75	92	75	89	75
+45	89	80	90	80	91	80	92	80	89	80
 #sitting right
 46	93	100
 #falling right 
@@ -399,7 +399,7 @@
 #stop left
 54	108	150
 #fight idle left
-55	109	75	110	75	111	75	112	75	109	75
+55	109	80	110	80	111	80	112	80	109	80
 #sitting left
 56	113	100
 #falling left
@@ -444,7 +444,7 @@
 75	149	100	150	100	141	100
 #	141	100
 #fight while jumping left
-76	152	100	153	100	154	100
+76	154	100	153	100	152	100
 #sitting left
 77	151	100
 #falling left
@@ -496,9 +496,9 @@
 #rung khi nam ngua
 806	508	100
 # die move sap
-807	509	100	510	100	511	100	512	100
+807	509	30	510	30	511	30	512	30
 #die move ngua
-808	513	100	514	100	515	100	516	100
+808	513	30	514	30	515	30	516	30
 
 # ====== RED KOOPA ======
 # move right
@@ -514,9 +514,9 @@
 # vibrate supine: rung khi nam ngua
 816	528	100
 # spin and move prone: xoay vong va di chuyen sap
-817	529	100	530	100	531	100	532	100
+817	529	30	530	30	531	30	532	30
 # spin and move supine: xoay vong và di chuyen ngua
-818	533	100	534	100	535	100	536	100
+818	533	30	534	30	535	30	536	30
 
 #
 # id	ani1	ani2	ani3
@@ -545,19 +545,19 @@
 # type	x	y	ani_set_id	extra_settings per object type
 # type: 0 = Mario , 1 = Brick, 2 = Goomba, 3 = Koopas
 # MARIO
-0	550	360	1
+0	380	360	1
 #0	500	30	1
 
 #GOOMBA
 #2	336	400	3
 2	608	400	3
 2	830	370	3
-#2	930	370	3
+2	930	370	3
 # KOOPAS
 #type	x	y	ani_set_id	type_of_koopas
 #type: 1= koopa xanh, 2= koopa do, 3 = paratroopa xanh, 4 = paratroopa do
 3	580	340	8	2
-#3	1473	380	4	1
+3	1473	380	4	1
 #3	450	380	4	1
 
 # RED KOOPAS

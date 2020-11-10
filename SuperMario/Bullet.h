@@ -8,6 +8,7 @@
 //#define BULLET_SPEED_X		0.08f
 #define BULLET_GRAVITY		0.0008f
 #define BULLET_SPEED_X		0.2f
+#define BULLET_SPEED_Y		0.15f
 #define FIRE_BALL		1
 
 class CBullet :

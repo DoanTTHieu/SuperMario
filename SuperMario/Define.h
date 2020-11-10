@@ -63,7 +63,7 @@ enum Level
 
 //mario
 #define TIME_FLY					3000
-#define MARIO_TIME_ATTACK			375
+#define MARIO_TIME_ATTACK			400
 #define MARIO_TIME_SHOOT			300
 #define MARIO_TIME_STOP				100
 

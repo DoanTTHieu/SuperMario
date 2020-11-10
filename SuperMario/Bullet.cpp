@@ -47,7 +47,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 		if (ny < 0)
 		{
-			vy = -BULLET_SPEED_X;
+			vy = -BULLET_SPEED_Y;
 		}
 
 		//
@@ -84,10 +84,6 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != EState::DIE_BY_CRUSH && e->obj->GetState() != EState::DIE_BY_ATTACK)
 					{
 						CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
-						
-						//goomba->nx = this->nx;
-						//goomba->DieByAttack();
-						//e->obj->SetState(STATE_DESTROYED);
 						enemy->nx = this->nx;
 						enemy->DieByAttack();
 						vy = -0.2;
@@ -109,17 +105,23 @@ CBullet::~CBullet()
 
 void CBullet::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	left = x;
-	top = y;
-	right = x + BULLET_BBOX_WIDTH;
-	bottom = y + BULLET_BBOX_HEIGHT;
-
+	if (state == STATE_DESTROYED)
+	{
+		left = top = right = bottom = 0;
+	}
+	else
+	{
+		left = x;
+		top = y;
+		right = x + BULLET_BBOX_WIDTH;
+		bottom = y + BULLET_BBOX_HEIGHT;
+	}
 }
 
 void CBullet::Render()
 {
 	int alpha = 255;
 	animation_set->at(0)->Render(x, y, alpha);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 

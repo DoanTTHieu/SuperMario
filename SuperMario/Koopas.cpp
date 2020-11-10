@@ -65,13 +65,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CGround*>(e->obj))
+			if (e->obj->GetType()==Type::GROUND)
 			{
-				//DebugOut(L"GROUND\n");
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
 				if (e->nx != 0)
 				{
-					//DebugOut(L"NX: %d\n", e->nx);
 					if (ground->interact)
 					{
 						x += dx;
@@ -88,13 +86,18 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 			}
-			else if (dynamic_cast<CBrick*>(e->obj))
+			else if (e->obj->GetType()==Type::BRICK)
 			{
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 				if (e->nx != 0)
 				{
 					vx = -vx;
 				}
+			}
+			else if (dynamic_cast<CEnemy*>(e->obj)&&state == KOOPAS_STATE_DIE_MOVE)
+			{
+				CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
+				enemy->nx = this->nx;
+				enemy->DieByAttack();
 			}
 		}
 
@@ -131,7 +134,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -161,7 +164,6 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_IDLE:
 		vx = 0;
 		isInteractable = false;
-		//isInteractable = true;
 		vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:

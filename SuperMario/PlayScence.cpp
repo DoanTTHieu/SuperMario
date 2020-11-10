@@ -404,10 +404,11 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		}
 		else 
 		{
-			if(mario->GetLevel() == Level::Raccoon)
+			//if(mario->GetLevel() == Level::Raccoon)
 				mario->vy = 0;
-			else
-				mario->vy = mario->vy + MARIO_GRAVITY * mario->dt;
+			//else
+				//mario->vy = mario->vy + MARIO_GRAVITY * mario->dt;
+				
 				//mario->vy = +(MARIO_GRAVITY + 0.002f * 4) * mario->dt;
 		}
 		
@@ -493,13 +494,14 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			}
 
 		}
-
 		else if (game->IsKeyDown(DIK_DOWN))
 		{
 			if (mario->GetLevel() != Level::Small)
 			{
 				mario->Sit();
 			}
+			else
+				mario->Idle();
 		}
 		else mario->Idle();
 	}

@@ -141,13 +141,22 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 100);
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 200);
 }
 
 bool CGameObject::IsOutOfCamera()
 {
 	CGame* game = CGame::GetInstance();
 	return !(x >= game->GetCamPosX() && x < game->GetCamPosX() + (SCREEN_WIDTH) && y >= game->GetCamPosY() && y < game->GetCamPosY() + (SCREEN_HEIGHT));
+
+}
+
+bool CGameObject::IsAABB(LPGAMEOBJECT object)
+{
+	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
+	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
+	object->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
+	return AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario);
 
 }
 
