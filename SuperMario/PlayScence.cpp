@@ -428,6 +428,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 			mario->isSitting = false;
 		break;
 	case DIK_A:
+		mario->canHoldShell = false;
 		break;
 	case DIK_SPACE:
 		break;
@@ -443,6 +444,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		return;
 	if (mario->isWaitingForAni)
 		return;
+	if (game->IsKeyDown(DIK_A))
+		mario->canHoldShell = true;
 
 	if (mario->isOnGround)
 	{

@@ -2,6 +2,13 @@
 #include "Ground.h"
 #include "Brick.h"
 
+CKoopas::CKoopas() 
+{
+	type = Type::KOOPAS;
+	Ktype = 1;
+	SetState(KOOPAS_STATE_IDLE);
+}
+
 CKoopas::CKoopas(int x)
 {
 	type = Type::KOOPAS;
@@ -10,101 +17,167 @@ CKoopas::CKoopas(int x)
 }
 
 
-
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-
-	//can define
-	vy += MARIO_GRAVITY * dt;
 
 	if (GetState() == KOOPAS_STATE_IDLE && idleTimer->IsTimeUp())
 	{
 		idleTimer->Stop();
 		SetState(KOOPAS_STATE_WALKING);
+		if (isBeingHeld)
+			isBeingHeld = false;
 	}
 
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-
-	coEvents.clear();
-	CalcPotentialCollisions(coObjects, coEvents);
-	//
-	// TO-DO: make sure Koopas can interact with the world and to each of them too!
-	// 
-
-	if (coEvents.size() == 0)
+	//neu ko bi cam thi update binh thuong
+	if (!isBeingHeld)
 	{
-		x += dx;
-		y += dy;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny;
-		float rdx = 0;
-		float rdy = 0;
+		vy += MARIO_GRAVITY * dt;
 
-		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+		vector<LPCOLLISIONEVENT> coEvents;
+		vector<LPCOLLISIONEVENT> coEventsResult;
 
-		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		//if (rdx != 0 && rdx!=dx)
-			//x += nx*abs(rdx); 
-
-		// block every object first!
-		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
-
-		//if (nx != 0) vx = 0;
-		if (ny != 0) vy = 0;
-
+		coEvents.clear();
+		CalcPotentialCollisions(coObjects, coEvents);
 		//
-		// Collision logic with other objects
-		//
-		for (UINT i = 0; i < coEventsResult.size(); i++)
+		// TO-DO: make sure Koopas can interact with the world and to each of them too!
+		// 
+
+		if (coEvents.size() == 0)
 		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
+			x += dx;
+			y += dy;
+		}
+		else
+		{
+			float min_tx, min_ty, nx = 0, ny;
+			float rdx = 0;
+			float rdy = 0;
 
-			if (e->obj->GetType()==Type::GROUND)
+			// TODO: This is a very ugly designed function!!!!
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+			// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+			//if (rdx != 0 && rdx!=dx)
+				//x += nx*abs(rdx); 
+
+			// block every object first!
+			x += min_tx * dx + nx * 0.4f;
+			y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
+
+			//if (nx != 0) vx = 0;
+			if (ny != 0) vy = 0;
+
+			//
+			// Collision logic with other objects
+			//
+			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
-				CGround* ground = dynamic_cast<CGround*>(e->obj);
-				if (e->nx != 0)
+				LPCOLLISIONEVENT e = coEventsResult[i];
+
+				if (e->obj->GetType() == Type::GROUND)
 				{
-					if (ground->interact)
+					CGround* ground = dynamic_cast<CGround*>(e->obj);
+					if (e->nx != 0)
 					{
-						x += dx;
-					}
-					else
-						vx = -vx;
-				}
-				if (Ktype == KoopaType::Red_troopa && GetState()!=KOOPAS_STATE_DIE_MOVE)
-				{
-					if (e->ny == -1)
-					{
-						if(x<ground->x||x>(ground->x+ ground->GetGroundWitdth()- KOOPAS_BBOX_WIDTH))
+						if (ground->interact)
+						{
+							x += dx;
+						}
+						else
 							vx = -vx;
 					}
+					if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+					{
+						if (e->ny == -1)
+						{
+							if (x<ground->x || x>(ground->x + ground->GetGroundWitdth() - KOOPAS_BBOX_WIDTH))
+								vx = -vx;
+						}
+					}
 				}
-			}
-			else if (e->obj->GetType()==Type::BRICK)
-			{
-				if (e->nx != 0)
+				else if (e->obj->GetType() == Type::BRICK)
 				{
-					vx = -vx;
+					if (e->nx != 0)
+					{
+						vx = -vx;
+					}
+				}
+				else if (dynamic_cast<CEnemy*>(e->obj) && state == KOOPAS_STATE_DIE_MOVE)
+				{
+					CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
+					enemy->nx = this->nx;
+					enemy->DieByAttack();
 				}
 			}
-			else if (dynamic_cast<CEnemy*>(e->obj)&&state == KOOPAS_STATE_DIE_MOVE)
-			{
-				CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
-				enemy->nx = this->nx;
-				enemy->DieByAttack();
-			}
+
 		}
 
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 	}
+	else // ko co tac dung cua trong luc
+	{
+		if (GetState() == EState::DIE_BY_ATTACK)
+			vy += MARIO_GRAVITY * dt;
+		else
+			vy = 0;
+		vector<LPCOLLISIONEVENT> coEvents;
+		vector<LPCOLLISIONEVENT> coEventsResult;
 
+		coEvents.clear();
+		CalcPotentialCollisions(coObjects, coEvents);
+		//
+		// TO-DO: make sure Koopas can interact with the world and to each of them too!
+		// 
 
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+		if (coEvents.size() == 0)
+		{
+			x += dx;
+			y += dy;
+		}
+		else
+		{
+			float min_tx, min_ty, nx = 0, ny;
+			float rdx = 0;
+			float rdy = 0;
+
+			// TODO: This is a very ugly designed function!!!!
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+
+			// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
+			//if (rdx != 0 && rdx!=dx)
+				//x += nx*abs(rdx); 
+
+			// block every object first!
+			x += min_tx * dx + nx * 0.4f;
+			y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
+
+			//if (nx != 0) vx = 0;
+			if (ny != 0) vy = 0;
+
+			//
+			// Collision logic with other objects
+			//
+			for (UINT i = 0; i < coEventsResult.size(); i++)
+			{
+				LPCOLLISIONEVENT e = coEventsResult[i];
+				
+				if (dynamic_cast<CEnemy*>(e->obj) && state == KOOPAS_STATE_IDLE)
+				{
+					CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
+					enemy->nx = -nx;
+					enemy->DieByAttack();
+					this->nx = -nx;
+					this->DieByAttack();
+				}
+			}
+
+		}
+
+		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	}
+	
+		
 }
 
 void CKoopas::Render()
@@ -134,7 +207,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -169,6 +242,8 @@ void CKoopas::SetState(int state)
 	case KOOPAS_STATE_WALKING:
 		vx = -KOOPAS_WALKING_SPEED;
 		isInteractable = true;
+		break;
+	default:
 		break;
 	}
 

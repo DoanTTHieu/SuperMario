@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Timer.h"
 #include "Tail.h"
+#include "Koopas.h"
 
 class CMario : public CGameObject
 {
@@ -19,6 +20,7 @@ class CMario : public CGameObject
 	vector< LPGAMEOBJECT> listEffect;
 	
 	CTail* tail = new CTail();
+	CKoopas* koopas = new CKoopas();
 
 	CBullet* CreateBullet(float x, float y, int nx)
 	{
@@ -45,6 +47,8 @@ public:
 	bool isAttack;
 	bool isWaggingTail;
 	bool isWaitingForAni;
+	bool canHoldShell;
+	bool isHolding;
 
 	CTimer* flyTimer = new CTimer(TIME_FLY);
 	DWORD attackStart;

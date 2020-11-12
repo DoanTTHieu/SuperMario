@@ -26,7 +26,8 @@ CMario::CMario(float x, float y) : CGameObject()
 	isblockJump = false;
 	isAttack = false;
 	isWaggingTail = false;
-
+	canHoldShell = false;
+	isHolding = false;
 	attackStart = 0;
 
 	start_x = x;
@@ -47,6 +48,35 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		flyTimer->Stop();
 	if (!isAttack && tail)	tail->SetState(STATE_DESTROYED);
 
+	//can sua
+	//dieu kien tha
+	if (isHolding)
+	{
+		if (!koopas->isBeingHeld||koopas->GetState()==EState::DIE_BY_ATTACK)
+			isHolding = false;
+		koopas->nx = -nx;
+		if (level != Level::Small)
+		{
+			if (nx < 0)
+				koopas->SetPosition(x - 12, y);
+			else
+				koopas->SetPosition(x + 12, y);
+		}
+		else
+		{
+			if (nx < 0)
+				koopas->SetPosition(x - 12, y - 12);
+			else
+				koopas->SetPosition(x + 12, y -12);
+		}
+	}
+	if (!canHoldShell && isHolding)
+	{
+		koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+		isHolding = false;
+		koopas->isBeingHeld = false;
+	}
+
 	//khoi tao list dan cua mario
 	if (isAttack)
 	{
@@ -63,7 +93,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		isAttack = false;
 	}
 
-	
 	if (GetLevel() == Level::Raccoon)
 	{
 		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_ATTACK)
@@ -130,12 +159,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	for (int i = 0; i < listEffect.size(); i++)
-	{
+	for (int i = 0; i < listEffect.size(); i++)	{
 		listEffect[i]->Update(dt, coObjects);
 	}
-
-
 
 	//xoa vien dan bien mat
 	for (int i = 0; i < listBullet.size(); i++)
@@ -323,10 +349,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							if (e->obj->GetState() == KOOPAS_STATE_IDLE)
 							{
-								e->obj->nx = nx;
-								e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
-								e->obj->isInteractable = true;
-								
+								CKoopas* newkoopas = dynamic_cast<CKoopas*>(e->obj);
+								if (canHoldShell)
+								{
+									this->koopas = newkoopas;
+									newkoopas->isBeingHeld = true;
+									isHolding = true;
+								}
+								else
+								{
+									e->obj->nx = nx;
+									e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
+									e->obj->isInteractable = true;
+								}
 							}
 							else if (e->obj->GetState() != KOOPAS_STATE_IDLE || e->obj->GetState() != STATE_DESTROYED)
 							{

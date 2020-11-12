@@ -22,9 +22,10 @@ enum KoopaType
 #define KOOPAS_BBOX_HEIGHT 26
 #define KOOPAS_BBOX_HEIGHT_DIE 15
 
-#define KOOPAS_STATE_WALKING 100
-#define KOOPAS_STATE_IDLE 200
-#define KOOPAS_STATE_DIE_MOVE 300
+#define KOOPAS_STATE_WALKING	100
+#define KOOPAS_STATE_IDLE		200
+#define KOOPAS_STATE_DIE_MOVE	300 
+
 
 
 #define KOOPAS_ANI_WALKING_LEFT		0
@@ -43,8 +44,9 @@ class CKoopas : public CEnemy
 	int Ktype;
 
 public:
+	bool isBeingHeld = false;
 	CTimer* idleTimer = new CTimer(KOOPAS_TIME_IDLE);
-
+	CKoopas();
 	CKoopas(int x);
 	virtual void SetState(int state);
 
