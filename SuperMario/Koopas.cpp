@@ -70,6 +70,15 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			if (ny != 0) 
 			{
 				vy = 0;
+				if (ny < 0)
+				{
+					if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
+					{
+						vy = -KOOPAS_SPEED_Y;
+					}
+				}
+				
+				
 				if (checkDone && ny == -1)
 				{
 					//if (state==KOOPAS_STATE_IDLE && checkSupine)
@@ -214,10 +223,24 @@ void CKoopas::Render()
 			ani = KOOPAS_ANI_DIE;
 		break;
 	case KOOPAS_STATE_WALKING:
-		if (vx > 0) 
-			ani = KOOPAS_ANI_WALKING_RIGHT;
+		if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
+		{
+			if (vx > 0)
+				ani = PARA_KOOPAS_ANI_RIGHT;
+			else
+			{
+				ani = PARA_KOOPAS_ANI_LEFT;
+			}
+		}
 		else
-			ani = KOOPAS_ANI_WALKING_LEFT;
+		{
+			if (vx > 0)
+				ani = KOOPAS_ANI_WALKING_RIGHT;
+			else
+			{
+				ani = KOOPAS_ANI_WALKING_LEFT;
+			}
+		}
 		break;
 	default:
 		ani = KOOPAS_ANI_WALKING_RIGHT;
@@ -227,7 +250,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)
@@ -261,6 +284,10 @@ void CKoopas::SetState(int state)
 		break;
 	case KOOPAS_STATE_WALKING:
 		vx = -KOOPAS_WALKING_SPEED;
+		if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
+		{
+			vy = -KOOPAS_SPEED_Y;
+		}
 		isInteractable = true;
 		break;
 	default:

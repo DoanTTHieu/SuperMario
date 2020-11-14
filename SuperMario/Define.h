@@ -36,6 +36,13 @@ enum Level
 	Fire = 04,
 };
 
+enum KoopaType
+{
+	Green_troopa = 01,
+	Red_troopa = 02,
+	Green_paratroopa = 03,
+	Red_paratroopa = 04,
+};
 
 #define STATE_DESTROYED				99
 //brick

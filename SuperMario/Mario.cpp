@@ -267,8 +267,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 						if (koopas->GetState() != KOOPAS_STATE_IDLE)
 						{
-							koopas->Idle();
-							vy = -0.2;
+							if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
+								koopas->SetKoopaType(KoopaType::Green_troopa);
+							if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
+								koopas->SetKoopaType(KoopaType::Red_troopa);
+							else
+							{
+								koopas->Idle();
+								vy = -0.2;
+							}
 						}
 						else
 						{
@@ -347,9 +354,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						//koopas
 						if (e->obj->GetType() == Type::KOOPAS)
 						{
-							if (e->obj->GetState() == KOOPAS_STATE_IDLE)
+							CKoopas* newkoopas = dynamic_cast<CKoopas*>(e->obj);
+							if (newkoopas->GetState() == KOOPAS_STATE_IDLE)
 							{
-								CKoopas* newkoopas = dynamic_cast<CKoopas*>(e->obj);
 								if (canHoldShell)
 								{
 									this->koopas = newkoopas;
@@ -358,13 +365,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								}
 								else
 								{
-									e->obj->nx = nx;
-									e->obj->SetState(KOOPAS_STATE_DIE_MOVE);
-									e->obj->isInteractable = true;
+									newkoopas->nx = nx;
+									newkoopas->SetState(KOOPAS_STATE_DIE_MOVE);
+									newkoopas->isInteractable = true;
 								}
 							}
-							else if (e->obj->GetState() != KOOPAS_STATE_IDLE || e->obj->GetState() != STATE_DESTROYED)
+							else if (newkoopas->GetState() != KOOPAS_STATE_IDLE || newkoopas->GetState() != STATE_DESTROYED)
 							{
+								if (newkoopas->GetKoopaType() == KoopaType::Green_paratroopa || newkoopas->GetKoopaType() == KoopaType::Red_paratroopa)
+									newkoopas->vx = -newkoopas->vx;
 								UpdateLevel();
 							}
 						}
