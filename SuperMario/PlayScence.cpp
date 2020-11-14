@@ -378,8 +378,11 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_A:
-		if (mario->GetLevel() == Level::Fire|| mario->GetLevel() == Level::Raccoon)
-			mario->Attack();
+		if (!mario->isAttack)
+		{
+			if (mario->GetLevel() == Level::Fire || mario->GetLevel() == Level::Raccoon)
+				mario->Attack();
+		}
 		break;
 
 	}

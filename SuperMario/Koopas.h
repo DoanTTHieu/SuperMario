@@ -44,7 +44,10 @@ class CKoopas : public CEnemy
 	int Ktype;
 
 public:
+	bool checkSupine = false;
 	bool isBeingHeld = false;
+	bool checkDone = false;
+
 	CTimer* idleTimer = new CTimer(KOOPAS_TIME_IDLE);
 	CKoopas();
 	CKoopas(int x);
@@ -54,4 +57,5 @@ public:
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 	void Idle();
+	void IdleSupine();
 };

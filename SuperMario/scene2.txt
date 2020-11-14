@@ -4,7 +4,7 @@
 20	textures\misc.png	176	224	248
 10	textures\enemies.png	3	26	110
 30	textures\enemies-2.png	0	128	128
-31	textures\enemies-2.png	0	128	128
+31	textures\enemies-3.png	0	128	128
 33	textures\effect.png	176	224	248
 999	textures\raccoon_3.png	255	255	255
 40	textures\raccoon_4.png	255	255	255
@@ -271,7 +271,7 @@
 # lay prone nam sap
 525	198	85	214	120	52
 # lay supine nam ngua
-526	114	269	130	285	54
+526	114	259	130	285	54
 # vibrate prone
 527	71	75	89	91	52
 # vibrate supine

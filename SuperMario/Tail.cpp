@@ -7,27 +7,11 @@
 #include "Game.h"
 #include "Define.h"
 
-//CTail* CTail::__instance = NULL;
-//
-//CTail* CTail::GetInstance()
-//{
-//	if (__instance == NULL) __instance = new CTail();
-//	return __instance;
-//}
-
 CTail::CTail()
 {
-	/*x = position.x;
-	y = position.y;
-	this->nx = nx;*/
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 }
-//CTail::CTail(D3DXVECTOR2 position, int nx)
-//{
-//	x = position.x;
-//	y = position.y;
-//	this->nx = nx;
-//}
+
 void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx)
 {
 
@@ -49,19 +33,47 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 			{
 				if (coObjects->at(i)->GetState() != STATE_DESTROYED && coObjects->at(i)->GetState() != EState::DIE_BY_CRUSH && coObjects->at(i)->GetState() != EState::DIE_BY_ATTACK)
 				{
-					CEnemy* enemy = dynamic_cast<CEnemy*>(coObjects->at(i));
-					//can cap nhat nx cua enemy khi quat duoi
-					//enemy->nx = this->nx;
-					float ax, ay;
-					float bx, by;
-					GetPosition(ax, ay);//mario
-					enemy->GetPosition(bx, by);
-					if ((bx - ax) > 0)
-						enemy->nx = 1;
+					if (coObjects->at(i)->GetType() == Type::KOOPAS)
+					{
+						CKoopas* koopas = dynamic_cast<CKoopas*>(coObjects->at(i));
+						//koopas->checkSupine = true;
+						float ax, ay;
+						float bx, by;
+						GetPosition(ax, ay);//mario
+						koopas->GetPosition(bx, by);
+						if ((bx - ax) > 0)
+							koopas->nx = 1;
+						else
+							koopas->nx = -1;
+						koopas->IdleSupine();
+						koopas->vy = -0.2;
+						DebugOut(L"checkDone: %d\n", koopas->checkDone);
+						if (!koopas->checkDone)
+						{
+							if (koopas->nx > 0)
+								koopas->vx = 0.05;
+							else
+								koopas->vx = -0.05;
+							koopas->checkDone = true;
+						}
+						
+					}
 					else
-						enemy->nx = -1;
-					enemy->DieByAttack();
-					vy = -0.2;
+					{
+						CEnemy* enemy = dynamic_cast<CEnemy*>(coObjects->at(i));
+						//can cap nhat nx cua enemy khi quat duoi
+						//enemy->nx = this->nx;
+						float ax, ay;
+						float bx, by;
+						GetPosition(ax, ay);//mario
+						enemy->GetPosition(bx, by);
+						if ((bx - ax) > 0)
+							enemy->nx = 1;
+						else
+							enemy->nx = -1;
+						enemy->DieByAttack();
+						vy = -0.2;
+					}
 				}
 				state = STATE_DESTROYED;
 			}

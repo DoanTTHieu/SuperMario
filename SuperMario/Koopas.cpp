@@ -20,10 +20,11 @@ CKoopas::CKoopas(int x)
 void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-
+	
 	if (GetState() == KOOPAS_STATE_IDLE && idleTimer->IsTimeUp())
 	{
 		idleTimer->Stop();
+		checkSupine = false;
 		SetState(KOOPAS_STATE_WALKING);
 		if (isBeingHeld)
 			isBeingHeld = false;
@@ -66,7 +67,20 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
 
 			//if (nx != 0) vx = 0;
-			if (ny != 0) vy = 0;
+			if (ny != 0) 
+			{
+				vy = 0;
+				if (checkDone && ny == -1)
+				{
+					//if (state==KOOPAS_STATE_IDLE && checkSupine)
+					{
+						checkDone = false;
+						vx = 0;
+					}
+					//DebugOut(L"VX: %f \n", vx);
+				}
+				//DebugOut(L"check : %d \n", checkDone);
+			}
 
 			//
 			// Collision logic with other objects
@@ -188,10 +202,16 @@ void CKoopas::Render()
 		ani = KOOPAS_ANI_DIE_SUPINE;
 		break;
 	case KOOPAS_STATE_DIE_MOVE:
-		ani = KOOPAS_ANI_DIE_MOVE;
+		if (checkSupine)
+			ani = KOOPAS_ANI_DIE_MOVE_SUPINE;
+		else
+			ani = KOOPAS_ANI_DIE_MOVE;
 		break;
 	case KOOPAS_STATE_IDLE:
-		ani = KOOPAS_ANI_DIE;
+		if (checkSupine)
+			ani = KOOPAS_ANI_DIE_SUPINE;
+		else
+			ani = KOOPAS_ANI_DIE;
 		break;
 	case KOOPAS_STATE_WALKING:
 		if (vx > 0) 
@@ -275,5 +295,11 @@ void CKoopas::Idle()
 {
 	SetState(KOOPAS_STATE_IDLE);
 	idleTimer->Start();
+}
 
+void CKoopas::IdleSupine()
+{
+	SetState(KOOPAS_STATE_IDLE);
+	idleTimer->Start();
+	checkSupine = true;
 }
