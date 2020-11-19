@@ -267,10 +267,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 						if (koopas->GetState() != KOOPAS_STATE_IDLE)
 						{
-							if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
-								koopas->SetKoopaType(KoopaType::Green_troopa);
-							if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
-								koopas->SetKoopaType(KoopaType::Red_troopa);
+							if (koopas->GetKoopaType() > 2)
+							{
+								if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
+									koopas->SetKoopaType(KoopaType::Green_troopa);
+								if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
+									koopas->SetKoopaType(KoopaType::Red_troopa);
+
+							}
 							else
 							{
 								koopas->Idle();
@@ -294,6 +298,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 				//block, pipe,..
+				if (e->ny > 0)
+				{
+					if (e->obj->GetType() == Type::BRICK)
+					{
+						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+						if (brick->GetBrickType() == BrickType::question)
+							brick->SetBrickType(BrickType::question_broken);
+					}
+				}
+				
 			}
 			//nx
 			//else
@@ -806,7 +820,7 @@ void CMario::Render()
 		listEffect[i]->Render();
 
 	if (tail) tail->Render();
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 

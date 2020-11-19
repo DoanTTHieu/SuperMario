@@ -44,6 +44,14 @@ enum KoopaType
 	Red_paratroopa = 04,
 };
 
+enum BrickType
+{
+	normal = 01,
+	question = 02,
+	question_broken = 03,
+	bronze = 04,
+};
+
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16

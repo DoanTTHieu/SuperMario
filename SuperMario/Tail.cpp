@@ -27,55 +27,68 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 
 	for (int i = 0; i < coObjects->size(); i++)
 	{
-		if (coObjects->at(i)->GetType() != Type::BRICK && coObjects->at(i)->GetType() != Type::GROUND)
+		if (IsAABB(coObjects->at(i)))
 		{
-			if (IsAABB(coObjects->at(i)))
+			if (coObjects->at(i)->GetType() == Type::BRICK)
 			{
-				if (coObjects->at(i)->GetState() != STATE_DESTROYED && coObjects->at(i)->GetState() != EState::DIE_BY_CRUSH && coObjects->at(i)->GetState() != EState::DIE_BY_ATTACK)
+				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
+				if (brick->GetBrickType() == BrickType::bronze)
+					brick->SetState(STATE_DESTROYED);
+				else if (brick->GetBrickType() == BrickType::question)
+					brick->SetBrickType(BrickType::question_broken);
+			}
+			else
+			{
+				if (coObjects->at(i)->GetType() != Type::BRICK && coObjects->at(i)->GetType() != Type::GROUND)
 				{
-					if (coObjects->at(i)->GetType() == Type::KOOPAS)
+					if (coObjects->at(i)->GetState() != STATE_DESTROYED && coObjects->at(i)->GetState() != EState::DIE_BY_CRUSH && coObjects->at(i)->GetState() != EState::DIE_BY_ATTACK)
 					{
-						CKoopas* koopas = dynamic_cast<CKoopas*>(coObjects->at(i));
-						//koopas->checkSupine = true;
-						float ax, ay;
-						float bx, by;
-						GetPosition(ax, ay);//mario
-						koopas->GetPosition(bx, by);
-						if ((bx - ax) > 0)
-							koopas->nx = 1;
-						else
-							koopas->nx = -1;
-						koopas->IdleSupine();
-						koopas->vy = -0.2;
-						DebugOut(L"checkDone: %d\n", koopas->checkDone);
-						if (!koopas->checkDone)
+						if (coObjects->at(i)->GetType() == Type::KOOPAS)
 						{
-							if (koopas->nx > 0)
-								koopas->vx = 0.05;
+							CKoopas* koopas = dynamic_cast<CKoopas*>(coObjects->at(i));
+							//koopas->checkSupine = true;
+							float ax, ay;
+							float bx, by;
+							GetPosition(ax, ay);//mario
+							koopas->GetPosition(bx, by);
+							if ((bx - ax) > 0)
+								koopas->nx = 1;
 							else
-								koopas->vx = -0.05;
-							koopas->checkDone = true;
+								koopas->nx = -1;
+							koopas->IdleSupine();
+							koopas->vy = -0.2;
+							DebugOut(L"checkDone: %d\n", koopas->checkDone);
+							if (!koopas->checkDone)
+							{
+								if (koopas->nx > 0)
+									koopas->vx = 0.05;
+								else
+									koopas->vx = -0.05;
+								koopas->checkDone = true;
+							}
+
 						}
-						
-					}
-					else
-					{
-						CEnemy* enemy = dynamic_cast<CEnemy*>(coObjects->at(i));
-						//can cap nhat nx cua enemy khi quat duoi
-						//enemy->nx = this->nx;
-						float ax, ay;
-						float bx, by;
-						GetPosition(ax, ay);//mario
-						enemy->GetPosition(bx, by);
-						if ((bx - ax) > 0)
-							enemy->nx = 1;
 						else
-							enemy->nx = -1;
-						enemy->DieByAttack();
-						vy = -0.2;
+						{
+							DebugOut(L"Type: %d\n", coObjects->at(i)->GetType());
+							CEnemy* enemy = dynamic_cast<CEnemy*>(coObjects->at(i));
+							//can cap nhat nx cua enemy khi quat duoi
+							//enemy->nx = this->nx;
+							float ax, ay;
+							float bx, by;
+							GetPosition(ax, ay);//mario
+							enemy->GetPosition(bx, by);
+							if ((bx - ax) > 0)
+								enemy->nx = 1;
+							else
+								enemy->nx = -1;
+							enemy->DieByAttack();
+							vy = -0.2;
+						}
 					}
+					//state = STATE_DESTROYED;
 				}
-				state = STATE_DESTROYED;
+
 			}
 		}
 	}
