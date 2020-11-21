@@ -48,8 +48,9 @@ void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 	}
 	if (y > start_y)
 	{
-		state = STATE_NORMAL;
 		y = start_y;
+		//vy = 0;
+		SetState(STATE_NORMAL);
 	}
 
 	if (diddropItem)

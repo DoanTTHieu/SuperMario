@@ -441,10 +441,10 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 		mario->canHoldShell = false;
 		break;
 	case DIK_RIGHT:
-		//mario->nx = 1;
+		mario->nx = 1;
 		break;
 	case DIK_LEFT:
-		//mario->nx = -1;
+		mario->nx = -1;
 		break;
 	case DIK_SPACE:
 		break;

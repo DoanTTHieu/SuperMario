@@ -251,13 +251,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//quai di chuyen
 				if (e->ny < 0)
 				{
-					if (e->obj->GetType() == Type::BRICK)
-					{
-						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-						if (brick->GetBrickType() == BrickType::question_broken)
-							DebugOut(L"1111111111\n");
-
-					}
 					//goomba
 					if (e->obj->GetType() == Type::GOOMBA)
 					{
@@ -280,7 +273,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 									koopas->SetKoopaType(KoopaType::Green_troopa);
 								if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
 									koopas->SetKoopaType(KoopaType::Red_troopa);
-
 							}
 							else
 							{
@@ -315,8 +307,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							brick->SetBrickType(BrickType::question_broken);
 							brick->SetState(STATE_BEING_TOSSED);
 						}
-						if (brick->GetBrickType() == BrickType::question_broken)
-							DebugOut(L"BROKEN\n");
 					}
 				}
 				
@@ -885,13 +875,6 @@ void CMario::SetState(int state)
 	case MState::Attack:
 		break;
 	case MState::Stop:
-		/*if (vx > 0)
-			nx = 1;
-		else if (vx < 0)
-			nx = -1;
-		else
-			nx = -nx;*/
-		//break;
 	case MState::Idle:
 		DecreaseSpeedToStop();
 		break;
@@ -1067,7 +1050,6 @@ void CMario::DecreaseSpeedToStop()
 	if (abs(vx) > 0.08)
 	{
 		if (vx > 0) {
-
 			vx -= MARIO_ACCELERATION * dt;
 			if (vx < 0)
 				vx = 0;
