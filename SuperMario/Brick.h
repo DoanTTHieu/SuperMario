@@ -7,15 +7,19 @@
 
 #define BRICK_ANI_NORMAL		0
 #define BRICK_ANI_BROKEN		1
+#define STATE_BEING_TOSSED		0
+#define STATE_NORMAL			1
 
 class CBrick : public CGameObject
 {
 
 public:
 	bool isBroken;
+	bool diddropItem = false;
 	int Btype;
+	float start_y;
 public:
-	CBrick(D3DXVECTOR2 position, int type);
+	CBrick(float x, float y, int type);
 	~CBrick();
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
@@ -24,4 +28,5 @@ public:
 	int GetBrickType() { return Btype; }
 	void SetBrickType(int type) { Btype = type; }
 	
+	void SetState(int state);
 };

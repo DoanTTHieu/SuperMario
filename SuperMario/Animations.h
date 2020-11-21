@@ -42,7 +42,7 @@ public:
 
 	void Render(float x, float y, int alpha = 255);
 	void SetAniStartTime(DWORD t) { aniStartTime = t; }
-	bool IsFinished() { return GetTickCount() - aniStartTime >= totalFrameTime; }
+	bool IsFinished() { return GetTickCount64() - aniStartTime >= totalFrameTime; }
 };
 
 typedef CAnimation* LPANIMATION;

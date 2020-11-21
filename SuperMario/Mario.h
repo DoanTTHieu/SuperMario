@@ -39,7 +39,7 @@ public:
 	
 	void SetLevel(int l) { level = l; }
 	int GetLevel() { return level; }
-	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount(); }
+	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	bool isOnGround;
 	bool isSitting;
 		

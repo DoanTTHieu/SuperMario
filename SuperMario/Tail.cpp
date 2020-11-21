@@ -25,7 +25,7 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 	coEvents.clear();
 	CalcPotentialCollisions(coObjects, coEvents);
 
-	for (int i = 0; i < coObjects->size(); i++)
+	for (size_t i = 0; i < coObjects->size(); i++)
 	{
 		if (IsAABB(coObjects->at(i)))
 		{
@@ -35,7 +35,11 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 				if (brick->GetBrickType() == BrickType::bronze)
 					brick->SetState(STATE_DESTROYED);
 				else if (brick->GetBrickType() == BrickType::question)
+				{
 					brick->SetBrickType(BrickType::question_broken);
+					brick->SetState(STATE_BEING_TOSSED);
+				}
+				
 			}
 			else
 			{
@@ -56,14 +60,14 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 							else
 								koopas->nx = -1;
 							koopas->IdleSupine();
-							koopas->vy = -0.2;
+							koopas->vy = -0.2f;
 							DebugOut(L"checkDone: %d\n", koopas->checkDone);
 							if (!koopas->checkDone)
 							{
 								if (koopas->nx > 0)
-									koopas->vx = 0.05;
+									koopas->vx = 0.05f;
 								else
-									koopas->vx = -0.05;
+									koopas->vx = -0.05f;
 								koopas->checkDone = true;
 							}
 
@@ -83,7 +87,7 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 							else
 								enemy->nx = -1;
 							enemy->DieByAttack();
-							vy = -0.2;
+							vy = -0.2f;
 						}
 					}
 					//state = STATE_DESTROYED;

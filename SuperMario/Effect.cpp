@@ -2,7 +2,7 @@
 
 CEffect::CEffect()
 {
-	startEffect = GetTickCount();
+	startEffect = GetTickCount64();
 }
 
 CEffect::~CEffect()
@@ -16,7 +16,7 @@ void CEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 void CEffect::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 {
-	if (GetTickCount() - startEffect > EFFECT_TIME)
+	if (GetTickCount64() - startEffect > EFFECT_TIME)
 		state = STATE_DESTROYED;
 }
 

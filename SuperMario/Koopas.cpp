@@ -110,20 +110,28 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						else
 							vx = -vx;
 					}
-					if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+					else if (e->ny == -1)
 					{
-						if (e->ny == -1)
+						if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
 						{
 							if (x<ground->x || x>(ground->x + ground->GetGroundWitdth() - KOOPAS_BBOX_WIDTH))
 								vx = -vx;
 						}
 					}
+					
 				}
 				else if (e->obj->GetType() == Type::BRICK)
 				{
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 					if (e->nx != 0)
 					{
 						vx = -vx;
+
+						if (brick->GetBrickType() == BrickType::question)
+						{
+							brick->SetBrickType(BrickType::question_broken);
+							brick->SetState(STATE_BEING_TOSSED);
+						}
 					}
 				}
 				else if (dynamic_cast<CEnemy*>(e->obj) && state == KOOPAS_STATE_DIE_MOVE)

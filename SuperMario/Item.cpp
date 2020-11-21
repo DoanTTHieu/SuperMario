@@ -3,7 +3,7 @@
 
 CItem::CItem()
 {
-
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(6));
 }
 
 CItem::~CItem()

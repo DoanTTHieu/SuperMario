@@ -74,7 +74,7 @@ public:
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 
 	int GetState() { return this->state; }
-	Type GetType() { return type; }
+	Type GetType() { return this->type; }
 
 	void RenderBoundingBox();
 

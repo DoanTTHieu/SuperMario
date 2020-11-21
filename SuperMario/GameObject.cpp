@@ -123,7 +123,7 @@ void CGameObject::FilterCollision(
 
 void CGameObject::ResetAnimation()
 {
-	animation_set->at(state)->SetAniStartTime(GetTickCount());
+	animation_set->at(state)->SetAniStartTime(GetTickCount64());
 }
 
 void CGameObject::RenderBoundingBox()

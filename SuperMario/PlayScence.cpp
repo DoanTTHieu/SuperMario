@@ -71,7 +71,7 @@ void CPlayScene::_ParseSection_ANIMATIONS(string line)
 	LPANIMATION ani = new CAnimation();
 
 	int ani_id = atoi(tokens[0].c_str());
-	for (int i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
+	for (size_t i = 1; i < tokens.size(); i += 2)	// why i+=2 ?  sprite_id | frame_time  
 	{
 		int sprite_id = atoi(tokens[i].c_str());
 		int frame_time = atoi(tokens[i + 1].c_str());
@@ -93,7 +93,7 @@ void CPlayScene::_ParseSection_ANIMATION_SETS(string line)
 
 	CAnimations* animations = CAnimations::GetInstance();
 
-	for (int i = 1; i < tokens.size(); i++)
+	for (size_t i = 1; i < tokens.size(); i++)
 	{
 		int ani_id = atoi(tokens[i].c_str());
 
@@ -115,9 +115,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 	if (tokens.size() < 3) return; // skip invalid lines - an object set must have at least id, x, y
 
-	int object_type = atoi(tokens[0].c_str());
-	float x = atof(tokens[1].c_str());
-	float y = atof(tokens[2].c_str());
+	int object_type = atoi(tokens[0].c_str());	
+	float x = strtof(tokens[1].c_str(), NULL);
+	float y = strtof(tokens[2].c_str(), NULL);
 
 	int ani_set_id = atoi(tokens[3].c_str());
 
@@ -141,29 +141,29 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
 	case OBJECT_TYPE_BRICK: 
 	{
-		int btype = atof(tokens[4].c_str());
-		obj = new CBrick({ x,y }, btype); 
+		int btype = atoi(tokens[4].c_str());
+		obj = new CBrick( x,y , btype); 
 	}
 	break;
 	case OBJECT_TYPE_KOOPAS: 
 	{
-		int type = atof(tokens[4].c_str());
+		int type = atoi(tokens[4].c_str());
 		obj = new CKoopas(type); 
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
 	{
-		float r = atof(tokens[4].c_str());
-		float b = atof(tokens[5].c_str());
+		float r = strtof(tokens[4].c_str(), NULL);
+		float b = strtof(tokens[5].c_str(), NULL);
 		int scene_id = atoi(tokens[6].c_str());
 		obj = new CPortal(x, y, r, b, scene_id);
 	}
 	break;
 	case OBJECT_TYPE_GROUND:
 	{
-		int w = atof(tokens[4].c_str());
-		int h = atof(tokens[5].c_str());
-		int i = atof(tokens[6].c_str());
+		int w = atoi(tokens[4].c_str());
+		int h = atoi(tokens[5].c_str());
+		int i = atoi(tokens[6].c_str());
 		obj = new CGround(w, h, i);
 	}
 	break;
@@ -276,11 +276,13 @@ void CPlayScene::Update(DWORD dt)
 
 	for (size_t i = 0; i < objects.size(); i++)
 	{
+		//if (objects[i]->GetType() == Type::ITEM)
+			//vDebugOut(L"ITEMMMMMM: %d\n", objects[i]->GetType());
 		objects[i]->Update(dt, &coObjects);
 	}
 
 	//xoa may cai da chet
-	for (int i = 0; i < objects.size(); i++)
+	for (size_t i = 0; i < objects.size(); i++)
 	{
 		if (objects[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
 		{
@@ -324,7 +326,7 @@ void CPlayScene::Update(DWORD dt)
 void CPlayScene::Render()
 {
 	map->Draw();
-	for (int i = 0; i < objects.size(); i++)
+	for (size_t i = 0; i < objects.size(); i++)
 		objects[i]->Render();
 
 }
@@ -334,7 +336,7 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < objects.size(); i++)
+	for (size_t i = 0; i < objects.size(); i++)
 		delete objects[i];
 
 	objects.clear();
@@ -438,6 +440,12 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_A:
 		mario->canHoldShell = false;
 		break;
+	case DIK_RIGHT:
+		//mario->nx = 1;
+		break;
+	case DIK_LEFT:
+		//mario->nx = -1;
+		break;
 	case DIK_SPACE:
 		break;
 	}
@@ -466,6 +474,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		{
 			if (mario->vx < 0)
 			{
+				mario->nx = 1;
 				mario->Stop();
 			}
 			else
@@ -476,6 +485,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 			if (mario->vx > 0)
 			{
+				mario->nx = -1;
 				mario->Stop();
 			}
 			else
@@ -485,6 +495,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		{
 			if (mario->vx > 0)
 			{
+				mario->nx = -1;
 				mario->Stop();
 			}
 			else
@@ -496,14 +507,13 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		{	
 			if (mario->vx < 0)
 			{
+				mario->nx = 1;
 				mario->Stop();
 			}
-				
 			else
 			{
 				mario->WalkingRight();
 			}
-
 		}
 		else if (game->IsKeyDown(DIK_DOWN))
 		{
@@ -526,7 +536,5 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		{
 			mario->ToLeft();
 		}
-
 	}
-	
 }

@@ -4,17 +4,17 @@
 
 class CTimer
 {
-	int start;
-	int limitedTime;
+	ULONGLONG start;
+	ULONGLONG limitedTime;
 
 public:
 	CTimer(int limitedTime) { this->limitedTime = limitedTime; start = 0; }
 
-	void Start() { start = GetTickCount(); }
+	void Start() { start = GetTickCount64(); }
 	void Stop() { start = 0; }
-	bool IsTimeUp() { return GetTickCount() - start > limitedTime; }
+	bool IsTimeUp() { return GetTickCount64() - start > limitedTime; }
 
-	int GetStartTime() { return start; }
-	int GetLimitedTime() { return limitedTime; }
+	ULONGLONG GetStartTime() { return start; }
+	ULONGLONG GetLimitedTime() { return limitedTime; }
 	void SetLimitedTime(int temp) { limitedTime = temp; }
 };

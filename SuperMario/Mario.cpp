@@ -95,18 +95,18 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (GetLevel() == Level::Raccoon)
 	{
-		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_ATTACK)
+		if (attackStart && GetTickCount64() - attackStart <= MARIO_TIME_ATTACK)
 		{
 			state = MState::Attack;
 			tail->SetState(KILL_ENEMY);
 			//cap nhat nx cua mario 
 			//con thieu moot truong hop khi ani = 4
-			if (GetTickCount() - attackStart < MARIO_TIME_ATTACK / 2 && changedNx == 0)
+			if (GetTickCount64() - attackStart < MARIO_TIME_ATTACK / 2 && changedNx == 0)
 			{
 				nx = -nx;
 				changedNx++;
 			}
-			if (GetTickCount() - attackStart >= MARIO_TIME_ATTACK / 2 && changedNx == 1)
+			if (GetTickCount64() - attackStart >= MARIO_TIME_ATTACK / 2 && changedNx == 1)
 			{
 				changedNx = 0;
 				nx = -nx;
@@ -128,7 +128,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	if (GetLevel() == Level::Fire)
 	{
-		if (attackStart && GetTickCount() - attackStart <= MARIO_TIME_SHOOT)
+		if (attackStart && GetTickCount64() - attackStart <= MARIO_TIME_SHOOT)
 		{
 			state = MState::Attack;
 		}
@@ -147,7 +147,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	if (tail) tail->Update(dt, coObjects, {x, y}, nx);
 
 	//update list dan trong mario
-	for (int i = 0; i < listBullet.size(); i++)
+	for (size_t i = 0; i < listBullet.size(); i++)
 	{
 		listBullet[i]->Update(dt, coObjects);
 		if (listBullet[i]->GetState() == STATE_DESTROYED)
@@ -159,19 +159,19 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 	}
 
-	for (int i = 0; i < listEffect.size(); i++)	{
+	for (size_t i = 0; i < listEffect.size(); i++)	{
 		listEffect[i]->Update(dt, coObjects);
 	}
 
 	//xoa vien dan bien mat
-	for (int i = 0; i < listBullet.size(); i++)
+	for (size_t i = 0; i < listBullet.size(); i++)
 		if (listBullet[i]->GetState() == STATE_DESTROYED || listBullet[i]->IsOutOfCamera())
 		{
 			listBullet.erase(listBullet.begin() + i);
 			i--;
 		}
 	//xoa effect cua vien dan
-	for (int i = 0; i < listEffect.size(); i++)
+	for (size_t i = 0; i < listEffect.size(); i++)
 		if (listEffect[i]->GetState() == STATE_DESTROYED)
 		{
 			listEffect.erase(listEffect.begin() + i);
@@ -187,7 +187,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 		CalcPotentialCollisions(coObjects, coEvents);
 
 	// reset untouchable timer if untouchable time has passed
-	if (GetTickCount() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
+	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
 		untouchable_start = 0;
 		untouchable = 0;
@@ -251,6 +251,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				//quai di chuyen
 				if (e->ny < 0)
 				{
+					if (e->obj->GetType() == Type::BRICK)
+					{
+						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+						if (brick->GetBrickType() == BrickType::question_broken)
+							DebugOut(L"1111111111\n");
+
+					}
 					//goomba
 					if (e->obj->GetType() == Type::GOOMBA)
 					{
@@ -258,7 +265,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						{
 							CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 							goomba->DieByCrush();
-							vy = -0.2;
+							vy = -0.2f;
 						}
 					}
 					//koopas
@@ -278,7 +285,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 							else
 							{
 								koopas->Idle();
-								vy = -0.2;
+								vy = -0.2f;
 							}
 						}
 						else
@@ -304,7 +311,12 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 						if (brick->GetBrickType() == BrickType::question)
+						{
 							brick->SetBrickType(BrickType::question_broken);
+							brick->SetState(STATE_BEING_TOSSED);
+						}
+						if (brick->GetBrickType() == BrickType::question_broken)
+							DebugOut(L"BROKEN\n");
 					}
 				}
 				
@@ -379,7 +391,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 								}
 								else
 								{
-									newkoopas->nx = nx;
+									newkoopas->nx = int(nx);
 									newkoopas->SetState(KOOPAS_STATE_DIE_MOVE);
 									newkoopas->isInteractable = true;
 								}
@@ -450,7 +462,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MState::Stop:
-			if (vx < 0)
+			if (nx > 0)
 				ani = FIRE_ANI_STOP_RIGHT;
 			else
 				ani = FIRE_ANI_STOP_LEFT;
@@ -527,9 +539,9 @@ void CMario::Render()
 			}
 			else
 			{
-				if (vx > 0)
+				if (nx > 0 && (vx > 0 || vx < 0))
 					ani = FIRE_ANI_WALK_RIGHT;
-				else if (vx < 0)
+				else if (nx < 0 && (vx > 0 || vx < 0))
 					ani = FIRE_ANI_WALK_LEFT;
 				else if (nx > 0)
 					ani = FIRE_ANI_IDLE_RIGHT;
@@ -549,7 +561,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MState::Stop:
-			if (vx < 0)
+			if (nx > 0)
 				ani = RACCOON_ANI_STOP_RIGHT;
 			else
 				ani = RACCOON_ANI_STOP_LEFT;
@@ -652,14 +664,12 @@ void CMario::Render()
 			}
 			else
 			{
-				if (vx > 0)
+				if (nx > 0 && (vx > 0 || vx < 0))
 					ani = RACCOON_ANI_WALK_RIGHT;
-				else if (vx < 0)
+				else if (nx < 0 && (vx > 0 || vx < 0))
 					ani = RACCOON_ANI_WALK_LEFT;
 				else if (nx > 0)
-				{
 					ani = RACCOON_ANI_IDLE_RIGHT;
-				}
 				else
 					ani = RACCOON_ANI_IDLE_LEFT;
 			}
@@ -676,7 +686,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MState::Stop:
-			if (vx<0)
+			if (nx>0)
 				ani = MARIO_ANI_STOP_RIGHT;
 			else
 				ani = MARIO_ANI_STOP_LEFT;
@@ -737,9 +747,9 @@ void CMario::Render()
 			}
 			else
 			{
-				if (vx > 0)
+				if (nx >0 && (vx > 0|| vx < 0))
 					ani = MARIO_ANI_WALK_RIGHT;
-				else if (vx < 0)
+				else if (nx < 0 && (vx > 0 || vx < 0))
 					ani = MARIO_ANI_WALK_LEFT;
 				else if (nx > 0)
 					ani = MARIO_ANI_IDLE_RIGHT;
@@ -759,7 +769,7 @@ void CMario::Render()
 			ani = MARIO_ANI_DIE;
 			break;
 		case MState::Stop:
-			if (vx < 0)
+			if (nx < 0)
 				ani = mario_ANI_STOP_RIGHT;
 			else
 				ani = mario_ANI_STOP_LEFT;
@@ -796,9 +806,9 @@ void CMario::Render()
 			}
 			else
 			{
-				if (vx > 0)
+				if (nx > 0 && (vx > 0 || vx < 0))
 					ani = mario_ANI_WALK_RIGHT;
-				else if (vx < 0)
+				else if (nx < 0 && (vx > 0 || vx < 0))
 					ani = mario_ANI_WALK_LEFT;
 				else if (nx > 0)
 					ani = mario_ANI_IDLE_RIGHT;
@@ -814,13 +824,13 @@ void CMario::Render()
 
 	animation_set->at(ani)->Render(x, y, alpha);
 
-	for (int i = 0; i < listBullet.size(); i++)
+	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
-	for (int i = 0; i < listEffect.size(); i++)
+	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect[i]->Render();
 
 	if (tail) tail->Render();
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 
@@ -842,7 +852,7 @@ void CMario::SetState(int state)
 	case MState::Run_right:
 		if (vx <= 0)
 			vx = MARIO_WALKING_SPEED;
-		vx += mario_ACCELERATION * 0.2 * dt;
+		vx += mario_ACCELERATION * 0.2f * dt;
 		if (vx >= MARIO_RUN_SPEED_THRESH)
 			vx = MARIO_RUN_SPEED_THRESH;
 		nx = 1;
@@ -850,7 +860,7 @@ void CMario::SetState(int state)
 	case MState::Run_left:
 		if (vx >= 0)
 			vx = -MARIO_WALKING_SPEED;
-		vx -= mario_ACCELERATION * 0.2 * dt;
+		vx -= mario_ACCELERATION * 0.2f * dt;
 		if (vx <= -MARIO_RUN_SPEED_THRESH)
 			vx = -MARIO_RUN_SPEED_THRESH;
 		break;
@@ -875,10 +885,12 @@ void CMario::SetState(int state)
 	case MState::Attack:
 		break;
 	case MState::Stop:
-		if (vx > 0)
+		/*if (vx > 0)
+			nx = 1;
+		else if (vx < 0)
 			nx = -1;
 		else
-			nx = 1;
+			nx = -nx;*/
 		//break;
 	case MState::Idle:
 		DecreaseSpeedToStop();
@@ -1007,7 +1019,7 @@ void CMario::Attack() {
 	SetState(MState::Attack);
 	/*if (GetLevel() == Level::Fire)*/
 		isAttack = true;
-	attackStart = GetTickCount();
+	attackStart = GetTickCount64();
 }
 
 void CMario::Sit() {
@@ -1055,6 +1067,7 @@ void CMario::DecreaseSpeedToStop()
 	if (abs(vx) > 0.08)
 	{
 		if (vx > 0) {
+
 			vx -= MARIO_ACCELERATION * dt;
 			if (vx < 0)
 				vx = 0;

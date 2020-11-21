@@ -2,14 +2,17 @@
 #include "Item.h"
 #include "SuperMushroom.h"
 #include "SuperLeaf.h"
+#include "Utils.h"
 
-CBrick::CBrick(D3DXVECTOR2 position, int type)
+CBrick::CBrick(float x, float y, int type)
 {
 	Btype = type;
 	this->type = Type::BRICK;
-	this->x = position.x;
-	this->y = position.y;
+	this->x = x;
+	this->y = y;
+	this->start_y = y;
 	isBroken = false;
+	state = STATE_NORMAL;
 }
 CBrick::~CBrick()
 {
@@ -22,12 +25,8 @@ void CBrick::Render()
 		ani = BRICK_ANI_BROKEN;
 	else
 		ani = BRICK_ANI_NORMAL;
-
-	//animation_set->at(1)->Render(x, y);
-	//animation_set->at(0)->Render(x, y);
-	
 	animation_set->at(ani)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -41,10 +40,29 @@ void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 {
 	CGameObject::Update(dt);
-	//if (!isBroken)
-	//{
-	//	isBroken = true;
+	y += dy;
 
+	if (y < start_y - 5.0f)
+	{
+		vy = -vy;
+	}
+	if (y > start_y)
+	{
+		state = STATE_NORMAL;
+		y = start_y;
+	}
+
+	if (diddropItem)
+	{
+		diddropItem = false;
+		CItem* item = new CSuperMushroom({ x, y - 16 });
+		if (item)
+		{
+			objects->push_back(item);
+			//DebugOut(L"BJAHJASSJ\n");
+		}
+	}
+	
 	//	CItem* item = new CSuperMushroom({ x, y - 16 });
 	//	//chua co khoi tao itemID cua item ma
 	//	/*switch (item->itemID)
@@ -63,4 +81,23 @@ void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 	//	if (item)
 	//		objects->push_back(item);
 	//}
+}
+
+void CBrick::SetState(int state)
+{
+	CGameObject::SetState(state);
+
+	switch (state)
+	{
+	case STATE_DESTROYED:
+		break;
+	case STATE_BEING_TOSSED:
+		diddropItem = true;
+		vy = -0.2f;
+		break;
+	case STATE_NORMAL:
+		vy = 0;
+	default:
+		break;
+	}
 }

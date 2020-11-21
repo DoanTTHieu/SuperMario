@@ -10,6 +10,9 @@ enum Type
 	GOOMBA = 04,
 	KOOPAS = 05,
 
+	//
+	ITEM = 06,
+
 };
 
 enum MState
@@ -55,7 +58,7 @@ enum BrickType
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16
-#define BRICK_BBOX_HEIGHT 15
+#define BRICK_BBOX_HEIGHT 16
 
 //play scene
 #define SCENE_SECTION_UNKNOWN -1
@@ -167,7 +170,7 @@ enum BrickType
 #define FIRE_ANI_FALL_LEFT				62
 
 
-#define MARIO_BIG_BBOX_WIDTH  15
+#define MARIO_BIG_BBOX_WIDTH  14
 #define MARIO_BIG_BBOX_HEIGHT 27
 
 #define MARIO_RACCOON_BBOX_WIDTH  15
