@@ -517,7 +517,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_DOWN))
 		{
-			if (mario->GetLevel() != Level::Small)
+			if (mario->GetLevel() != Level::Small && !mario->isHolding)
 			{
 				mario->Sit();
 			}
