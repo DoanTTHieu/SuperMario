@@ -36,7 +36,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	this->y = y;
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
@@ -144,39 +144,13 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 
 	//tail update
-	if (tail) tail->Update(dt, coObjects, { x, y }, nx);
+	if (tail) tail->Update(dt, coObj, { x, y }, nx);
 
 	//update list dan trong mario
 	for (size_t i = 0; i < listBullet.size(); i++)
 	{
-		listBullet[i]->Update(dt, coObjects);
-		if (listBullet[i]->GetState() == STATE_DESTROYED)
-		{
-			float bx, by;
-			listBullet[i]->GetPosition(bx, by);
-			CFireBallEffect* effect = new CFireBallEffect({ bx, by });
-			listEffect.push_back(effect);
-		}
+		listBullet[i]->Update(dt, coObj);
 	}
-
-	for (size_t i = 0; i < listEffect.size(); i++) {
-		listEffect[i]->Update(dt, coObjects);
-	}
-
-	//xoa vien dan bien mat
-	for (size_t i = 0; i < listBullet.size(); i++)
-		if (listBullet[i]->GetState() == STATE_DESTROYED || listBullet[i]->IsOutOfCamera())
-		{
-			listBullet.erase(listBullet.begin() + i);
-			i--;
-		}
-	//xoa effect cua vien dan
-	for (size_t i = 0; i < listEffect.size(); i++)
-		if (listEffect[i]->GetState() == STATE_DESTROYED)
-		{
-			listEffect.erase(listEffect.begin() + i);
-			i--;
-		}
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -184,7 +158,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 	// turn off collision when die 
 	if (state != MState::Die)
-		CalcPotentialCollisions(coObjects, coEvents);
+		CalcPotentialCollisions(coObj, coEvents);
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -409,16 +383,22 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 
 
 	interactableObject.clear();
-	for (UINT i = 0; i < coObjects->size(); i++)
+	for (UINT i = 0; i < coObj->size(); i++)
 	{
-		if (coObjects->at(i)->isInteractable)
+		if (coObj->at(i)->isInteractable)
 		{
-			interactableObject.push_back(coObjects->at(i));
+			interactableObject.push_back(coObj->at(i));
+		}
+	}
+	for (UINT i = 0; i < coObj->size(); i++)
+	{
+		if (coObj->at(i)->isInteractable)
+		{
+			interactableObject.push_back(coObj->at(i));
 		}
 	}
 	//aabb
 	CheckInteraction();
-
 }
 
 void CMario::CheckInteraction()
@@ -972,9 +952,7 @@ void CMario::Render()
 
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
-	for (size_t i = 0; i < listEffect.size(); i++)
-		listEffect[i]->Render();
-
+	
 	//if (tail) tail->Render();
 	RenderBoundingBox();
 }

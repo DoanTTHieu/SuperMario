@@ -138,7 +138,11 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
-	case OBJECT_TYPE_GOOMBA: obj = new CGoomba(); break;
+	case OBJECT_TYPE_GOOMBA: 
+	{
+		obj = new CGoomba();
+	}
+	break;
 	case OBJECT_TYPE_BRICK: 
 	{
 		int btype = atoi(tokens[4].c_str());
@@ -148,7 +152,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_KOOPAS: 
 	{
 		int type = atoi(tokens[4].c_str());
-		obj = new CKoopas(type); 
+		obj = new CKoopas(type);
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
@@ -178,7 +182,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
 	obj->SetAnimationSet(ani_set);
-	objects.push_back(obj);
+
+	switch (obj->GetType())
+	{
+	case Type::BRICK:
+	case Type::GROUND:
+	case Type::KOOPAS:
+	case Type::GOOMBA:
+		listObj.push_back(obj);
+		break;
+	//case Type::ITEM:
+	//	listItem.push_back(obj);
+	//	break;
+	}
 }
 
 /*
@@ -267,26 +283,87 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
+		//mario
+	player->Update(dt, &listObj, &listItem);
 
-	vector<LPGAMEOBJECT> coObjects;
-	for (size_t i = 1; i < objects.size(); i++)
+	for (size_t i = 0; i < listObj.size(); i++)
 	{
-		coObjects.push_back(objects[i]);
-	}
-
-	for (size_t i = 0; i < objects.size(); i++)
-	{
-		//if (objects[i]->GetType() == Type::ITEM)
-			//vDebugOut(L"ITEMMMMMM: %d\n", objects[i]->GetType());
-		objects[i]->Update(dt, &coObjects);
-	}
-
-	//xoa may cai da chet
-	for (size_t i = 0; i < objects.size(); i++)
-	{
-		if (objects[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		if (listObj[i]->GetType() == Type::BRICK)
 		{
-			objects.erase(objects.begin() + i);
+			CBrick* brick = dynamic_cast<CBrick*>(listObj[i]);
+			if (brick->diddropItem)
+			{
+				brick->diddropItem = false;
+				//RANDOM ITEM
+				//CItem* item = new CSuperMushroom({ brick->x, brick->y - 16 });
+				CItem* item = new CSuperLeaf({ brick->x, brick->y - 16 });
+				listItem.push_back(item);
+			}
+			else if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == STATE_DESTROYED)
+			{
+				float bx, by;
+				brick->GetPosition(bx, by);
+				CEffect* effect = new CEffect({ bx, by }, EffectType::broze_bick_broken);
+				listEffect.push_back(effect);
+			}
+		}
+	}
+
+	for (size_t i = 0; i < listObj.size(); i++)
+	{
+		listObj[i]->Update(dt, &listObj);
+	}
+	for (size_t i = 0; i < listItem.size(); i++)
+	{
+		listItem[i]->Update(dt, &listObj);
+	}
+
+
+	for (size_t i = 0; i < player->listBullet.size(); i++)
+	{
+		if (player->listBullet[i]->GetState() == STATE_DESTROYED)
+		{
+			float bx, by;
+			player->listBullet[i]->GetPosition(bx, by);
+			CEffect* effect = new CEffect({ bx, by }, EffectType::fireBall);
+			listEffect.push_back(effect);
+		}
+	}
+
+	//xoa vien dan bien mat
+	for (size_t i = 0; i < player->listBullet.size(); i++)
+		if (player->listBullet[i]->GetState() == STATE_DESTROYED || player->listBullet[i]->IsOutOfCamera())
+		{
+			player->listBullet.erase(player->listBullet.begin() + i);
+			i--;
+		}
+
+	for (size_t i = 0; i < listEffect.size(); i++)
+	{
+		listEffect[i]->Update(dt);
+	}
+
+	for (size_t i = 0; i < listObj.size(); i++)
+	{
+		if (listObj[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		{
+			listObj.erase(listObj.begin() + i);
+			i--;
+		}
+	}
+	for (size_t i = 0; i < listItem.size(); i++)
+	{
+		if (listItem[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		{
+			listItem.erase(listItem.begin() + i);
+			i--;
+		}
+	}
+	for (size_t i = 0; i < listEffect.size(); i++)
+	{
+		if (listEffect[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		{
+			listEffect.erase(listEffect.begin() + i);
 			i--;
 		}
 	}
@@ -296,39 +373,26 @@ void CPlayScene::Update(DWORD dt)
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
-
-	//CGame* game = CGame::GetInstance();
-	//cx -= game->GetScreenWidth() / 2;
-	//cy -= game->GetScreenHeight() / 2;
-
-	//CGame::GetInstance()->SetCamPos(cx, 0.0f /*cy*/);
-	//map di theo nhan vat, ko di qua map
-	
-	//CGame::GetInstance()->cam_y = 250;
 	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->GetMapWidth())
 	{
 		cx = player->x - (SCREEN_WIDTH / 2);
 		CGame::GetInstance()->cam_x = cx;
 	}
 	CGame::GetInstance()->cam_y = 250;
-	//if (player->y > (SCREEN_HEIGHT / 2) && player->y + (SCREEN_HEIGHT / 2) < map->GetMapHeight())
-	//{
-	//	cy = player->y - (SCREEN_HEIGHT / 2);
-	//	CGame::GetInstance()->cam_y = cy;
-	//}
-	//else
-	//{
-	//	CGame::GetInstance()->cam_y = 250;
-	//}
-	
 }
 
 void CPlayScene::Render()
 {
 	map->Draw();
-	for (size_t i = 0; i < objects.size(); i++)
-		objects[i]->Render();
-
+	for (size_t i = 0; i < listObj.size(); i++)
+		if (listObj.at(i) != NULL)
+			listObj[i]->Render();
+	for (size_t i = 0; i < listItem.size(); i++)
+		if (listItem.at(i) != NULL)
+			listItem.at(i)->Render();
+	for (size_t i = 0; i < listEffect.size(); i++)
+		listEffect.at(i)->Render();
+	player->Render();
 }
 
 /*
@@ -336,10 +400,18 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (size_t i = 0; i < objects.size(); i++)
-		delete objects[i];
+	for (int i = 0; i < listItem.size(); i++)
+		delete listItem[i];
+	listItem.clear();
 
-	objects.clear();
+	for (size_t i = 0; i < listObj.size(); i++)
+		delete listObj[i];
+	listObj.clear();
+
+	for (size_t i = 0; i < listEffect.size(); i++)
+		delete listEffect[i];
+	listEffect.clear();
+
 	player = NULL;
 
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);

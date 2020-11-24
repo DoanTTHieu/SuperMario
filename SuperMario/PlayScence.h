@@ -9,6 +9,11 @@
 #include "Koopas.h"
 #include "TileMap.h"
 #include "Ground.h"
+#include "Effect.h"
+#include "Item.h"
+#include "SuperMushroom.h"
+#include "FireBallEffect.h"
+#include "SuperLeaf.h"
 
 class CPlayScene : public CScene
 {
@@ -16,7 +21,9 @@ protected:
 	CMario* player;					// A play scene has to have player, right? 
 	CTileMap* map;
 
-	vector<LPGAMEOBJECT> objects;
+	vector<CGameObject*> listObj;
+	vector<CGameObject*> listItem;
+	vector<CEffect*> listEffect;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);

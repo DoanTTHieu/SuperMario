@@ -31,10 +31,15 @@ void CBrick::Render()
 
 void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 {
-	l = x;
-	t = y;
-	r = x + BRICK_BBOX_WIDTH;
-	b = y + BRICK_BBOX_HEIGHT;
+	if (state == STATE_DESTROYED)
+		l = t = b = r = 0;
+	else
+	{
+		l = x;
+		t = y;
+		r = x + BRICK_BBOX_WIDTH;
+		b = y + BRICK_BBOX_HEIGHT;
+	}
 }
 
 void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
@@ -52,36 +57,6 @@ void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 		//vy = 0;
 		SetState(STATE_NORMAL);
 	}
-
-	if (diddropItem)
-	{
-		diddropItem = false;
-		CItem* item = new CSuperMushroom({ x, y - 16 });
-		if (item)
-		{
-			objects->push_back(item);
-			//DebugOut(L"BJAHJASSJ\n");
-		}
-	}
-	
-	//	CItem* item = new CSuperMushroom({ x, y - 16 });
-	//	//chua co khoi tao itemID cua item ma
-	//	/*switch (item->itemID)
-	//	{
-	//	case ID_ITEM_SUPER_MUSHROOM:
-	//		item = new CSuperMushroom({ x, y-16 });
-	//		break;
-	//	case ID_ITEM_SUPER_LEAF:
-	//		item = new CSuperLeaf({ x, y-16 });
-	//		break;
-
-	//	default:
-	//		item = NULL;
-	//		break;
-	//	}*/
-	//	if (item)
-	//		objects->push_back(item);
-	//}
 }
 
 void CBrick::SetState(int state)

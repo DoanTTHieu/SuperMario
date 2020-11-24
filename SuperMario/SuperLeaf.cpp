@@ -16,4 +16,6 @@ void CSuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);
 	//update roi
+	x += dx;
+	y += dy;
 }

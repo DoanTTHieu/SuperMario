@@ -16,8 +16,7 @@ class CMario : public CGameObject
 	float start_y;
 
 	vector<LPGAMEOBJECT> interactableObject;
-	vector< LPGAMEOBJECT> listBullet;
-	vector< LPGAMEOBJECT> listEffect;
+	//vector< LPGAMEOBJECT> listEffect;
 	
 	CTail* tail = new CTail();
 	CKoopas* koopas = new CKoopas();
@@ -30,8 +29,11 @@ class CMario : public CGameObject
 
 
 public:
+	vector< LPGAMEOBJECT> listBullet;
+
 	CMario(float x = 0.0f, float y = 0.0f);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	//virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
 	virtual void Render();
 	void CheckInteraction();
 
