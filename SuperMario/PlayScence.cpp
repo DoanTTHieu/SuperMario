@@ -146,7 +146,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_BRICK: 
 	{
 		int btype = atoi(tokens[4].c_str());
-		obj = new CBrick( x,y , btype); 
+		int isContain = atoi(tokens[5].c_str());
+		obj = new CBrick( x,y , btype, isContain); 
 	}
 	break;
 	case OBJECT_TYPE_KOOPAS: 
@@ -295,9 +296,13 @@ void CPlayScene::Update(DWORD dt)
 			{
 				brick->diddropItem = false;
 				//RANDOM ITEM
-				//CItem* item = new CSuperMushroom({ brick->x, brick->y - 16 });
-				CItem* item = new CSuperLeaf({ brick->x, brick->y - 16 });
-				listItem.push_back(item);
+				CItem* item;
+				if(player->GetLevel()>=Level::Big)
+					item = new CSuperLeaf({ brick->x, brick->y - 16 });
+				else 
+					item = new CSuperMushroom({ brick->x, brick->y - 16 });
+				if(item!=NULL)
+					listItem.push_back(item);
 			}
 			else if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == STATE_DESTROYED)
 			{
@@ -434,7 +439,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 				mario->Jump();
 			}
 		}
-			
 		if (mario->GetLevel() == Level::Raccoon && mario->vy > 0)
 		{
 			mario->isWaggingTail = true;
@@ -443,6 +447,10 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_X:
 		if (mario->isOnGround)
 			mario->JumpX();
+		break;
+	case DIK_1:
+		mario->Small();
+		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_2:
 		mario->Reset();

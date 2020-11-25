@@ -12,6 +12,7 @@
 #include "Portal.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Item.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -55,20 +56,28 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		if (!koopas->isBeingHeld || koopas->GetState() == EState::DIE_BY_ATTACK)
 			isHolding = false;
 		koopas->nx = -nx;
-		if (level != Level::Small)
-		{
-			if (nx < 0)
-				koopas->SetPosition(x - 12, y);
-			else
-				koopas->SetPosition(x + 12, y);
-		}
-		else
+		if (level == Level::Small)
 		{
 			if (nx < 0)
 				koopas->SetPosition(x - 12, y - 12);
 			else
 				koopas->SetPosition(x + 12, y - 12);
 		}
+		else if (level == Level::Raccoon)
+		{
+			if (nx < 0)
+				koopas->SetPosition(x - 5, y);
+			else
+				koopas->SetPosition(x + 19, y);
+		}
+		else
+		{
+			if (nx < 0)
+				koopas->SetPosition(x - 12, y);
+			else
+				koopas->SetPosition(x + 12, y);
+		}
+
 	}
 	if (!canHoldShell && isHolding)
 	{
@@ -381,7 +390,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-
 	interactableObject.clear();
 	for (UINT i = 0; i < coObj->size(); i++)
 	{
@@ -390,15 +398,32 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			interactableObject.push_back(coObj->at(i));
 		}
 	}
-	for (UINT i = 0; i < coObj->size(); i++)
-	{
-		if (coObj->at(i)->isInteractable)
-		{
-			interactableObject.push_back(coObj->at(i));
-		}
-	}
+
 	//aabb
 	CheckInteraction();
+	for (UINT i = 0; i < coItem->size(); i++)
+	{
+		if (IsAABB(coItem->at(i)))
+		{
+			CItem* item = dynamic_cast<CItem*>(coItem->at(i));
+				switch (item->GetItemID())
+				{
+				case ItemID::superLeaf:
+					this->SetPosition(x, y - 1.0f);
+					this->SetLevel(Level::Raccoon);
+						break;
+				case ItemID::superMushroom:
+					this->SetPosition(x, y - 12.0f);
+					this->SetLevel(Level::Big);
+						break;
+				case ItemID::fireFlower:
+					this->SetLevel(Level::Fire);
+					break;
+				}
+			item->SetState(STATE_DESTROYED);
+		}
+	}
+
 }
 
 void CMario::CheckInteraction()
@@ -410,11 +435,13 @@ void CMario::CheckInteraction()
 			if (untouchable == 0)
 			{
 				if (IsAABB(object))
-					if (dynamic_cast<CKoopas*>(object))
+				{
+					if (object->GetType() == Type::KOOPAS)
 					{
 						if (object->GetState() != STATE_DESTROYED)
 							this->UpdateLevel();
 					}
+				}
 
 			}
 		}
@@ -954,10 +981,8 @@ void CMario::Render()
 		listBullet[i]->Render();
 	
 	//if (tail) tail->Render();
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
-
-
 
 void CMario::SetState(int state)
 {
@@ -1080,6 +1105,14 @@ void CMario::Raccoon()
 {
 	Idle();
 	SetLevel(Level::Raccoon);
+	SetPosition(start_x, start_y);
+	SetSpeed(0, 0);
+}
+
+void CMario::Small()
+{
+	Idle();
+	SetLevel(Level::Small);
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
 }

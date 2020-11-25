@@ -1,23 +1,23 @@
-#include "SuperLeaf.h"
+#include "FireFlower.h"
 #include "Ground.h"
 #include "Brick.h"
 
 
-CSuperLeaf::CSuperLeaf(D3DXVECTOR2 position) {
+CFireFlower::CFireFlower(D3DXVECTOR2 position) {
 	this->x = position.x;
 	this->y = position.y;
 	//ani
-	itemID = ItemID::superLeaf;
+	itemID = ItemID::fireFlower;
 	this->type = Type::ITEM;
 	vx = -0.05f;
 }
-CSuperLeaf::~CSuperLeaf()
+CFireFlower::~CFireFlower()
 {
 
 }
 
 
-void CSuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CFireFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);
 	vy += (ITEM_GRAVITY * dt);

@@ -32,7 +32,7 @@
 #define PARA_KOOPAS_ANI_RIGHT		9
 
 
-#define KOOPAS_TIME_IDLE			8000
+#define KOOPAS_TIME_IDLE			8000000
 
 class CKoopas : public CEnemy
 {

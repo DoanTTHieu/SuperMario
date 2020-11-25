@@ -71,6 +71,7 @@ public:
 	int changedNx = 0;
 
 	void Reset();
+	void Small();
 	void Raccoon();
 	void FireMario();
 

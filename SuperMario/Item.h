@@ -4,10 +4,13 @@
 
 #define ITEM_GRAVITY			0.0003f
 #define ITEM_DISAPPEAR_TIME		5000
-#define ID_ITEM_SUPER_MUSHROOM	0
-#define ID_ITEM_SUPER_LEAF		1
-#define ID_ITEM_FIRE_FLOWER		2
 
+enum ItemID
+{
+	superMushroom = 0,
+	superLeaf = 01,
+	fireFlower = 02,
+};
 
 class CItem :
 	public CGameObject {
@@ -16,7 +19,9 @@ public:
 public:
 	CItem();
 	~CItem();
-	//CTimer* disapperTimer = new CTimer(ITEM_DISAPPEAR_TIME);
+	
+	CTimer* disapperTimer = new CTimer(ITEM_DISAPPEAR_TIME);
+	int GetItemID() { return itemID; }
 
 	virtual void Render();
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);

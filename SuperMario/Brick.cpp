@@ -4,13 +4,14 @@
 #include "SuperLeaf.h"
 #include "Utils.h"
 
-CBrick::CBrick(float x, float y, int type)
+CBrick::CBrick(float x, float y, int type, bool isContain)
 {
 	Btype = type;
 	this->type = Type::BRICK;
 	this->x = x;
 	this->y = y;
 	this->start_y = y;
+	this->isContainItem = isContain;
 	isBroken = false;
 	state = STATE_NORMAL;
 }
@@ -68,7 +69,8 @@ void CBrick::SetState(int state)
 	case STATE_DESTROYED:
 		break;
 	case STATE_BEING_TOSSED:
-		diddropItem = true;
+		if(isContainItem)
+			diddropItem = true;
 		vy = -0.2f;
 		break;
 	case STATE_NORMAL:

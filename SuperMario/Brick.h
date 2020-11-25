@@ -17,9 +17,10 @@ public:
 	bool isBroken;
 	bool diddropItem = false;
 	int Btype;
+	bool isContainItem;
 	float start_y;
 public:
-	CBrick(float x, float y, int type);
+	CBrick(float x, float y, int type, bool isContain);
 	~CBrick();
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);

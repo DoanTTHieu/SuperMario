@@ -192,6 +192,7 @@ enum BrickType
 #define FIRE_ANI_WALK_HOLD_LEFT				85
 #define FIRE_ANI_ON_AIR_HOLD_LEFT			86
 
+//==============================================SIZE========================================
 #define MARIO_BIG_BBOX_WIDTH				14
 #define MARIO_BIG_BBOX_HEIGHT				27
 
