@@ -76,13 +76,11 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			//DebugOut(L"EVENT: %d\n", coEventsResult.size());
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			if (dynamic_cast<CGround*>(e->obj))
+			if (e->obj->GetType() == Type::GROUND)
 			{
-				//DebugOut(L"GROUND\n");
 				CGround* ground = dynamic_cast<CGround*>(e->obj);
 				if (e->nx != 0)
 				{
-					//DebugOut(L"NX: %d\n", e->nx);
 					if (ground->interact)
 					{
 						x += dx;
@@ -91,15 +89,14 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vx = -vx;
 				}
 			}
-			else if (dynamic_cast<CBrick*>(e->obj))
+			else if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::PIPE)
 			{
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 				if (e->nx != 0)
 				{
 					vx = -vx;
 				}
 			}
-			else if (dynamic_cast<CGoomba*>(e->obj))
+			else if (e->obj->GetType() == Type::GOOMBA)
 			{
 				CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 				if (e->nx != 0)

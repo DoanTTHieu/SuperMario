@@ -14,8 +14,8 @@
 
 using namespace std;
 
-#define SCREEN_WIDTH 300
-#define SCREEN_HEIGHT 300
+#define SCREEN_WIDTH 1500
+#define SCREEN_HEIGHT 600
 #define KEYBOARD_BUFFER_SIZE 1024
 
 class CGame

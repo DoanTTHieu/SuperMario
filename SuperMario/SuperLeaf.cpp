@@ -69,7 +69,7 @@ void CSuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						vx = -this->vx;
 				}
 			}
-			else if (e->obj->GetType() == Type::BRICK)
+			else if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::PIPE)
 			{
 				if (e->nx != 0)
 					vx = -this->vx;

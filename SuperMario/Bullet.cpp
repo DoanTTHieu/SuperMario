@@ -4,6 +4,7 @@
 #include "Define.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Pipe.h"
 #include "Game.h"
 
 
@@ -70,7 +71,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						state = STATE_DESTROYED;
 				}
 			}
-			else if (e->obj->GetType() == Type::BRICK)
+			else if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::PIPE)
 			{
 				if (e->nx != 0)
 				{

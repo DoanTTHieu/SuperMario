@@ -86,9 +86,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						checkDone = false;
 						vx = 0;
 					}
-					//DebugOut(L"VX: %f \n", vx);
 				}
-				//DebugOut(L"check : %d \n", checkDone);
 			}
 
 			//
@@ -126,12 +124,18 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->nx != 0)
 					{
 						vx = -vx;
-
 						if (brick->GetBrickType() == BrickType::question)
 						{
 							brick->SetBrickType(BrickType::question_broken);
 							brick->SetState(STATE_BEING_TOSSED);
 						}
+					}
+				}
+				else if (e->obj->GetType() == Type::PIPE)
+				{
+					if (e->nx != 0)
+					{
+						vx = -vx;
 					}
 				}
 				else if (dynamic_cast<CEnemy*>(e->obj) && state == KOOPAS_STATE_DIE_MOVE)
@@ -149,7 +153,9 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	else // ko co tac dung cua trong luc
 	{
 		if (GetState() == EState::DIE_BY_ATTACK)
+		{
 			vy += MARIO_GRAVITY * dt;
+		}
 		else
 			vy = 0;
 		vector<LPCOLLISIONEVENT> coEvents;

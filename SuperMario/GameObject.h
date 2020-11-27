@@ -59,6 +59,10 @@ public:
 
 	int state;
 	int ani;
+
+	float start_x;
+	float start_y;
+
 	Type type;
 
 	DWORD dt;

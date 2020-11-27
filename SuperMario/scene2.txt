@@ -4,6 +4,7 @@
 2	textures\mario-hold-shell-big.png	0	255	255
 #20	textures\misc.png	176	224	248
 20	textures\misc.png	166	185	255
+21	textures\misc-2.png	0	117	255
 10	textures\enemies.png	3	26	110
 30	textures\enemies-2.png	0	128	128
 31	textures\enemies-3.png	0	128	128
@@ -13,6 +14,8 @@
 41	textures\raccoon_5.png	255 	255	255
 42	textures\fireball_right.png	0	255	255
 43	textures\fireball_left.png	0	255	255
+50	textures\enemies_custom_2.png	255	255	255
+51	textures\enemies_custom.png	255	255	255
 52	textures\enemies-5.png	0	255	255
 53	textures\enemies-5_1.png	0	255	255
 54	textures\enemies-5_2.png	0	255	255
@@ -283,6 +286,11 @@
 
 #================BRICK=======================
 20001	254	188	270	204	20
+#==================PIPE===================
+# long pipe
+2001	5	28	37	76	21
+# short pipe
+2002	201	415	233	447	21
 
 #==============QUESTION BRICK=============
 40001	157	188	173	204	20
@@ -392,6 +400,41 @@
 573	295	219	311	247	30
 574	278	219	294	247	30
 
+#=============PLANT=======================
+#=========VENUS FIRE TRAP===================
+#=====RED
+# face up left
+42001	201	126	217	158	51
+42002	184	126	200	158	51
+# face down left
+42003	167	126	183	158	51
+42004	150	126	166	158	51
+# face up right
+42005	222	126	238	158	50
+42006	239	126	255	158	50
+# face down right
+42007	256	126	272	158	50
+42008	273	126	289	158	50
+
+#===GREEN
+# face up left
+42011	271	100	287	124	51
+42012	254	100	270	124	51
+# face down left
+42013	237	100	253	124	51
+42014	220	100	236	124	51
+# face up right
+42015	152	100	168	124	50
+42016	169	100	185	124	50
+# face down right
+42017	186	100	202	124	50
+42018	203	100	219	124	50
+
+#PIRANHA PLANT
+#GREEN
+42021	57	100	73	124	51
+42022	38	100	54	124	51
+#RED
 
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
@@ -669,6 +712,51 @@
 823	563	100	561	100	564	100	562	100
 824	573	100	571	100	574	100	572	100
 
+# ====== RED VENUS FIRE TRAP ======
+# face up left
+840	42001	200	42002	200
+# face down left
+841	42003	200	42004	200
+# face up right
+842	42005	200	42006	200
+# face down right
+843	42007	200	42008	200
+# attack up left
+844	42002	100
+# attack down left
+845	42004	100
+# attack up right
+846	42006	100
+# attack down right
+847	42008	100
+
+# ====== GREEN VENUS FIRE TRAP=====
+# face up left
+850	42011	200	42012	200
+# face down left
+851	42013	200	42014	200
+# face up right
+852	42015	200	42016	200
+# face down right
+853	42017	200	42018	200
+# attack up left
+854	42012	100
+# attack down left
+855	42014	100
+# attack up right
+856	42016	100
+# attack down right
+857	42018	100
+
+# ======= GREEN PIRANHA =======
+860	42021	100	42022	100
+
+# ========== PIPE ==========
+# long pipe
+1001	2001	100
+# short pipe
+1002	2002	100
+
 #
 # id	ani1	ani2	ani3
 #
@@ -694,7 +782,15 @@
 # RED KOOPA
 8	811	812	813	814	815	816	817	818	823	824
 # GREEN PARA KOOPAS
-#9	821	
+#9	821
+#RED VENUS FIRE TRAP
+10	840	841	842	843	844	845	846	847
+#GREEN VENUS FIRE TRAP
+11	850	851	852	853	854	855	856	857
+#PIRANHA PLANT
+12	860
+#PIPE
+13	1001	1002
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type
@@ -702,7 +798,7 @@
 
 # MARIO
 #0	1380	360	1
-0	500	30	1
+0	1730	30	1
 
 #GOOMBA
 2	336	400	3
@@ -714,11 +810,26 @@
 #type	x	y	ani_set_id	type_of_koopas
 #type: 1= koopa xanh, 2= koopa do, 3 = paratroopa xanh, 4 = paratroopa do
 3	580	340	8	2
-3	1473	380	4	1
+#3	1473	380	4	1
 #3	450	380	4	1
-3	1373	200	4	3
+#3	1373	200	4	3
 
- 
+#VENUS FIRE TRAP
+#type	x	y	ani_set	type_piranha_plant
+# 0 = do, 1 = xanh
+30	360	368	10	0
+30	1864	368	11	1
+#30	352	368	11	1
+
+#PIRANHA PLANT
+#type	x	y	ani_set
+31	1800	384	12
+
+# PIPE
+#41	352	368	13	1
+#41	1792	384	13	2
+#41	1856	368	13	1
+
 # QUESTION BRICK (hint: I created the list using Excel!) ----
 #type 	x	y	ani	brick_type	isContainItem
 #brick type	1=normal	2=question	3=question_broken	4=bronze
@@ -738,22 +849,22 @@
 # BRONZE BRICK
 1	1952	400	24	4	0
 1	1968	384	24	4	0
-1	1968	400	24	4	0
-1	1984	368	24	4	0
-1	1984	384	24	4	0
-1	1984	400	24	4	0
-1	2000	368	24	4	0
-1	2000	384	24	4	0
-1	2000	400	24	4	0
-1	2016	368	24	4	0
-1	2016	384	24	4	0
-1	2016	400	24	4	0
-1	2032	384	24	4	0
-1	2032	400	24	4	0
-1	2048	400	24	4	0
-1	2096	384	24	4	0
-1	2096	400	24	4	0
-1	2112	400	24	4	0
+#1	1968	400	24	4	0
+#1	1984	368	24	4	0
+#1	1984	384	24	4	0
+#1	1984	400	24	4	0
+#1	2000	368	24	4	0
+#1	2000	384	24	4	0
+#1	2000	400	24	4	0
+#1	2016	368	24	4	0
+#1	2016	384	24	4	0
+#1	2016	400	24	4	0
+#1	2032	384	24	4	0
+#1	2032	400	24	4	0
+#1	2048	400	24	4	0
+#1	2096	384	24	4	0
+#1	2096	400	24	4	0
+#1	2112	400	24	4	0
 
 
 
@@ -777,8 +888,11 @@
 40	1793	384	2	2	2	0
 40	1857	368	2	2	3	0
 40	2256	368	2	2	3	0
-40	2256	128	2	2	12	0
+40	2256	112	2	2	13	0
 40	2320	384	2	2	2	0
+40	1408	192	2	4	1	0
+40	1488	176	2	13	1	0
+
 #box
 40	240	368	2	3	3	1
 40	272	336	2	3	5	1
@@ -791,11 +905,15 @@
 40	1328	320	2	7	6	1
 40	2144	368	2	3	3	1
 40	2176	272	2	3	9	1
-
+40	1312	144	2	4	2	1
 
 # --- SCENE PORTAL ----
-# type	l	t	ani_set_id	r	b	scene_id
+# type	l	t ani_set_id	r	b	scene_id
 #50	300	98	0	380	150	1
+#50	2320	360	0	380	2330	20
+#50	300	398	2	400	150	1
+#50	300	98	2	380	150	2
+50	2256	112	2	2288	150	2
 [TILEMAP]
 100	map\map.png	map\data.txt	27	208	11	11	16	16
 

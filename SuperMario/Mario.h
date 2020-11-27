@@ -12,9 +12,6 @@ class CMario : public CGameObject
 	int untouchable;
 	DWORD untouchable_start;
 
-	float start_x;			// initial position of Mario at scene
-	float start_y;
-
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
 	
@@ -72,6 +69,7 @@ public:
 
 	void Reset();
 	void Small();
+	void Big();
 	void Raccoon();
 	void FireMario();
 

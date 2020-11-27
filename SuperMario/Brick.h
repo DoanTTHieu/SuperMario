@@ -18,7 +18,7 @@ public:
 	bool diddropItem = false;
 	int Btype;
 	bool isContainItem;
-	float start_y;
+
 public:
 	CBrick(float x, float y, int type, bool isContain);
 	~CBrick();

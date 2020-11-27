@@ -7,6 +7,9 @@
 #include "Sprites.h"
 #include "Portal.h"
 #include "Define.h"
+#include "PiranhaPlant.h"
+#include "VenusFireTrap.h"
+#include "Pipe.h"
 
 using namespace std;
 
@@ -150,6 +153,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CBrick( x,y , btype, isContain); 
 	}
 	break;
+	case OBJECT_TYPE_VENUS_FIRE_TRAP:
+	{
+		int t = atoi(tokens[4].c_str());
+		obj = new CVenusFireTrap(x, y, t);
+	}
+	break;
+	case OBJECT_TYPE_PIRANHA_PLANT:
+	{
+		obj = new CPiranhaPlant(x, y);
+	}
+	break;
 	case OBJECT_TYPE_KOOPAS: 
 	{
 		int type = atoi(tokens[4].c_str());
@@ -172,6 +186,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CGround(w, h, i);
 	}
 	break;
+	case OBJECT_TYPE_PIPE:
+	{
+		int t = atoi(tokens[4].c_str());
+		obj = new CPipe(t);
+	}
+	break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -183,13 +203,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
 	obj->SetAnimationSet(ani_set);
-
+	
 	switch (obj->GetType())
 	{
 	case Type::BRICK:
 	case Type::GROUND:
 	case Type::KOOPAS:
 	case Type::GOOMBA:
+	case Type::PORTAL:
+	case Type::VENUS_FIRE_TRAP:
+	case Type::PIRANHA_PLANT:
+	case Type::PIPE:
 		listObj.push_back(obj);
 		break;
 	//case Type::ITEM:
@@ -383,7 +407,7 @@ void CPlayScene::Update(DWORD dt)
 		cx = player->x - (SCREEN_WIDTH / 2);
 		CGame::GetInstance()->cam_x = cx;
 	}
-	CGame::GetInstance()->cam_y = 250;
+	CGame::GetInstance()->cam_y = 50;
 }
 
 void CPlayScene::Render()
@@ -448,12 +472,16 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 		if (mario->isOnGround)
 			mario->JumpX();
 		break;
+	case DIK_F1:
+		mario->Reset();
+		CGame::GetInstance()->cam_x = 0;
+		break;
 	case DIK_1:
 		mario->Small();
 		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_2:
-		mario->Reset();
+		mario->Big();
 		CGame::GetInstance()->cam_x = 0;
 		break;
 	case DIK_3:
@@ -520,13 +548,13 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_A:
 		mario->canHoldShell = false;
 		break;
+	case DIK_SPACE:
+		break;
 	case DIK_RIGHT:
 		mario->nx = 1;
 		break;
 	case DIK_LEFT:
 		mario->nx = -1;
-		break;
-	case DIK_SPACE:
 		break;
 	}
 }
@@ -549,6 +577,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			|| (game->IsKeyDown(DIK_DOWN) && game->IsKeyDown(DIK_UP)))
 		{
 			mario->Idle();
+			//DebugOut(L"NX: %d\n", mario->nx);
 		}
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_RIGHT))
 		{
@@ -562,7 +591,6 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		}
 		else if (game->IsKeyDown(DIK_A) && game->IsKeyDown(DIK_LEFT))
 		{
-
 			if (mario->vx > 0)
 			{
 				mario->nx = -1;

@@ -13,6 +13,8 @@
 #include "Ground.h"
 #include "Brick.h"
 #include "Item.h"
+#include "PiranhaPlant.h"
+#include "VenusFireTrap.h"
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -176,6 +178,39 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		untouchable = 0;
 	}
 
+	interactableObject.clear();
+	for (UINT i = 0; i < coObj->size(); i++)
+	{
+		if (coObj->at(i)->isInteractable)
+		{
+			interactableObject.push_back(coObj->at(i));
+		}
+	}
+
+	//aabb
+	CheckInteraction();
+	for (UINT i = 0; i < coItem->size(); i++)
+	{
+		if (IsAABB(coItem->at(i)))
+		{
+			CItem* item = dynamic_cast<CItem*>(coItem->at(i));
+			switch (item->GetItemID())
+			{
+			case ItemID::superLeaf:
+				this->SetPosition(x, y - 1.0f);
+				this->SetLevel(Level::Raccoon);
+				break;
+			case ItemID::superMushroom:
+				this->SetPosition(x, y - 12.0f);
+				this->SetLevel(Level::Big);
+				break;
+			case ItemID::fireFlower:
+				this->SetLevel(Level::Fire);
+				break;
+			}
+			item->SetState(STATE_DESTROYED);
+		}
+	}
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -197,7 +232,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		//	x += nx*abs(rdx); 
 
 		// block every object first!
-		x += min_tx * dx + nx * 0.4f;
+		x += min_tx * dx + nx * 0.4f;	
 		y += min_ty * dy + ny * 0.25f;
 
 		//if (nx != 0) vx = 0;
@@ -222,12 +257,16 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 
 			//truong hop CPortal
 
-			//if (dynamic_cast<CPortal*>(e->obj))
-			//{
-			//	CPortal* p = dynamic_cast<CPortal*>(e->obj);
-			//	CGame::GetInstance()->SwitchScene(p->GetSceneId());
-			//}
-
+			if (dynamic_cast<CPortal*>(e->obj))
+			{
+				CPortal* p = dynamic_cast<CPortal*>(e->obj);
+				CGame::GetInstance()->SwitchScene(p->GetSceneId());
+			}
+			if (e->obj->GetType() == Type::PIRANHA_PLANT)
+			{
+				x += dx;
+				y += dy;
+			}
 			//ny
 			if (e->ny != 0)
 			{
@@ -278,6 +317,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 						}
 
 					}
+
 				}
 				//block, pipe,..
 				if (e->ny > 0)
@@ -291,6 +331,15 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 							brick->SetState(STATE_BEING_TOSSED);
 						}
 					}
+					else if (e->obj->GetType() == Type::GROUND)
+					{
+						CGround* ground = dynamic_cast<CGround*>(e->obj);
+						if (ground->interact)
+						{
+							x += dx;
+						}
+					}
+
 				}
 
 			}
@@ -300,34 +349,31 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			{
 				//ko di xuyen qua duoc ne
 				//xet block, pipe,...
-				if (e->obj->GetType() == Type::GROUND || e->obj->GetType() == Type::BRICK)
+				if (e->obj->GetType() == Type::GROUND || e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::PIPE)
 				{
 					if (e->obj->GetType() == Type::GROUND)
 					{
 						CGround* ground = dynamic_cast<CGround*>(e->obj);
 						if (ground->interact)
 						{
-							if (e->nx != 0)
-							{
-								x += dx;
-							}
+							x += dx;
 						}
 						else
 						{
-							if (e->nx != 0)//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+							//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+							if (state == MState::Run_right || state == MState::Run_left)
 							{
-								if (state == MState::Run_right || state == MState::Run_left)
-								{
-									if (vx > 0)
-										state = MState::Walk_right;
-									else
-										state = MState::Walk_left;
-								}
+								if (vx > 0)
+									state = MState::Walk_right;
+								else
+									state = MState::Walk_left;
 							}
+
 						}
 					}
 					else
-					{//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+					{
+						//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
 						if (state == MState::Run_right || state == MState::Run_left)
 						{
 							if (vx > 0)
@@ -390,40 +436,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 	// clean up collision events
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 
-	interactableObject.clear();
-	for (UINT i = 0; i < coObj->size(); i++)
-	{
-		if (coObj->at(i)->isInteractable)
-		{
-			interactableObject.push_back(coObj->at(i));
-		}
-	}
-
-	//aabb
-	CheckInteraction();
-	for (UINT i = 0; i < coItem->size(); i++)
-	{
-		if (IsAABB(coItem->at(i)))
-		{
-			CItem* item = dynamic_cast<CItem*>(coItem->at(i));
-				switch (item->GetItemID())
-				{
-				case ItemID::superLeaf:
-					this->SetPosition(x, y - 1.0f);
-					this->SetLevel(Level::Raccoon);
-						break;
-				case ItemID::superMushroom:
-					this->SetPosition(x, y - 12.0f);
-					this->SetLevel(Level::Big);
-						break;
-				case ItemID::fireFlower:
-					this->SetLevel(Level::Fire);
-					break;
-				}
-			item->SetState(STATE_DESTROYED);
-		}
-	}
-
 }
 
 void CMario::CheckInteraction()
@@ -436,7 +448,7 @@ void CMario::CheckInteraction()
 			{
 				if (IsAABB(object))
 				{
-					if (object->GetType() == Type::KOOPAS)
+					if (object->GetType() == Type::KOOPAS || object->GetType() == Type::PIRANHA_PLANT|| object->GetType() == Type::VENUS_FIRE_TRAP)
 					{
 						if (object->GetState() != STATE_DESTROYED)
 							this->UpdateLevel();
@@ -1012,8 +1024,8 @@ void CMario::SetState(int state)
 		vx -= mario_ACCELERATION * 0.2f * dt;
 		if (vx <= -MARIO_RUN_SPEED_THRESH)
 			vx = -MARIO_RUN_SPEED_THRESH;
-		break;
 		nx = -1;
+		break;
 	case MState::Fly:
 		if (vx > 0)
 			vx = MARIO_WALKING_SPEED;
@@ -1096,15 +1108,7 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 void CMario::Reset()
 {
 	Idle();
-	SetLevel(Level::Big);
-	SetPosition(start_x, start_y);
-	SetSpeed(0, 0);
-}
-
-void CMario::Raccoon()
-{
-	Idle();
-	SetLevel(Level::Raccoon);
+	SetLevel(Level::Small);
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
 }
@@ -1113,16 +1117,28 @@ void CMario::Small()
 {
 	Idle();
 	SetLevel(Level::Small);
-	SetPosition(start_x, start_y);
-	SetSpeed(0, 0);
+	SetPosition(x, y-15);
+}
+
+void CMario::Big()
+{
+	Idle();
+	SetLevel(Level::Big);
+	SetPosition(x, y-15);
+}
+
+void CMario::Raccoon()
+{
+	Idle();
+	SetLevel(Level::Raccoon);
+	SetPosition(x, y-15);
 }
 
 void CMario::FireMario()
 {
 	Idle();
 	SetLevel(Level::Fire);
-	SetPosition(start_x, start_y);
-	SetSpeed(0, 0);
+	SetPosition(x, y - 15);
 }
 
 //level giam

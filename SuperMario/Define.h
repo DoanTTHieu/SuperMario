@@ -13,6 +13,11 @@ enum Type
 	//
 	ITEM = 06,
 
+	PIRANHA_PLANT = 07,
+	VENUS_FIRE_TRAP = 8,
+	PORTAL = 9,
+	PIPE = 10,
+
 };
 
 enum MState
@@ -55,6 +60,12 @@ enum BrickType
 	bronze = 04,
 };
 
+enum VenusFireTrapType
+{
+	red = 0,
+	green = 01
+};
+
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16
@@ -69,13 +80,15 @@ enum BrickType
 #define SCENE_SECTION_OBJECTS	6
 #define SCENE_SECTION_TILE_MAP	7
 
-#define OBJECT_TYPE_MARIO		0
-#define OBJECT_TYPE_BRICK		1
-#define OBJECT_TYPE_GOOMBA		2
-#define OBJECT_TYPE_KOOPAS		3
-#define OBJECT_TYPE_RED_KOOPA	4
-#define OBJECT_TYPE_GROUND		40
-#define OBJECT_TYPE_PORTAL		50
+#define OBJECT_TYPE_MARIO			0
+#define OBJECT_TYPE_BRICK			1
+#define OBJECT_TYPE_GOOMBA			2
+#define OBJECT_TYPE_KOOPAS			3
+#define OBJECT_TYPE_VENUS_FIRE_TRAP	30
+#define OBJECT_TYPE_PIRANHA_PLANT	31
+#define OBJECT_TYPE_GROUND			40
+#define OBJECT_TYPE_PIPE			41
+#define OBJECT_TYPE_PORTAL			50
 
 #define MAX_SCENE_LINE 1024
 
@@ -140,7 +153,7 @@ enum BrickType
 
 #define RACCOON_ANI_IDLE_RIGHT				37
 #define RACCOON_ANI_WALK_RIGHT				38
-#define RACCOON_ANI_RUN_RIGHT				38
+#define RACCOON_ANI_RUN_RIGHT				39
 #define RACCOON_ANI_JUMP_RIGHT				40
 #define RACCOON_ANI_STOP_RIGHT				41
 #define RACCOON_ANI_FIGHT_IDLE_RIGHT		42
@@ -203,3 +216,10 @@ enum BrickType
 #define MARIO_SMALL_BBOX_HEIGHT				15
 
 #define MARIO_UNTOUCHABLE_TIME				2000
+
+//PLANT
+#define PLANT_BBOX_WIDTH				16
+#define PLANT_BBOX_LOW					24
+#define PLANT_BBOX_HIGH					32
+//plant speed
+#define PLANT_SPEED_Y		0.05f;
