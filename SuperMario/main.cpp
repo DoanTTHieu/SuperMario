@@ -158,7 +158,6 @@ int Run()
 			frameStart = now;
 
 			game->ProcessKeyboard();
-
 			Update(dt);
 			Render();
 		}

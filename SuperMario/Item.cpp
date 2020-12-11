@@ -6,7 +6,7 @@
 CItem::CItem()
 {
 	this->isInteractable = true;
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(6));
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(31));
 }
 
 CItem::~CItem()

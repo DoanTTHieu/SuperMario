@@ -4,14 +4,15 @@
 #include "SuperLeaf.h"
 #include "Utils.h"
 
-CBrick::CBrick(float x, float y, int type, bool isContain)
+CBrick::CBrick(float x, float y, int type, int typeItem, int sl)
 {
 	Btype = type;
 	this->type = Type::BRICK;
 	this->x = x;
 	this->y = y;
 	this->start_y = y;
-	this->isContainItem = isContain;
+	this->containItem = typeItem;
+	this->sl = sl;
 	isBroken = false;
 	state = STATE_NORMAL;
 }
@@ -22,12 +23,13 @@ CBrick::~CBrick()
 
 void CBrick::Render()
 {
+	//if(state==STATE_BROKEN)
 	if (Btype == BrickType::question_broken)
 		ani = BRICK_ANI_BROKEN;
 	else
 		ani = BRICK_ANI_NORMAL;
 	animation_set->at(ani)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -46,9 +48,7 @@ void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 {
 	CGameObject::Update(dt);
-	y += dy;
-
-	if (y < start_y - 5.0f)
+	if (y < (start_y - 5.0f) && vy<0)
 	{
 		vy = -vy;
 	}
@@ -58,6 +58,7 @@ void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
 		//vy = 0;
 		SetState(STATE_NORMAL);
 	}
+	y += dy;
 }
 
 void CBrick::SetState(int state)
@@ -67,11 +68,13 @@ void CBrick::SetState(int state)
 	switch (state)
 	{
 	case STATE_DESTROYED:
+	case STATE_BROKEN:
 		break;
 	case STATE_BEING_TOSSED:
-		if(isContainItem)
+		if(containItem==1 && sl==1)
 			diddropItem = true;
 		vy = -0.2f;
+		DebugOut(L"CONTAIN: %d \n", sl);
 		break;
 	case STATE_NORMAL:
 		vy = 0;

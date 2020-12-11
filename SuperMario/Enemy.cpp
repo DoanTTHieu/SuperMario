@@ -8,6 +8,9 @@ void CEnemy::DieByCrush()
 
 void CEnemy::DieByAttack()
 {
-	SetState(EState::DIE_BY_ATTACK);
+	if (this->GetType() != Type::PIRANHA_PLANT && this->GetType() != Type::VENUS_FIRE_TRAP)
+		SetState(EState::DIE_BY_ATTACK);
+	else
+		SetState(STATE_DESTROYED);
 	//dieTimer->Start();
 }

@@ -18,10 +18,11 @@
 class CPlayScene : public CScene
 {
 protected:
-	CMario* player;					// A play scene has to have player, right? 
-	CTileMap* map;
+	CMario* player = nullptr;					// A play scene has to have player, right? 
+	CTileMap* map = nullptr;
 
 	vector<CGameObject*> listObj;
+	vector<CGameObject*> listEnemy;
 	vector<CGameObject*> listItem;
 	vector<CEffect*> listEffect;
 

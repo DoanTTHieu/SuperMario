@@ -13,7 +13,7 @@ CBullet::CBullet(D3DXVECTOR2 position, int nx)
 	x = position.x;
 	y = position.y;
 	this->nx = nx;
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(5));
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(21));
 
 }
 void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -77,6 +77,11 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				{
 					state = STATE_DESTROYED;
 				}
+			}
+			else if (e->obj->GetType() == Type::PIRANHA_PLANT || e->obj->GetType() == Type::VENUS_FIRE_TRAP)
+			{
+				e->obj->SetState(STATE_DESTROYED);
+				state = STATE_DESTROYED;
 			}
 			else //quai di chuyen: 1 phat dan la chet
 			{

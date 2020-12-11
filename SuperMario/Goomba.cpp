@@ -23,7 +23,7 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 		
 }
 
-void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj)
 {
 
 	////
@@ -46,7 +46,7 @@ void CGoomba::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	vector<LPCOLLISIONEVENT> coEventsResult;
 
 	coEvents.clear();
-	CalcPotentialCollisions(coObjects, coEvents);
+	CalcPotentialCollisions(coObj, coEvents);
 
 	if (coEvents.size() == 0)
 	{

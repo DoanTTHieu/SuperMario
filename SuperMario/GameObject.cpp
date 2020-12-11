@@ -14,6 +14,14 @@ CGameObject::CGameObject()
 	vx = vy = 0;
 	nx = 1;
 	isInteractable = false;
+	//
+	start_x = start_y = 0;
+	ny = 0;
+	state = ani = 0;
+	dx = dy = 0.0f;
+	type = Type::BRICK;
+	dt = 0;
+	animation_set = NULL;
 }
 
 void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -23,15 +31,10 @@ void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	dy = vy * dt;
 }
 
+
 /*
 	Extension of original SweptAABB to deal with two moving objects
 */
-
-bool CGameObject::AABBCheck(float l_a, float t_a, float r_a, float b_a, float l_b, float t_b, float r_b, float b_b)
-{
-	return (l_a < r_b&& r_a > l_b && t_a < b_b&& b_a > t_b);
-	//return !(l_a > r_b || r_a<l_b || t_a>b_b || b_a < t_b);
-}
 
 LPCOLLISIONEVENT CGameObject::SweptAABBEx(LPGAMEOBJECT coO)
 {
@@ -141,7 +144,7 @@ void CGameObject::RenderBoundingBox()
 	rect.right = (int)r - (int)l;
 	rect.bottom = (int)b - (int)t;
 
-	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 80);
+	CGame::GetInstance()->Draw(l, t, bbox, rect.left, rect.top, rect.right, rect.bottom, 200);
 }
 
 bool CGameObject::IsOutOfCamera()
@@ -151,13 +154,18 @@ bool CGameObject::IsOutOfCamera()
 
 }
 
+bool CGameObject::AABBCheck(float l_a, float t_a, float r_a, float b_a, float l_b, float t_b, float r_b, float b_b)
+{
+	return (l_a < r_b&& r_a > l_b && t_a < b_b&& b_a > t_b);
+	//return !(l_a > r_b || r_a<l_b || t_a>b_b || b_a < t_b);
+}
+
 bool CGameObject::IsAABB(LPGAMEOBJECT object)
 {
 	float l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario;
 	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
 	object->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
 	return AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario);
-
 }
 
 CGameObject::~CGameObject()

@@ -4,8 +4,8 @@
 
 CPiranhaPlant::CPiranhaPlant(float x, float y):CPlant(x,y)
 {
-	hiddenTimer = new CTimer(TIME_HIDDEN);
-	attackTimer = new CTimer(TIME_ATTACK);
+	hiddenTimer = new CTimer(PIRANHA_PLANT_TIME_HIDDEN);
+	attackTimer = new CTimer(PIRANHA_PLANT_TIME_ATTACK);
 	type = Type::PIRANHA_PLANT;
 }
 
@@ -25,9 +25,9 @@ void CPiranhaPlant::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 }
 
-void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
 {
-	CPlant::Update(dt, coObjects);
+	CPlant::Update(dt, coObjects, player);
 	//1
 	if (GetState() == STATE_MOVING_UP && y < start_y - PLANT_BBOX_LOW)
 	{
@@ -36,12 +36,13 @@ void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	}
 }
 
+
 void CPiranhaPlant::Render()
 {
 	ani = 0;
 	animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CPiranhaPlant::SetState(int state)

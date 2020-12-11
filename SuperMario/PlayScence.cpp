@@ -10,6 +10,7 @@
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
 #include "Pipe.h"
+#include "Coin.h"
 
 using namespace std;
 
@@ -146,11 +147,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CGoomba();
 	}
 	break;
+	case OBJECT_TYPE_COIN:
+	{
+		obj = new CCoin();
+	}
+	break;
 	case OBJECT_TYPE_BRICK: 
 	{
 		int btype = atoi(tokens[4].c_str());
-		int isContain = atoi(tokens[5].c_str());
-		obj = new CBrick( x,y , btype, isContain); 
+		int contain = atoi(tokens[5].c_str());
+		int sl = atoi(tokens[6].c_str());
+		obj = new CBrick( x,y , btype, contain, sl); 
 	}
 	break;
 	case OBJECT_TYPE_VENUS_FIRE_TRAP:
@@ -208,17 +215,17 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 	case Type::BRICK:
 	case Type::GROUND:
-	case Type::KOOPAS:
-	case Type::GOOMBA:
 	case Type::PORTAL:
+	case Type::PIPE:
+	case Type::COIN:
 	case Type::VENUS_FIRE_TRAP:
 	case Type::PIRANHA_PLANT:
-	case Type::PIPE:
+	case Type::KOOPAS:
+	case Type::GOOMBA:
 		listObj.push_back(obj);
 		break;
-	//case Type::ITEM:
-	//	listItem.push_back(obj);
-	//	break;
+
+	/*	listEnemy.push_back(obj);*/
 	}
 }
 
@@ -308,8 +315,8 @@ void CPlayScene::Update(DWORD dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
-		//mario
-	player->Update(dt, &listObj, &listItem);
+	//	//mario
+	//player->Update(dt, &listObj, &listItem);
 
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
@@ -340,12 +347,23 @@ void CPlayScene::Update(DWORD dt)
 
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
-		listObj[i]->Update(dt, &listObj);
+		if (listObj[i]->GetType() == Type::PIRANHA_PLANT || listObj[i]->GetType() == Type::VENUS_FIRE_TRAP)
+		{
+			float l, t, r, b;
+			player->GetBoundingBox(l, t, r, b);
+			CPlant* plant = dynamic_cast<CPlant*>(listObj[i]);
+			plant->Update(dt, &listObj, { l,t,r,b });
+		}
+		else
+			listObj[i]->Update(dt, &listObj);
 	}
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
 		listItem[i]->Update(dt, &listObj);
 	}
+
+	//mario
+	player->Update(dt, &listObj, &listItem);
 
 
 	for (size_t i = 0; i < player->listBullet.size(); i++)
@@ -372,17 +390,26 @@ void CPlayScene::Update(DWORD dt)
 		listEffect[i]->Update(dt);
 	}
 
+	//xoa obj co state = STATE_DESTROYED
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
-		if (listObj[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		if (listObj[i]->GetState() == STATE_DESTROYED)
 		{
 			listObj.erase(listObj.begin() + i);
 			i--;
 		}
 	}
+	//for (size_t i = 0; i < listEnemy.size(); i++)
+	//{
+	//	if (listEnemy[i]->GetState() == STATE_DESTROYED|| (listEnemy[i]->IsOutOfCamera()&& listEnemy[i]->GetType()==Type::VENUS_FIRE_BALL))
+	//	{
+	//		listEnemy.erase(listEnemy.begin() + i);
+	//		i--;
+	//	}
+	//}
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
-		if (listItem[i]->GetState() == STATE_DESTROYED/*|| objects[i]->IsOutOfCamera()*/)
+		if (listItem[i]->GetState() == STATE_DESTROYED|| listItem[i]->IsOutOfCamera())
 		{
 			listItem.erase(listItem.begin() + i);
 			i--;
@@ -416,6 +443,9 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listObj.size(); i++)
 		if (listObj.at(i) != NULL)
 			listObj[i]->Render();
+	//for (size_t i = 0; i < listEnemy.size(); i++)
+	//	if (listEnemy.at(i) != NULL)
+	//		listEnemy[i]->Render();
 	for (size_t i = 0; i < listItem.size(); i++)
 		if (listItem.at(i) != NULL)
 			listItem.at(i)->Render();
@@ -429,9 +459,13 @@ void CPlayScene::Render()
 */
 void CPlayScene::Unload()
 {
-	for (int i = 0; i < listItem.size(); i++)
+	for (size_t i = 0; i < listItem.size(); i++)
 		delete listItem[i];
 	listItem.clear();
+
+	//for (size_t i = 0; i < listEnemy.size(); i++)
+	//	delete listEnemy[i];
+	//listEnemy.clear();
 
 	for (size_t i = 0; i < listObj.size(); i++)
 		delete listObj[i];
@@ -451,6 +485,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	if (mario->GetState() == MState::Die && KeyCode !=DIK_F1)
+		return;
 	switch (KeyCode)
 	{
 	case DIK_S:
@@ -506,6 +542,8 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 {
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
+	if (mario->GetState() == MState::Die)
+		return;
 	switch (KeyCode)
 	{
 	case DIK_S:

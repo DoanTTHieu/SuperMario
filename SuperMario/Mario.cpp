@@ -163,21 +163,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		listBullet[i]->Update(dt, coObj);
 	}
 
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-	coEvents.clear();
-
-	// turn off collision when die 
-	if (state != MState::Die)
-		CalcPotentialCollisions(coObj, coEvents);
-
-	// reset untouchable timer if untouchable time has passed
-	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
-	{
-		untouchable_start = 0;
-		untouchable = 0;
-	}
-
+	//Collide with objects
 	interactableObject.clear();
 	for (UINT i = 0; i < coObj->size(); i++)
 	{
@@ -210,6 +196,21 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			}
 			item->SetState(STATE_DESTROYED);
 		}
+	}
+
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+	coEvents.clear();
+
+	// turn off collision when die 
+	if (state != MState::Die)
+		CalcPotentialCollisions(coObj, coEvents);
+
+	// reset untouchable timer if untouchable time has passed
+	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
+	{
+		untouchable_start = 0;
+		untouchable = 0;
 	}
 
 	// No collision occured, proceed normally
@@ -262,7 +263,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 				CPortal* p = dynamic_cast<CPortal*>(e->obj);
 				CGame::GetInstance()->SwitchScene(p->GetSceneId());
 			}
-			if (e->obj->GetType() == Type::PIRANHA_PLANT)
+			if (e->obj->GetType() == Type::PIRANHA_PLANT|| e->obj->GetType() == Type::VENUS_FIRE_TRAP)
 			{
 				x += dx;
 				y += dy;
@@ -325,11 +326,20 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 					if (e->obj->GetType() == Type::BRICK)
 					{
 						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-						if (brick->GetBrickType() == BrickType::question)
+						if (brick->GetBrickType() != BrickType::question_broken)
 						{
-							brick->SetBrickType(BrickType::question_broken);
+							if (brick->GetItemRemaining() == 1)
+							{
+								if (brick->GetBrickType() == BrickType::question)
+									//brick->SetState(STATE_BROKEN);
+									brick->SetBrickType(BrickType::question_broken);
+								else
+									brick->SetState(STATE_DESTROYED);
+							}
 							brick->SetState(STATE_BEING_TOSSED);
+							brick->sl--;
 						}
+
 					}
 					else if (e->obj->GetType() == Type::GROUND)
 					{
@@ -419,7 +429,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 							{
 								if (newkoopas->GetKoopaType() == KoopaType::Green_paratroopa || newkoopas->GetKoopaType() == KoopaType::Red_paratroopa)
 									newkoopas->vx = -newkoopas->vx;
-								UpdateLevel();
+								//UpdateLevel();
 							}
 						}
 					}
@@ -440,6 +450,8 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 
 void CMario::CheckInteraction()
 {
+	if (GetState() == MState::Die)
+		return;
 	if (interactableObject.size() > 0)
 	{
 		for (auto object : interactableObject)
@@ -448,10 +460,14 @@ void CMario::CheckInteraction()
 			{
 				if (IsAABB(object))
 				{
-					if (object->GetType() == Type::KOOPAS || object->GetType() == Type::PIRANHA_PLANT|| object->GetType() == Type::VENUS_FIRE_TRAP)
+					if (object->GetType() == Type::KOOPAS || object->GetType() == Type::PIRANHA_PLANT|| object->GetType() == Type::VENUS_FIRE_TRAP
+						|| object->GetType() == Type::VENUS_FIRE_BALL)
 					{
 						if (object->GetState() != STATE_DESTROYED)
-							this->UpdateLevel();
+							//this->UpdateLevel();
+						{
+
+						}
 					}
 				}
 
@@ -1107,8 +1123,8 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 */
 void CMario::Reset()
 {
-	Idle();
 	SetLevel(Level::Small);
+	Idle();
 	SetPosition(start_x, start_y);
 	SetSpeed(0, 0);
 }

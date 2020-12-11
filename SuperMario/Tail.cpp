@@ -32,18 +32,23 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 			if (coObjects->at(i)->GetType() == Type::BRICK)
 			{
 				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
-				if (brick->GetBrickType() == BrickType::bronze)
-					brick->SetState(STATE_DESTROYED);
-				else if (brick->GetBrickType() == BrickType::question)
+				if (brick->GetBrickType() != BrickType::question_broken)
 				{
-					brick->SetBrickType(BrickType::question_broken);
+					if (brick->GetItemRemaining() == 1)
+					{
+						if (brick->GetBrickType() == BrickType::question)
+							//brick->SetState(STATE_BROKEN);
+							brick->SetBrickType(BrickType::question_broken);
+						else
+							brick->SetState(STATE_DESTROYED);
+					}
 					brick->SetState(STATE_BEING_TOSSED);
+					brick->sl--;
 				}
-				
 			}
 			else
 			{
-				if (coObjects->at(i)->GetType() != Type::BRICK && coObjects->at(i)->GetType() != Type::GROUND)
+				if (coObjects->at(i)->GetType() != Type::BRICK && coObjects->at(i)->GetType() != Type::GROUND && coObjects->at(i)->GetType() != Type::PIPE)
 				{
 					if (coObjects->at(i)->GetState() != STATE_DESTROYED && coObjects->at(i)->GetState() != EState::DIE_BY_CRUSH && coObjects->at(i)->GetState() != EState::DIE_BY_ATTACK)
 					{
@@ -81,6 +86,7 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 							float ax, ay;
 							float bx, by;
 							GetPosition(ax, ay);//mario
+
 							enemy->GetPosition(bx, by);
 							if ((bx - ax) > 0)
 								enemy->nx = 1;

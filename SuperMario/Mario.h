@@ -8,9 +8,11 @@
 
 class CMario : public CGameObject
 {
+	int score;
+	int coin;
 	int level;
 	int untouchable;
-	DWORD untouchable_start;
+	ULONGLONG untouchable_start;
 
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
@@ -50,7 +52,7 @@ public:
 	bool isHolding;
 
 	CTimer* flyTimer = new CTimer(TIME_FLY);
-	DWORD attackStart;
+	ULONGLONG attackStart;
 
 	void Jump();
 	void JumpX();

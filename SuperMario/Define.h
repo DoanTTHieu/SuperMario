@@ -3,20 +3,27 @@
 enum Type
 {
 	MARIO = 01,
-	//
+
+	// static objects
 	GROUND = 02,
 	BRICK = 03,
-	//
-	GOOMBA = 04,
-	KOOPAS = 05,
+	PIPE = 04,
 
-	//
-	ITEM = 06,
-
+	//enemy
+	GOOMBA = 05,
+	KOOPAS = 06,
 	PIRANHA_PLANT = 07,
 	VENUS_FIRE_TRAP = 8,
-	PORTAL = 9,
-	PIPE = 10,
+
+	//item and coin
+	ITEM = 9,
+	COIN = 10,
+
+	//weapon
+	VENUS_FIRE_BALL = 11,
+
+	//
+	PORTAL = 12,
 
 };
 
@@ -81,14 +88,19 @@ enum VenusFireTrapType
 #define SCENE_SECTION_TILE_MAP	7
 
 #define OBJECT_TYPE_MARIO			0
+//static objects
 #define OBJECT_TYPE_BRICK			1
-#define OBJECT_TYPE_GOOMBA			2
-#define OBJECT_TYPE_KOOPAS			3
-#define OBJECT_TYPE_VENUS_FIRE_TRAP	30
-#define OBJECT_TYPE_PIRANHA_PLANT	31
-#define OBJECT_TYPE_GROUND			40
-#define OBJECT_TYPE_PIPE			41
+#define OBJECT_TYPE_GROUND			2
+#define OBJECT_TYPE_PIPE			3
+#define OBJECT_TYPE_COIN			4
+//enemy
+#define OBJECT_TYPE_GOOMBA			11
+#define OBJECT_TYPE_KOOPAS			12
+#define OBJECT_TYPE_VENUS_FIRE_TRAP	13
+#define OBJECT_TYPE_PIRANHA_PLANT	14
+//
 #define OBJECT_TYPE_PORTAL			50
+
 
 #define MAX_SCENE_LINE 1024
 

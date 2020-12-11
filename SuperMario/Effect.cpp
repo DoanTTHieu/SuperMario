@@ -5,7 +5,7 @@ CEffect::CEffect(D3DXVECTOR2 position, int type)
 	this->effectType = type;
 	x = position.x;
 	y = position.y;
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(7));
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(41));
 	startEffect = GetTickCount64();
 
 }

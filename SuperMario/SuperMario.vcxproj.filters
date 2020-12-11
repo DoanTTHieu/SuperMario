@@ -105,6 +105,12 @@
     <ClInclude Include="Plant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VenusFireBall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico">
@@ -197,6 +203,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Plant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VenusFireBall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

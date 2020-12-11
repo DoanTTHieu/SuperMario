@@ -9,6 +9,7 @@
 #define BRICK_ANI_BROKEN		1
 #define STATE_BEING_TOSSED		0
 #define STATE_NORMAL			1
+#define STATE_BROKEN			2
 
 class CBrick : public CGameObject
 {
@@ -17,16 +18,17 @@ public:
 	bool isBroken;
 	bool diddropItem = false;
 	int Btype;
-	bool isContainItem;
-
+	int containItem;
+	int sl;
 public:
-	CBrick(float x, float y, int type, bool isContain);
+	CBrick(float x, float y, int type, int isContain, int sl);
 	~CBrick();
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects);
 
 	int GetBrickType() { return Btype; }
+	int GetItemRemaining() { return sl; };
 	void SetBrickType(int type) { Btype = type; }
 	
 	void SetState(int state);
