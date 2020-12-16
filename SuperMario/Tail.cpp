@@ -42,7 +42,12 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 						else
 							brick->SetState(STATE_DESTROYED);
 					}
-					brick->SetState(STATE_BEING_TOSSED);
+					if (brick->GetBrickType() != BrickType::bronze)
+						brick->SetState(STATE_BEING_TOSSED);
+					else
+						//brick->SetState(STATE_DESTROYED);
+						if(!brick->isBroken)
+							brick->SetState(STATE_BROKEN);
 					brick->sl--;
 				}
 			}

@@ -20,6 +20,8 @@ public:
 	int Btype;
 	int containItem;
 	int sl;
+	vector<LPGAMEOBJECT> listPiece;
+
 public:
 	CBrick(float x, float y, int type, int isContain, int sl);
 	~CBrick();
