@@ -105,6 +105,7 @@ enum VenusFireTrapType
 #define MAX_SCENE_LINE 1024
 
 //mario
+#define TIME_DEFAULT				300
 #define TIME_FLY					3000
 #define MARIO_TIME_ATTACK			400
 #define MARIO_TIME_SHOOT			300

@@ -8,12 +8,18 @@
 
 class CMario : public CGameObject
 {
+	//static CMario* __instance;
+
 	int score;
 	int coin;
 	int level;
+	int life;
+	int time;
+
 	int untouchable;
 	ULONGLONG untouchable_start;
-
+	CTimer* play_timer = new CTimer(TIME_DEFAULT);
+	
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
 	
@@ -28,9 +34,13 @@ class CMario : public CGameObject
 
 
 public:
+	//static CMario* GetInstance();
+
 	vector< LPGAMEOBJECT> listBullet;
 
 	CMario(float x = 0.0f, float y = 0.0f);
+	~CMario();
+
 	//virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
 	virtual void Render();
@@ -38,12 +48,10 @@ public:
 
 	void SetState(int state);
 	
-	void SetLevel(int l) { level = l; }
-	int GetLevel() { return level; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
+	
 	bool isOnGround;
 	bool isSitting;
-		
 	bool isblockJump;
 	bool isAttack;
 	bool isWaggingTail;
@@ -74,6 +82,24 @@ public:
 	void Big();
 	void Raccoon();
 	void FireMario();
+
+	int GetCoin() { return coin; }
+	void SetCoin(int x) { coin = x; }
+	void AddCoin() { coin++; }
+
+	int GetScore() { return score; }
+	void SetScore(int x) { score = x; }
+	void AddScore(int x) { score += x; }
+
+	int GetLevel() { return level; }
+	void SetLevel(int l) { level = l; }
+
+	int GetLife() { return life; }
+	void SetLife(int x) { life = x; }
+	void SubLife() { life -= 1; }
+	void AddLife() { life += 1; }
+
+	void CollideWithItem(vector<LPGAMEOBJECT>* listItem);
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);
 };

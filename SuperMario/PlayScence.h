@@ -14,12 +14,14 @@
 #include "SuperMushroom.h"
 #include "FireBallEffect.h"
 #include "SuperLeaf.h"
+#include "HUD.h"
 
 class CPlayScene : public CScene
 {
 protected:
 	CMario* player = nullptr;					// A play scene has to have player, right? 
 	CTileMap* map = nullptr;
+	LPHUD hud;
 
 	vector<CGameObject*> listObj;
 	vector<CGameObject*> listEnemy;

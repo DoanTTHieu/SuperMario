@@ -139,6 +139,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 		obj = new CMario(x, y);
 		player = (CMario*)obj;
+		// Add simon
+		//player = CMario::GetInstance();
+		//player->SetPosition(30.0f, 183.0f);
+		hud = new CHUD();
 
 		DebugOut(L"[INFO] Player object created!\n");
 		break;
@@ -217,16 +221,19 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Type::GROUND:
 	case Type::PORTAL:
 	case Type::PIPE:
-	case Type::COIN:
 	case Type::VENUS_FIRE_TRAP:
 	case Type::PIRANHA_PLANT:
 	case Type::KOOPAS:
 	case Type::GOOMBA:
 		listObj.push_back(obj);
 		break;
-
-	/*	listEnemy.push_back(obj);*/
+	case Type::COIN:
+		DebugOut(L"coin\n");
+		listItem.push_back(obj);
+		break;
 	}
+	//hud = CHUD::GetInstance();
+
 }
 
 /*
@@ -335,13 +342,6 @@ void CPlayScene::Update(DWORD dt)
 				if(item!=NULL)
 					listItem.push_back(item);
 			}
-			else if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == STATE_DESTROYED)
-			{
-				float bx, by;
-				brick->GetPosition(bx, by);
-				CEffect* effect = new CEffect({ bx, by }, EffectType::broze_bick_broken);
-				listEffect.push_back(effect);
-			}
 		}
 	}
 
@@ -364,7 +364,6 @@ void CPlayScene::Update(DWORD dt)
 
 	//mario
 	player->Update(dt, &listObj, &listItem);
-
 
 	for (size_t i = 0; i < player->listBullet.size(); i++)
 	{
@@ -452,6 +451,7 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect.at(i)->Render();
 	player->Render();
+	hud->Render({ 0, 0 }, player);
 }
 
 /*
@@ -476,7 +476,7 @@ void CPlayScene::Unload()
 	listEffect.clear();
 
 	player = NULL;
-
+	delete hud;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 

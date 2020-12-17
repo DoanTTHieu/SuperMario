@@ -16,9 +16,16 @@
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
 
+//CMario* CMario::__instance;
+
 CMario::CMario(float x, float y) : CGameObject()
 {
 	type = Type::MARIO;
+
+	score = 100;
+	coin = 0;
+	life = 4;
+	time = TIME_DEFAULT;
 
 	level = Level::Big;
 	untouchable = 0;
@@ -37,6 +44,24 @@ CMario::CMario(float x, float y) : CGameObject()
 	start_y = y;
 	this->x = x;
 	this->y = y;
+}
+
+//CMario* CMario::GetInstance()
+//{
+//	if (__instance == NULL) __instance = new CMario();
+//	return __instance;
+//}
+
+CMario::~CMario()
+{
+	delete tail;
+
+	for (auto iter : listBullet)
+		delete iter;
+	listBullet.clear();
+
+	//delete __instance;
+	//__instance = NULL;
 }
 
 void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem)
@@ -175,28 +200,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 
 	//aabb
 	CheckInteraction();
-	for (UINT i = 0; i < coItem->size(); i++)
-	{
-		if (IsAABB(coItem->at(i)))
-		{
-			CItem* item = dynamic_cast<CItem*>(coItem->at(i));
-			switch (item->GetItemID())
-			{
-			case ItemID::superLeaf:
-				this->SetPosition(x, y - 1.0f);
-				this->SetLevel(Level::Raccoon);
-				break;
-			case ItemID::superMushroom:
-				this->SetPosition(x, y - 12.0f);
-				this->SetLevel(Level::Big);
-				break;
-			case ItemID::fireFlower:
-				this->SetLevel(Level::Fire);
-				break;
-			}
-			item->SetState(STATE_DESTROYED);
-		}
-	}
+
+	//Collide with items and coins
+	CollideWithItem(coItem);
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -1071,6 +1077,7 @@ void CMario::SetState(int state)
 	case MState::Die:
 		flyTimer->Stop();
 		vy = -MARIO_DIE_DEFLECT_SPEED;
+		SubLife();
 		break;
 	}
 
@@ -1114,6 +1121,45 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 		right = x + MARIO_SMALL_BBOX_WIDTH;
 		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
 		break;
+	}
+
+}
+
+/*
+	Mario collides with objects
+*/
+void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
+{
+	for (UINT i = 0; i < coItem->size(); i++)
+	{
+		if (IsAABB(coItem->at(i)))
+		{
+			if (coItem->at(i)->GetType() == Type::COIN)
+			{
+				AddCoin();
+			}
+			else
+			{
+				CItem* item = dynamic_cast<CItem*>(coItem->at(i));
+				switch (item->GetItemID())
+				{
+				case ItemID::superLeaf:
+					this->SetPosition(x, y - 1.0f);
+					this->SetLevel(Level::Raccoon);
+					break;
+				case ItemID::superMushroom:
+					this->SetPosition(x, y - 12.0f);
+					this->SetLevel(Level::Big);
+					break;
+				case ItemID::fireFlower:
+					this->SetLevel(Level::Fire);
+					break;
+				}
+
+			}
+			coItem->at(i)->SetState(STATE_DESTROYED);
+
+		}
 	}
 
 }
