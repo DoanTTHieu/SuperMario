@@ -58,7 +58,7 @@ public:
 	bool isWaitingForAni;
 	bool canHoldShell;
 	bool isHolding;
-
+	bool isFlying;//cam_y theo mario khi bay, ko theo khi nhay
 	CTimer* flyTimer = new CTimer(TIME_FLY);
 	ULONGLONG attackStart;
 

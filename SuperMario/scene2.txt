@@ -819,7 +819,7 @@
 
 # MARIO
 #0	1380	360	1
-0	0	30	1
+0	0	380	1
 
 #==========================ENEMY=========================
 #GOOMBA
@@ -840,7 +840,7 @@
 #type	x	y	ani_set	type_piranha_plant
 # 0 = do, 1 = xanh
 13	360	368	54	0
-13	1864	368	55	1
+#13	1864	368	55	1
 
 #PIRANHA PLANT
 #type	x	y	ani_set

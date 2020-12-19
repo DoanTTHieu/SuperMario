@@ -6,6 +6,7 @@ CVenusFireBall::CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario) :C
 	this->zone = zoneOfMario;
 	this->isInteractable = true;
 	this->type = Type::VENUS_FIRE_BALL;
+	this->isInteractable = true;
 }
 
 void CVenusFireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
@@ -16,6 +17,8 @@ void CVenusFireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	x += dx;
 	y += dy;
 	
+	if (IsOutOfCamera())
+		SetState(STATE_DESTROYED);
 }
 
 CVenusFireBall::~CVenusFireBall()
@@ -24,7 +27,8 @@ CVenusFireBall::~CVenusFireBall()
 
 void CVenusFireBall::SetSpeed()
 {
-	vx = nx * BULLET_SPEED_X*0.004;
+	vx = nx * BULLET_SPEED_X;
+	//vx = nx * BULLET_SPEED_X*0.004;
 	switch (zone)
 	{
 	case ZoneActive::left_up_far:

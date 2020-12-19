@@ -35,7 +35,7 @@ class CVenusFireTrap : public CPlant
 	int venusFireTrapType;
 	bool isAttack = false;
 	int zoneOfMario = 0;
-	CVenusFireBall *fireBall;
+	CVenusFireBall *fireBall = nullptr;
 public:
 	CVenusFireTrap(float x, float y, int type);
 

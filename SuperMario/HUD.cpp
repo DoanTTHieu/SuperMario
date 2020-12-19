@@ -25,19 +25,19 @@ char* IntToChar(int value, int len = 10)
 
 void CHUD::Render(D3DXVECTOR2 position, CMario * player)
 {
-	background->at(0)->Render(0, 432);
+	background->at(0)->Render(position.x, 432);
 
 	// scores
-	text.Render(IntToChar(player->GetScore(), 7), { 51, 448 });
+	text.Render(IntToChar(player->GetScore(), 7), { position.x+51, 448 });
 
 	// money
 	int coin = player->GetCoin();
 	string strCoin = to_string(coin);
 	int length = strCoin.length();
-	text.Render(IntToChar(player->GetCoin(), length), { 132, 439 });
+	text.Render(IntToChar(player->GetCoin(), length), { position.x+132, 439 });
 
 	// player's life
-	text.Render(IntToChar(player->GetLife(), 1), { 20, 448});
+	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 20, 448});
 
 	// time
 	//text.Render(IntToChar(player->GetTime(), 3), { 141, 3 });

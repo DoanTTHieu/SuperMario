@@ -115,6 +115,7 @@
     <ClCompile Include="Brick.cpp" />
     <ClCompile Include="BronzeBrickPiece.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="Enemy.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="Brick.h" />
     <ClInclude Include="BronzeBrickPiece.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Define.h" />
     <ClInclude Include="Effect.h" />

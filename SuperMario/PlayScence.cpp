@@ -233,7 +233,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	}
 	//hud = CHUD::GetInstance();
-
+	cam = CCamera::GetInstance();
 }
 
 /*
@@ -343,6 +343,7 @@ void CPlayScene::Update(DWORD dt)
 					listItem.push_back(item);
 			}
 		}
+		
 	}
 
 	for (size_t i = 0; i < listObj.size(); i++)
@@ -398,6 +399,7 @@ void CPlayScene::Update(DWORD dt)
 			i--;
 		}
 	}
+
 	//for (size_t i = 0; i < listEnemy.size(); i++)
 	//{
 	//	if (listEnemy[i]->GetState() == STATE_DESTROYED|| (listEnemy[i]->IsOutOfCamera()&& listEnemy[i]->GetType()==Type::VENUS_FIRE_BALL))
@@ -428,12 +430,7 @@ void CPlayScene::Update(DWORD dt)
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
-	if (player->x > (SCREEN_WIDTH / 2) && player->x + (SCREEN_WIDTH / 2) < map->GetMapWidth())
-	{
-		cx = player->x - (SCREEN_WIDTH / 2);
-		CGame::GetInstance()->cam_x = cx;
-	}
-	CGame::GetInstance()->cam_y = 50;
+	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2.25) , float(map->GetMapHeight() - SCREEN_HEIGHT/**1.15*/) }, player->isFlying);
 }
 
 void CPlayScene::Render()
@@ -451,7 +448,7 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect.at(i)->Render();
 	player->Render();
-	hud->Render({ 0, 0 }, player);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), 0 }, player);
 }
 
 /*
@@ -477,6 +474,7 @@ void CPlayScene::Unload()
 
 	player = NULL;
 	delete hud;
+	delete cam;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 

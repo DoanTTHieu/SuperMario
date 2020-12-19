@@ -15,12 +15,14 @@
 #include "FireBallEffect.h"
 #include "SuperLeaf.h"
 #include "HUD.h"
+#include "Camera.h"
 
 class CPlayScene : public CScene
 {
 protected:
 	CMario* player = nullptr;					// A play scene has to have player, right? 
 	CTileMap* map = nullptr;
+	LPCAMERA cam;
 	LPHUD hud;
 
 	vector<CGameObject*> listObj;

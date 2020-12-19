@@ -83,7 +83,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				e->obj->SetState(STATE_DESTROYED);
 				state = STATE_DESTROYED;
 			}
-			else //quai di chuyen: 1 phat dan la chet
+			else if (e->obj->GetType() != Type::VENUS_FIRE_BALL)//quai di chuyen: 1 phat dan la chet
 			{
 				if (e->ny != 0 || e->nx != 0)
 				{
@@ -126,8 +126,15 @@ void CBullet::GetBoundingBox(float& left, float& top, float& right, float& botto
 
 void CBullet::Render()
 {
+	if (state == STATE_DESTROYED)
+		return;
 	int alpha = 255;
 	animation_set->at(0)->Render(x, y, alpha);
 	//RenderBoundingBox();
 }
 
+void CBullet::SetState(int state)
+{
+	if (state == STATE_DESTROYED)
+		vx = vy = 0;
+}

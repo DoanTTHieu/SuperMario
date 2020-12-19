@@ -38,6 +38,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	isWaggingTail = false;
 	canHoldShell = false;
 	isHolding = false;
+	isFlying = false;
 	attackStart = 0;
 
 	start_x = x;
@@ -250,6 +251,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			if (ny == -1)
 			{
 				isOnGround = true;
+				isFlying = false;
 				isblockJump = false;
 				isWaggingTail = false;
 			}
@@ -470,10 +472,9 @@ void CMario::CheckInteraction()
 						|| object->GetType() == Type::VENUS_FIRE_BALL)
 					{
 						if (object->GetState() != STATE_DESTROYED)
-							//this->UpdateLevel();
-						{
-
-						}
+							this->UpdateLevel();
+						if (object->GetType() == Type::VENUS_FIRE_BALL)
+							object->SetState(STATE_DESTROYED);
 					}
 				}
 
@@ -1233,6 +1234,7 @@ void CMario::JumpX() {
 
 void CMario::Fly() {
 	SetState(MState::Fly);
+	isFlying = true;
 	isOnGround = false;
 	flyTimer->Start();
 }

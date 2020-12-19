@@ -81,9 +81,8 @@ void CVenusFireTrap::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTO
 		else
 			fireBall = new CVenusFireBall({ x - 6, y + 6 }, nx, zoneOfMario);
 		isAttack = false;
+		coObjects->push_back(fireBall);
 	}
-	if (fireBall) coObjects->push_back(fireBall);
-	//if(fireBall) fireBall->Update(dt, coObjects);
 
 	//1
 	if (GetVenusFireTrapType() == VenusFireTrapType::red)
