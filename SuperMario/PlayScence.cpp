@@ -228,7 +228,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		listObj.push_back(obj);
 		break;
 	case Type::COIN:
-		DebugOut(L"coin\n");
 		listItem.push_back(obj);
 		break;
 	}
@@ -410,7 +409,7 @@ void CPlayScene::Update(DWORD dt)
 	//}
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
-		if (listItem[i]->GetState() == STATE_DESTROYED|| listItem[i]->IsOutOfCamera())
+		if (listItem[i]->GetState() == STATE_DESTROYED|| (listItem[i]->IsOutOfCamera() && listItem[i]->GetType()==Type::ITEM))
 		{
 			listItem.erase(listItem.begin() + i);
 			i--;
@@ -430,7 +429,11 @@ void CPlayScene::Update(DWORD dt)
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
-	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2.25) , float(map->GetMapHeight() - SCREEN_HEIGHT/**1.15*/) }, player->isFlying);
+	if (player->GetState() == MState::Die)
+		cam->LockUpdate();
+	if(cam->IsLockUpdate() && player->GetState() != MState::Die)
+		cam->UnlockUpdate();
+	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2.25) , float(map->GetMapHeight() - SCREEN_HEIGHT+64) }, player->isFlying);
 }
 
 void CPlayScene::Render()
@@ -448,7 +451,7 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect.at(i)->Render();
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), 0 }, player);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player);
 }
 
 /*

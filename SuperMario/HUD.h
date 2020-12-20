@@ -10,7 +10,9 @@
 
 class CHUD
 {
-	LPANIMATION_SET background;
+	LPANIMATION_SET board;
+	LPSPRITE background;
+
 	//LPDIRECT3DTEXTURE9 texBackground;
 	CText text;
 

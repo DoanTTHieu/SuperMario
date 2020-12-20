@@ -289,6 +289,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 						{
 							CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
 							goomba->DieByCrush();
+							AddScore(100);
 							vy = -0.2f;
 						}
 					}
@@ -308,6 +309,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 							else
 							{
 								koopas->Idle();
+								AddScore(100);
 								vy = -0.2f;
 							}
 						}
@@ -476,6 +478,11 @@ void CMario::CheckInteraction()
 						if (object->GetType() == Type::VENUS_FIRE_BALL)
 							object->SetState(STATE_DESTROYED);
 					}
+					//if (object->GetType() == Type::COIN)
+					//{
+					//	AddCoin();
+					//	object->SetState(STATE_DESTROYED);
+					//}
 				}
 
 			}

@@ -28,7 +28,7 @@ public:
 	void LoadMap();
 	void Draw();
 	int GetMapWidth() { return Num_Cols * Tile_Width; }
-	int GetMapHeight() { return Num_Rows * Tile_Height+62; }
+	int GetMapHeight() { return Num_Rows * Tile_Height; }
 };
 
 typedef CTileMap* LPTILEMAP;

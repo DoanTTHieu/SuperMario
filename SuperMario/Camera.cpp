@@ -4,14 +4,16 @@ CCamera* CCamera::__instance = nullptr;
 
 CCamera::CCamera()
 {
-	height = SCREEN_HEIGHT;
+	height = SCREEN_HEIGHT-32;
 	width = SCREEN_WIDTH;
+	lockUpdate = false;
 	CGame::GetInstance()->SetCamPos(0, 200);
 }
 
 void CCamera::Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying)
 {
-
+	if (lockUpdate)
+		return;
 	position.x = playerPos.x - width / 2 + 16;
 
 	// Check if camera out of world screen
@@ -19,7 +21,7 @@ void CCamera::Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, 
 		position.x = end.x;
 	if (position.x < start.x)
 		position.x = start.x;
-	if (isFlying|| playerPos.y < end.y)
+	if (isFlying|| playerPos.y < end.y-64)
 	{
 		position.y = int(playerPos.y - height / 2 + 16);
 	}

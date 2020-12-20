@@ -4,7 +4,8 @@
 
 CCoin::CCoin() {
 	this->type = Type::COIN;
-	//this->SetAnimationSet(CAnimationSets::GetInstance()->Get(21));
+	//this->isInteractable = true;
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(21));
 }
 
 CCoin::~CCoin()
@@ -21,7 +22,7 @@ void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 void CCoin::Render()
 {
 	animation_set->at(1)->Render(x, y);
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CCoin::GetBoundingBox(float& l, float& t, float& r, float& b)

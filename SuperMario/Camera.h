@@ -26,6 +26,7 @@ public:
 	int GetWidth() { return width; }
 	int GetHeight() { return height; }
 
+	bool IsLockUpdate() { return lockUpdate; }
 	void LockUpdate() { lockUpdate = true; }
 	void UnlockUpdate() { lockUpdate = false; }
 };
