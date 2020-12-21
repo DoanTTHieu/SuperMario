@@ -4,9 +4,7 @@
 CVenusFireBall::CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario) :CBullet(position, nx)
 {
 	this->zone = zoneOfMario;
-	this->isInteractable = true;
 	this->type = Type::VENUS_FIRE_BALL;
-	this->isInteractable = true;
 }
 
 void CVenusFireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)

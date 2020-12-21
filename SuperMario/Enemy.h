@@ -9,6 +9,7 @@ enum EState
 	DIE_BY_CRUSH = 02,
 	DIE_BY_ATTACK = 03,
 	DESTROYED = 04,
+	FLY = 05
 	//JUMP = 02,
 	//ATTACK = 03,
 	//STOP = 04,

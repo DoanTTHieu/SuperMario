@@ -6,7 +6,7 @@
 #include "Brick.h"
 #include "Pipe.h"
 #include "Game.h"
-
+#include "Mario.h"
 
 CBullet::CBullet(D3DXVECTOR2 position, int nx)
 {
@@ -82,6 +82,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			{
 				e->obj->SetState(STATE_DESTROYED);
 				state = STATE_DESTROYED;
+				CMario::GetInstance()->AddScore(100);
 			}
 			else if (e->obj->GetType() != Type::VENUS_FIRE_BALL)//quai di chuyen: 1 phat dan la chet
 			{
@@ -92,6 +93,7 @@ void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						CEnemy* enemy = dynamic_cast<CEnemy*>(e->obj);
 						enemy->nx = this->nx;
 						enemy->DieByAttack();
+						CMario::GetInstance()->AddScore(100);
 						vy = -0.2;
 					}
 					state = STATE_DESTROYED;

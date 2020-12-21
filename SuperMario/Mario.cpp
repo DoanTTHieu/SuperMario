@@ -16,7 +16,7 @@
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
 
-//CMario* CMario::__instance;
+CMario* CMario::__instance = nullptr;
 
 CMario::CMario(float x, float y) : CGameObject()
 {
@@ -41,17 +41,19 @@ CMario::CMario(float x, float y) : CGameObject()
 	isFlying = false;
 	attackStart = 0;
 
+	colidingGround = NULL;
+
 	start_x = x;
 	start_y = y;
 	this->x = x;
 	this->y = y;
 }
 
-//CMario* CMario::GetInstance()
-//{
-//	if (__instance == NULL) __instance = new CMario();
-//	return __instance;
-//}
+CMario* CMario::GetInstance()
+{
+	if (__instance == NULL) __instance = new CMario();
+	return __instance;
+}
 
 CMario::~CMario()
 {
@@ -189,29 +191,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		listBullet[i]->Update(dt, coObj);
 	}
 
-	//Collide with objects
-	interactableObject.clear();
-	for (UINT i = 0; i < coObj->size(); i++)
-	{
-		if (coObj->at(i)->isInteractable)
-		{
-			interactableObject.push_back(coObj->at(i));
-		}
-	}
-
-	//aabb
-	CheckInteraction();
-
-	//Collide with items and coins
-	CollideWithItem(coItem);
-
-	vector<LPCOLLISIONEVENT> coEvents;
-	vector<LPCOLLISIONEVENT> coEventsResult;
-	coEvents.clear();
-
-	// turn off collision when die 
-	if (state != MState::Die)
-		CalcPotentialCollisions(coObj, coEvents);
 
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
@@ -219,6 +198,141 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		untouchable_start = 0;
 		untouchable = 0;
 	}
+
+	if (isOnGround && colidingGround)
+	{
+		float ml, mt, mr, mb, gl, gt, gr, gb;
+		colidingGround->GetBoundingBox(gl, gt, gr, gb);
+		GetBoundingBox(ml, mt, mr, mb);
+		if (mr < gl || ml > gr)
+		{
+			isFalling = true;
+			isOnGround = false;
+		}
+	}
+
+
+	vector<LPGAMEOBJECT> groundObjs;
+
+	for (int i = 0; i < coObj->size(); i++)
+	{
+		switch (coObj->at(i)->GetType())
+		{
+		case Type::BRICK:
+		case Type::GROUND:
+		case Type::PIPE:
+			groundObjs.push_back(coObj->at(i));
+			break;
+		case Type::PIRANHA_PLANT:
+		case Type::VENUS_FIRE_TRAP:
+		case Type::VENUS_FIRE_BALL:
+			if (untouchable == 0 && GetState() != MState::Die)
+			{
+				if (this->IsCollidingWithObject(coObj->at(i)))
+					UpdateLevel();
+			}
+			break;
+		case Type::GOOMBA:
+			if (untouchable == 0 && GetState()!=MState::Die)
+			{
+				if (this->IsCollidingWithObjectNy(coObj->at(i)))
+				{
+					if (coObj->at(i)->GetState() != STATE_DESTROYED && coObj->at(i)->GetState() != EState::DIE_BY_CRUSH && coObj->at(i)->GetState() != EState::DIE_BY_ATTACK)
+					{
+						CGoomba* goomba = dynamic_cast<CGoomba*>(coObj->at(i));
+						goomba->DieByCrush();
+						AddScore(100);
+						vy = -0.2f;
+					}
+				}
+				else
+				{
+					if (this->IsAABB(coObj->at(i)))
+					{
+						UpdateLevel();
+					}
+				}
+			}
+			break;
+		case Type::KOOPAS:
+			if (untouchable == 0 && GetState() != MState::Die)
+			{
+				if (this->IsCollidingWithObjectNy(coObj->at(i)))
+				{
+					CKoopas* koopas = dynamic_cast<CKoopas*>(coObj->at(i));
+					if (koopas->GetState() != KOOPAS_STATE_IDLE)
+					{
+						if (koopas->GetKoopaType() > 2)
+						{
+							if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
+								koopas->SetKoopaType(KoopaType::Green_troopa);
+							if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
+								koopas->SetKoopaType(KoopaType::Red_troopa);
+						}
+						else
+						{
+							koopas->Idle();
+							AddScore(100);
+							vy = -0.2f;
+						}
+					}
+					else
+					{
+						float ax, ay;
+						float bx, by;
+						GetPosition(ax, ay);//mario
+						koopas->GetPosition(bx, by);
+						if ((bx - ax) > 0)
+							koopas->nx = -1;
+						else
+							koopas->nx = 1;
+						koopas->SetState(KOOPAS_STATE_DIE_MOVE);
+					}
+				}
+				else if (this->IsCollidingWithObjectNx(coObj->at(i)))
+				{
+					CKoopas* newkoopas = dynamic_cast<CKoopas*>(coObj->at(i));
+					if (newkoopas->GetState() == KOOPAS_STATE_IDLE)
+					{
+						if (canHoldShell)
+						{
+							this->koopas = newkoopas;
+							newkoopas->isBeingHeld = true;
+							isHolding = true;
+						}
+						else
+						{
+							newkoopas->nx = -this->nx/*int(nx)*/;
+							newkoopas->SetState(KOOPAS_STATE_DIE_MOVE);
+						}
+					}
+					else if (newkoopas->GetState() != KOOPAS_STATE_IDLE || newkoopas->GetState() != STATE_DESTROYED)
+					{
+						if (newkoopas->GetKoopaType() == KoopaType::Green_paratroopa || newkoopas->GetKoopaType() == KoopaType::Red_paratroopa)
+							newkoopas->vx = -newkoopas->vx;
+						UpdateLevel();
+					}
+					
+				}
+				else if (this->IsAABB(coObj->at(i))&& !isHolding && isOnGround)
+				{
+					UpdateLevel();
+				}
+			}
+		
+			break;
+		}
+	}
+
+	// collision with ground
+	vector<LPCOLLISIONEVENT> coEvents;
+	vector<LPCOLLISIONEVENT> coEventsResult;
+
+	coEvents.clear();
+
+	// turn off collision
+	if (state != MState::Die)
+		CalcPotentialCollisions(&groundObjs, coEvents);
 
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
@@ -231,165 +345,77 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		float min_tx, min_ty, nx = 0, ny;
 		float rdx = 0;
 		float rdy = 0;
+		LPGAMEOBJECT objectX = NULL;
+		LPGAMEOBJECT objectY = NULL;
 
-		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
-		// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-		//if (rdx != 0 && rdx!=dx)
-		//	x += nx*abs(rdx); 
+		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy, objectX, objectY);
 
 		// block every object first!
-		x += min_tx * dx + nx * 0.4f;	
+		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.25f;
-
-		//if (nx != 0) vx = 0;
 
 		if (ny != 0)
 		{
 			vy = 0;
 			if (ny == -1)
 			{
+				colidingGround = objectY;
 				isOnGround = true;
 				isFlying = false;
 				isblockJump = false;
 				isWaggingTail = false;
+				isFalling = false;
 			}
 		}
-
-		//
-		// Collision logic with other objects
-		//
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
-			//truong hop CPortal
-
-			if (dynamic_cast<CPortal*>(e->obj))
+			if (e->ny > 0)
 			{
-				CPortal* p = dynamic_cast<CPortal*>(e->obj);
-				CGame::GetInstance()->SwitchScene(p->GetSceneId());
-			}
-			if (e->obj->GetType() == Type::PIRANHA_PLANT|| e->obj->GetType() == Type::VENUS_FIRE_TRAP)
-			{
-				x += dx;
-				y += dy;
-			}
-			//ny
-			if (e->ny != 0)
-			{
-				//quai di chuyen
-				if (e->ny < 0)
+				if (e->obj->GetType() == Type::BRICK)
 				{
-					//goomba
-					if (e->obj->GetType() == Type::GOOMBA)
+					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+					if (brick->GetBrickType() != BrickType::question_broken)
 					{
-						if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != EState::DIE_BY_CRUSH && e->obj->GetState() != EState::DIE_BY_ATTACK)
+						if (brick->GetItemRemaining() == 1)
 						{
-							CGoomba* goomba = dynamic_cast<CGoomba*>(e->obj);
-							goomba->DieByCrush();
+							if (brick->GetBrickType() == BrickType::question)
+								//brick->SetState(STATE_BROKEN);
+								brick->SetBrickType(BrickType::question_broken);
+							else
+								brick->SetState(STATE_DESTROYED);
+						}
+						brick->SetState(STATE_BEING_TOSSED);
+						brick->sl--;
+						if (brick->containItem == 2)
+						{
 							AddScore(100);
-							vy = -0.2f;
+							AddCoin();
 						}
-					}
-					//koopas
-					if (e->obj->GetType() == Type::KOOPAS)
-					{
-						CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
-						if (koopas->GetState() != KOOPAS_STATE_IDLE)
-						{
-							if (koopas->GetKoopaType() > 2)
-							{
-								if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
-									koopas->SetKoopaType(KoopaType::Green_troopa);
-								if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
-									koopas->SetKoopaType(KoopaType::Red_troopa);
-							}
-							else
-							{
-								koopas->Idle();
-								AddScore(100);
-								vy = -0.2f;
-							}
-						}
-						else
-						{
-							float ax, ay;
-							float bx, by;
-							GetPosition(ax, ay);//mario
-							koopas->GetPosition(bx, by);
-							if ((bx - ax) > 0)
-								koopas->nx = -1;
-							else
-								koopas->nx = 1;
-							koopas->SetState(KOOPAS_STATE_DIE_MOVE);
-							koopas->isInteractable = false;
-						}
-
 					}
 
 				}
-				//block, pipe,..
-				if (e->ny > 0)
+				else if (e->obj->GetType() == Type::GROUND)
 				{
-					if (e->obj->GetType() == Type::BRICK)
+					CGround* ground = dynamic_cast<CGround*>(e->obj);
+					if (ground->interact)
 					{
-						CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-						if (brick->GetBrickType() != BrickType::question_broken)
-						{
-							if (brick->GetItemRemaining() == 1)
-							{
-								if (brick->GetBrickType() == BrickType::question)
-									//brick->SetState(STATE_BROKEN);
-									brick->SetBrickType(BrickType::question_broken);
-								else
-									brick->SetState(STATE_DESTROYED);
-							}
-							brick->SetState(STATE_BEING_TOSSED);
-							brick->sl--;
-						}
-
+						x += dx;
 					}
-					else if (e->obj->GetType() == Type::GROUND)
-					{
-						CGround* ground = dynamic_cast<CGround*>(e->obj);
-						if (ground->interact)
-						{
-							x += dx;
-						}
-					}
-
 				}
 
 			}
-			//nx
-			//else
 			if (e->nx != 0)
 			{
 				//ko di xuyen qua duoc ne
 				//xet block, pipe,...
-				if (e->obj->GetType() == Type::GROUND || e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::PIPE)
+				if (e->obj->GetType() == Type::GROUND )
 				{
-					if (e->obj->GetType() == Type::GROUND)
+					CGround* ground = dynamic_cast<CGround*>(e->obj);
+					if (ground->interact)
 					{
-						CGround* ground = dynamic_cast<CGround*>(e->obj);
-						if (ground->interact)
-						{
-							x += dx;
-						}
-						else
-						{
-							//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
-							if (state == MState::Run_right || state == MState::Run_left)
-							{
-								if (vx > 0)
-									state = MState::Walk_right;
-								else
-									state = MState::Walk_left;
-							}
-
-						}
+						x += dx;
 					}
 					else
 					{
@@ -401,93 +427,30 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 							else
 								state = MState::Walk_left;
 						}
-					}
 
+					}
 				}
 				else
 				{
-					//tinh luon truong hop untouchable = 0 -> ddi xuyeen qua
-					//xet may con di chuyen 
-					if (untouchable == 0)//chi xet voi may con di chuyen thoi
+					//dang chay nhanh ma va cham thi ko con o trang thai chay nhanh
+					if (state == MState::Run_right || state == MState::Run_left)
 					{
-						//goomba
-						if (e->obj->GetType() == Type::GOOMBA)
-							if (e->obj->GetState() != STATE_DESTROYED && e->obj->GetState() != EState::DIE_BY_CRUSH && e->obj->GetState() != EState::DIE_BY_ATTACK)
-							{
-								UpdateLevel();
-							}
-						//koopas
-						if (e->obj->GetType() == Type::KOOPAS)
-						{
-							CKoopas* newkoopas = dynamic_cast<CKoopas*>(e->obj);
-							if (newkoopas->GetState() == KOOPAS_STATE_IDLE)
-							{
-								if (canHoldShell)
-								{
-									this->koopas = newkoopas;
-									newkoopas->isBeingHeld = true;
-									isHolding = true;
-								}
-								else
-								{
-									newkoopas->nx = int(nx);
-									newkoopas->SetState(KOOPAS_STATE_DIE_MOVE);
-									newkoopas->isInteractable = true;
-								}
-							}
-							else if (newkoopas->GetState() != KOOPAS_STATE_IDLE || newkoopas->GetState() != STATE_DESTROYED)
-							{
-								if (newkoopas->GetKoopaType() == KoopaType::Green_paratroopa || newkoopas->GetKoopaType() == KoopaType::Red_paratroopa)
-									newkoopas->vx = -newkoopas->vx;
-								//UpdateLevel();
-							}
-						}
+						if (vx > 0)
+							state = MState::Walk_right;
+						else
+							state = MState::Walk_left;
 					}
-					else
-						x += dx;
+					vx = 0;
 				}
 			}
-			//else//truong hop dang ONGROUND ma roi
-			//	if (e->obj->GetType() == Type::BRICK|| e->obj->GetType() == Type::GROUND)
-			//		isOnGround = false;
 		}
 	}
 
-	// clean up collision events
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+	for (auto iter : coEvents) delete iter;
+	coEvents.clear();
 
-}
-
-void CMario::CheckInteraction()
-{
-	if (GetState() == MState::Die)
-		return;
-	if (interactableObject.size() > 0)
-	{
-		for (auto object : interactableObject)
-		{
-			if (untouchable == 0)
-			{
-				if (IsAABB(object))
-				{
-					if (object->GetType() == Type::KOOPAS || object->GetType() == Type::PIRANHA_PLANT|| object->GetType() == Type::VENUS_FIRE_TRAP
-						|| object->GetType() == Type::VENUS_FIRE_BALL)
-					{
-						if (object->GetState() != STATE_DESTROYED)
-							this->UpdateLevel();
-						if (object->GetType() == Type::VENUS_FIRE_BALL)
-							object->SetState(STATE_DESTROYED);
-					}
-					//if (object->GetType() == Type::COIN)
-					//{
-					//	AddCoin();
-					//	object->SetState(STATE_DESTROYED);
-					//}
-				}
-
-			}
-		}
-	}
+	//Collide with items and coins
+	CollideWithItem(coItem);
 }
 
 void CMario::Render()
@@ -495,7 +458,14 @@ void CMario::Render()
 	//con lua
 	if (GetLevel() == Level::Fire)
 	{
-		if (isHolding)
+		if (isFalling)
+		{
+			if (nx > 0)
+				ani = FIRE_ANI_FALL_RIGHT;
+			else
+				ani = FIRE_ANI_FALL_LEFT;
+		}
+		else if (isHolding)
 		{
 			switch (state)
 			{
@@ -633,7 +603,24 @@ void CMario::Render()
 	//con raccoon
 	else if (GetLevel() == Level::Raccoon)
 	{
-		if (isHolding)
+		if (isFalling)
+		{
+			if (isWaggingTail)
+			{
+				if (nx > 0)
+					ani = RACCOON_ANI_WAG_TAIL_RIGHT;
+				else
+					ani = RACCOON_ANI_WAG_TAIL_LEFT;
+			}
+			else
+			{
+				if (nx > 0)
+					ani = RACCOON_ANI_FALL_RIGHT;
+				else
+					ani = RACCOON_ANI_FALL_LEFT;
+			}
+		}
+		else if (isHolding)
 		{
 			switch (state)
 			{
@@ -797,7 +784,14 @@ void CMario::Render()
 	//con lon
 	else if (GetLevel() == Level::Big)
 	{
-	if (isHolding)
+	if (isFalling)
+	{
+		if (nx > 0)
+			ani = MARIO_ANI_FALL_RIGHT;
+		else
+			ani = MARIO_ANI_FALL_LEFT;
+	}
+	else if (isHolding)
 	{
 		switch (state)
 		{
@@ -919,7 +913,14 @@ void CMario::Render()
 	//con nho
 	else
 	{
-	if (isHolding)
+	if (isFalling)
+	{
+		if (nx > 0)
+			ani = mario_ANI_JUMP_RIGHT;
+		else
+			ani = mario_ANI_JUMP_LEFT;
+	}
+	else if (isHolding)
 	{
 		switch (state)
 		{
@@ -1145,6 +1146,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 			if (coItem->at(i)->GetType() == Type::COIN)
 			{
 				AddCoin();
+				AddScore(100);
 			}
 			else
 			{
@@ -1163,6 +1165,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 					this->SetLevel(Level::Fire);
 					break;
 				}
+				AddScore(1000);
 
 			}
 			coItem->at(i)->SetState(STATE_DESTROYED);

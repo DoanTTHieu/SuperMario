@@ -8,7 +8,6 @@ CPlant::CPlant(float x, float y)
 	this->y = y;
 	GetPosition(this->start_x, this->start_y);
 	SetState(STATE_MOVING_UP);
-	this->isInteractable = true;
 }
 
 void CPlant::GetBoundingBox(float& l, float& t, float& r, float& b)

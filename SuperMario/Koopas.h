@@ -32,7 +32,8 @@
 #define PARA_KOOPAS_ANI_RIGHT		9
 
 
-#define KOOPAS_TIME_IDLE			8000000
+#define KOOPAS_TIME_IDLE			8000
+#define KOOPAS_TIME_RELIFE			1000
 
 class CKoopas : public CEnemy
 {
@@ -42,8 +43,13 @@ public:
 	bool checkSupine = false;
 	bool isBeingHeld = false;
 	bool checkDone = false;
+	bool isRelife = false;
+	LPGAMEOBJECT colidingGround;
+
 
 	CTimer* idleTimer = new CTimer(KOOPAS_TIME_IDLE);
+	CTimer* koopasTimer = new CTimer(KOOPAS_TIME_IDLE- KOOPAS_TIME_RELIFE);
+
 	CKoopas();
 	CKoopas(int x);
 	virtual void SetState(int state);

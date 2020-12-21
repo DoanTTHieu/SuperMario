@@ -59,6 +59,12 @@ enum KoopaType
 	Red_paratroopa = 04,
 };
 
+enum GoombaType
+{
+	normal = 01,
+	red_para = 02,
+};
+
 enum BrickType
 {
 	normal = 01,

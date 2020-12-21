@@ -69,8 +69,6 @@ public:
 
 	LPANIMATION_SET animation_set;
 
-	bool isInteractable;
-
 public:
 	void SetPosition(float x, float y) { this->x = x, this->y = y; }
 	void SetSpeed(float vx, float vy) { this->vx = vx, this->vy = vy; }
@@ -96,8 +94,19 @@ public:
 		float& nx,
 		float& ny,
 		float& rdx,
-		float& rdy);
+		float& rdy,
+		LPGAMEOBJECT& objx,
+		LPGAMEOBJECT& objy);
 
+	void FilterCollision(
+		vector<LPCOLLISIONEVENT>& coEvents,
+		vector<LPCOLLISIONEVENT>& coEventsResult,
+		float& min_tx,
+		float& min_ty,
+		float& nx,
+		float& ny,
+		float& rdx,
+		float& rdy);
 	CGameObject();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) = 0;
@@ -108,6 +117,9 @@ public:
 	virtual void ResetAnimation();
 	bool IsOutOfCamera();
 	bool IsAABB(LPGAMEOBJECT object);
+	bool IsCollidingWithObject(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNx(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNy(LPGAMEOBJECT object);
 	~CGameObject();
 };
 

@@ -6,6 +6,7 @@
 #include "Brick.h"
 #include "Game.h"
 #include "Define.h"
+#include "Mario.h"
 
 CTail::CTail()
 {
@@ -48,6 +49,11 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 						//brick->SetState(STATE_DESTROYED);
 						if(!brick->isBroken)
 							brick->SetState(STATE_BROKEN);
+					if (brick->containItem == 2)
+					{
+						CMario::GetInstance()->AddScore(100);
+						CMario::GetInstance()->AddCoin();
+					}
 					brick->sl--;
 				}
 			}
@@ -70,6 +76,7 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 							else
 								koopas->nx = -1;
 							koopas->IdleSupine();
+							CMario::GetInstance()->AddScore(100);
 							koopas->vy = -0.2f;
 							DebugOut(L"checkDone: %d\n", koopas->checkDone);
 							if (!koopas->checkDone)
@@ -98,6 +105,7 @@ void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 player
 							else
 								enemy->nx = -1;
 							enemy->DieByAttack();
+							CMario::GetInstance()->AddScore(100);
 							vy = -0.2f;
 						}
 					}

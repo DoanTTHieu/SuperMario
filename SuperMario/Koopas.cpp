@@ -6,6 +6,7 @@ CKoopas::CKoopas()
 {
 	type = Type::KOOPAS;
 	Ktype = 1;
+	colidingGround = NULL;
 	SetState(KOOPAS_STATE_IDLE);
 }
 
@@ -13,6 +14,7 @@ CKoopas::CKoopas(int x)
 {
 	type = Type::KOOPAS;
 	Ktype = x;
+	colidingGround = NULL;
 	SetState(KOOPAS_STATE_WALKING);
 }
 
@@ -21,13 +23,35 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
 	
+	if (koopasTimer->IsTimeUp() && !idleTimer->IsTimeUp())
+	{
+		koopasTimer->Stop();
+		isRelife = true;
+	}
+
 	if (GetState() == KOOPAS_STATE_IDLE && idleTimer->IsTimeUp())
 	{
 		idleTimer->Stop();
+		isRelife = false;
 		checkSupine = false;
 		SetState(KOOPAS_STATE_WALKING);
 		if (isBeingHeld)
 			isBeingHeld = false;
+	}
+
+	if (colidingGround && Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+	{
+		float kl, kt, kr, kb, gl, gt, gr, gb;
+		colidingGround->GetBoundingBox(gl, gt, gr, gb);
+		GetBoundingBox(kl, kt, kr, kb);
+		if (kl < gl-5.0f || kl > gr-5.0f)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
+		{
+			if(kl < gl - 5.0f)
+				this->x = gl-4.0f;//them de cho rua khoi bi lac
+			else
+				this->x = gr -5.5f;//them de cho rua khoi bi lac
+			this->vx = -vx;
+		}
 	}
 
 	//neu ko bi cam thi update binh thuong
@@ -54,9 +78,11 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			float min_tx, min_ty, nx = 0, ny;
 			float rdx = 0;
 			float rdy = 0;
+			LPGAMEOBJECT objectX = NULL;
+			LPGAMEOBJECT objectY = NULL;
 
 			// TODO: This is a very ugly designed function!!!!
-			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
+			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy, objectX, objectY);
 
 			// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
 			//if (rdx != 0 && rdx!=dx)
@@ -72,6 +98,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 				vy = 0;
 				if (ny < 0)
 				{
+					colidingGround = objectY;
 					if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
 					{
 						vy = -KOOPAS_SPEED_Y;
@@ -107,14 +134,6 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 						}
 						else
 							vx = -vx;
-					}
-					else if (e->ny == -1)
-					{
-						if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
-						{
-							if (x<ground->x || x>(ground->x + ground->GetGroundWitdth() - KOOPAS_BBOX_WIDTH))
-								vx = -vx;
-						}
 					}
 					
 				}
@@ -178,6 +197,7 @@ void CKoopas::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 			float rdx = 0;
 			float rdy = 0;
 
+
 			// TODO: This is a very ugly designed function!!!!
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
@@ -232,9 +252,19 @@ void CKoopas::Render()
 		break;
 	case KOOPAS_STATE_IDLE:
 		if (checkSupine)
-			ani = KOOPAS_ANI_DIE_SUPINE;
+		{
+			if (isRelife)
+				ani = KOOPAS_ANI_RELIFE_SUPINE;
+			else
+				ani = KOOPAS_ANI_DIE_SUPINE;
+		}
 		else
-			ani = KOOPAS_ANI_DIE;
+		{
+			if (isRelife)
+				ani = KOOPAS_ANI_RELIFE;
+			else
+				ani = KOOPAS_ANI_DIE;
+		}
 		break;
 	case KOOPAS_STATE_WALKING:
 		if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
@@ -289,11 +319,9 @@ void CKoopas::SetState(int state)
 		break;
 	case KOOPAS_STATE_DIE_MOVE:	
 		vx = -nx * KOOPAS_DIE_MOVE_SPEED;
-		isInteractable = false;
 		break;
 	case KOOPAS_STATE_IDLE:
 		vx = 0;
-		isInteractable = false;
 		vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
@@ -302,7 +330,6 @@ void CKoopas::SetState(int state)
 		{
 			vy = -KOOPAS_SPEED_Y;
 		}
-		isInteractable = true;
 		break;
 	default:
 		break;
@@ -336,11 +363,13 @@ void CKoopas::Idle()
 {
 	SetState(KOOPAS_STATE_IDLE);
 	idleTimer->Start();
+	koopasTimer->Start();
 }
 
 void CKoopas::IdleSupine()
 {
 	SetState(KOOPAS_STATE_IDLE);
 	idleTimer->Start();
+	koopasTimer->Start();
 	checkSupine = true;
 }

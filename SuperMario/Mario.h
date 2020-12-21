@@ -8,7 +8,7 @@
 
 class CMario : public CGameObject
 {
-	//static CMario* __instance;
+	static CMario* __instance;
 
 	int score;
 	int coin;
@@ -34,7 +34,7 @@ class CMario : public CGameObject
 
 
 public:
-	//static CMario* GetInstance();
+	static CMario* GetInstance();
 
 	vector< LPGAMEOBJECT> listBullet;
 
@@ -44,7 +44,6 @@ public:
 	//virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
 	virtual void Render();
-	void CheckInteraction();
 
 	void SetState(int state);
 	
@@ -59,6 +58,10 @@ public:
 	bool canHoldShell;
 	bool isHolding;
 	bool isFlying;//cam_y theo mario khi bay, ko theo khi nhay
+	bool isFalling;
+
+	LPGAMEOBJECT colidingGround;
+
 	CTimer* flyTimer = new CTimer(TIME_FLY);
 	ULONGLONG attackStart;
 

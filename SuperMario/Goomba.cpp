@@ -150,7 +150,6 @@ void CGoomba::SetState(int state)
 		break;
 	case EState::WALK:
 		vx = -GOOMBA_WALKING_SPEED;
-		isInteractable = true;
 	}
 }
 

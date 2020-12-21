@@ -13,7 +13,6 @@ CGameObject::CGameObject()
 	x = y = 0;
 	vx = vy = 0;
 	nx = 1;
-	isInteractable = false;
 	//
 	start_x = start_y = 0;
 	ny = 0;
@@ -95,6 +94,39 @@ void CGameObject::FilterCollision(
 	vector<LPCOLLISIONEVENT>& coEvents,
 	vector<LPCOLLISIONEVENT>& coEventsResult,
 	float& min_tx, float& min_ty,
+	float& nx, float& ny, float& rdx, float& rdy, LPGAMEOBJECT& objx,
+	LPGAMEOBJECT& objy)
+{
+	min_tx = 1.0f;
+	min_ty = 1.0f;
+	int min_ix = -1;
+	int min_iy = -1;
+
+	nx = 0.0f;
+	ny = 0.0f;
+
+	coEventsResult.clear();
+
+	for (UINT i = 0; i < coEvents.size(); i++)
+	{
+		LPCOLLISIONEVENT c = coEvents[i];
+
+		if (c->t < min_tx && c->nx != 0) {
+			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx; objx = c->obj;
+		}
+
+		if (c->t < min_ty && c->ny != 0) {
+			min_ty = c->t; ny = c->ny; min_iy = i; rdy = c->dy; objy = c->obj;
+		}
+	}
+
+	if (min_ix >= 0) coEventsResult.push_back(coEvents[min_ix]);
+	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
+}
+void CGameObject::FilterCollision(
+	vector<LPCOLLISIONEVENT>& coEvents,
+	vector<LPCOLLISIONEVENT>& coEventsResult,
+	float& min_tx, float& min_ty,
 	float& nx, float& ny, float& rdx, float& rdy)
 {
 	min_tx = 1.0f;
@@ -112,7 +144,7 @@ void CGameObject::FilterCollision(
 		LPCOLLISIONEVENT c = coEvents[i];
 
 		if (c->t < min_tx && c->nx != 0) {
-			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx;
+			min_tx = c->t; nx = c->nx; min_ix = i; rdx = c->dx; 
 		}
 
 		if (c->t < min_ty && c->ny != 0) {
@@ -123,7 +155,6 @@ void CGameObject::FilterCollision(
 	if (min_ix >= 0) coEventsResult.push_back(coEvents[min_ix]);
 	if (min_iy >= 0) coEventsResult.push_back(coEvents[min_iy]);
 }
-
 void CGameObject::ResetAnimation()
 {
 	animation_set->at(state)->SetAniStartTime(GetTickCount64());
@@ -166,6 +197,45 @@ bool CGameObject::IsAABB(LPGAMEOBJECT object)
 	GetBoundingBox(l_mario, t_mario, r_mario, b_mario);
 	object->GetBoundingBox(l_mob, t_mob, r_mob, b_mob);
 	return AABBCheck(l_mob, t_mob, r_mob, b_mob, l_mario, t_mario, r_mario, b_mario);
+}
+bool CGameObject::IsCollidingWithObject(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	if (this->IsAABB(object))
+		return true;	
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f; 
+	delete e;
+	return res;
+}
+
+bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny == -1)
+			return true;
+	delete e;
+	return false;
+}
+bool CGameObject::IsCollidingWithObjectNx(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx != 0)
+			return true;
+	delete e;
+	return false;
 }
 
 CGameObject::~CGameObject()
