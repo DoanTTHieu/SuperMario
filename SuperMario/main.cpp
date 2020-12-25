@@ -52,7 +52,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	Update world status for this frame
 	dt: time period between beginning of last frame and beginning of this frame
 */
-void Update(DWORD dt)
+void Update(ULONGLONG dt)
 {
 	CGame::GetInstance()->GetCurrentScene()->Update(dt);
 }
@@ -134,8 +134,8 @@ int Run()
 {
 	MSG msg;
 	int done = 0;
-	DWORD frameStart = GetTickCount64();
-	DWORD tickPerFrame = 1000 / MAX_FRAME_RATE;
+	ULONGLONG frameStart = GetTickCount64();
+	ULONGLONG tickPerFrame = 1000 / MAX_FRAME_RATE;
 
 	while (!done)
 	{
@@ -147,11 +147,11 @@ int Run()
 			DispatchMessage(&msg);
 		}
 
-		DWORD now = GetTickCount64();
+		ULONGLONG now = GetTickCount64();
 
 		// dt: the time between (beginning of last frame) and now
 		// this frame: the frame we are about to render
-		DWORD dt = now - frameStart;
+		ULONGLONG dt = now - frameStart;
 
 		if (dt >= tickPerFrame)
 		{

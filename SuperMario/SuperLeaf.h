@@ -11,6 +11,6 @@ public:
 	CSuperLeaf(D3DXVECTOR2 position);
 	~CSuperLeaf();
 	bool isFalling = false;
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
 
 };

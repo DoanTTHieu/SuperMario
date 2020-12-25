@@ -23,7 +23,7 @@ CGameObject::CGameObject()
 	animation_set = NULL;
 }
 
-void CGameObject::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CGameObject::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	this->dt = dt;
 	dx = vx * dt;
@@ -211,7 +211,7 @@ bool CGameObject::IsCollidingWithObject(LPGAMEOBJECT object)
 	return res;
 }
 
-bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
+bool CGameObject::IsCollidingWithObjectNy_1(LPGAMEOBJECT object)
 {
 	if (!object)
 		return false;
@@ -224,6 +224,20 @@ bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
 	delete e;
 	return false;
 }
+bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny != 0)
+			return true;
+	delete e;
+	return false;
+}
+
 bool CGameObject::IsCollidingWithObjectNx(LPGAMEOBJECT object)
 {
 	if (!object)

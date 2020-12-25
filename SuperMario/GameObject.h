@@ -63,9 +63,9 @@ public:
 	float start_x;
 	float start_y;
 
-	Type type;
+	int type;
 
-	DWORD dt;
+	ULONGLONG dt;
 
 	LPANIMATION_SET animation_set;
 
@@ -76,7 +76,7 @@ public:
 	void GetSpeed(float& vx, float& vy) { vx = this->vx; vy = this->vy; }
 
 	int GetState() { return this->state; }
-	Type GetType() { return this->type; }
+	int GetType() { return type; }
 
 	void RenderBoundingBox();
 
@@ -110,7 +110,7 @@ public:
 	CGameObject();
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom) = 0;
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects = NULL);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects = NULL);
 	virtual void Render() = 0;
 	virtual void SetState(int state) { this->state = state; }
 
@@ -120,6 +120,7 @@ public:
 	bool IsCollidingWithObject(LPGAMEOBJECT object);
 	bool IsCollidingWithObjectNx(LPGAMEOBJECT object);
 	bool IsCollidingWithObjectNy(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNy_1(LPGAMEOBJECT object);
 	~CGameObject();
 };
 

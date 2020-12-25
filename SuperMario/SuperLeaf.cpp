@@ -19,18 +19,19 @@ CSuperLeaf::~CSuperLeaf()
 }
 
 
-void CSuperLeaf::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CSuperLeaf::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);
 	x += dx;
 	y += dy;
+	vy += (ITEM_GRAVITY * dt);
 
 	if (!isFalling && y < (start_y - 20.0f))
 	{
 		DebugOut(L"n\n");
 		isFalling = true;
 	}
-	vy += (ITEM_GRAVITY * dt);
+
 	//vy = (ITEM_GRAVITY * dt);
 	DebugOut(L"vy: %f\n", vy);
 

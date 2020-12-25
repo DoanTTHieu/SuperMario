@@ -17,7 +17,7 @@ CFireFlower::~CFireFlower()
 }
 
 
-void CFireFlower::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CFireFlower::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);
 	vy += (ITEM_GRAVITY * dt);

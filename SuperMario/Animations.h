@@ -11,11 +11,11 @@ Sprite animation
 class CAnimationFrame
 {
 	LPSPRITE sprite;
-	DWORD time;
+	ULONGLONG time;
 
 public:
 	CAnimationFrame(LPSPRITE sprite, int time) { this->sprite = sprite; this->time = time; }
-	DWORD GetTime() { return time; }
+	ULONGLONG GetTime() { return time; }
 	LPSPRITE GetSprite() { return sprite; }
 };
 
@@ -24,15 +24,15 @@ typedef CAnimationFrame* LPANIMATION_FRAME;
 class CAnimation
 {
 public:
-	DWORD aniStartTime;
-	DWORD lastFrameTime;
-	DWORD totalFrameTime;
+	ULONGLONG aniStartTime;
+	ULONGLONG lastFrameTime;
+	ULONGLONG totalFrameTime;
 	int currentFrame;
 	int defaultTime;
 	vector<LPANIMATION_FRAME> frames;
 public:
 	CAnimation(int defaultTime = 100) { this->defaultTime = defaultTime; lastFrameTime = -1; currentFrame = -1; }
-	void Add(int spriteId, DWORD time = 0);
+	void Add(int spriteId, ULONGLONG time = 0);
 
 	void Reset() { lastFrameTime = -1; currentFrame = -1; }
 
@@ -41,7 +41,7 @@ public:
 	
 
 	void Render(float x, float y, int alpha = 255);
-	void SetAniStartTime(DWORD t) { aniStartTime = t; }
+	void SetAniStartTime(ULONGLONG t) { aniStartTime = t; }
 	bool IsFinished() { return GetTickCount64() - aniStartTime >= totalFrameTime; }
 };
 

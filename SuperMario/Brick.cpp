@@ -54,7 +54,7 @@ void CBrick::GetBoundingBox(float& l, float& t, float& r, float& b)
 	}
 }
 
-void CBrick::Update(DWORD dt, vector<LPGAMEOBJECT>* objects)
+void CBrick::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects)
 {
 	CGameObject::Update(dt);
 	if (listPiece.size() > 0)

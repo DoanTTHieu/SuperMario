@@ -15,7 +15,7 @@ CSuperMushroom::~CSuperMushroom()
 }
 
 
-void CSuperMushroom::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CSuperMushroom::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);
 	vy += (ITEM_GRAVITY * dt);

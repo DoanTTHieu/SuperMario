@@ -15,6 +15,7 @@
 #include "Item.h"
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
+#include "MapPoint.h"
 
 CMario* CMario::__instance = nullptr;
 
@@ -43,6 +44,13 @@ CMario::CMario(float x, float y) : CGameObject()
 
 	colidingGround = NULL;
 
+	canWalkLeft = false;
+	canWalkRight = false;
+	canWalkUp = false;
+	canWalkDown = false;
+
+	canSwitchScene = false;
+
 	start_x = x;
 	start_y = y;
 	this->x = x;
@@ -67,7 +75,42 @@ CMario::~CMario()
 	//__instance = NULL;
 }
 
-void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem)
+void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
+{
+	CGameObject::Update(dt);
+	x += dx;
+	y += dy;
+	for (int i = 0; i < coObj->size(); i++)
+	{
+		if (coObj->at(i)->GetType() == Type::MAP_POINT)
+		{
+			if (this->IsCollidingWithObjectNx(coObj->at(i))||this->IsCollidingWithObjectNy(coObj->at(i)) )
+			{
+				vx = vy = 0;
+				isIdling = true;
+
+				x = coObj->at(i)->x;
+				y = coObj->at(i)->y;
+			}
+			if (this->IsAABB(coObj->at(i)))
+			{
+				CMapPoint* point = dynamic_cast<CMapPoint*>(coObj->at(i));
+				this->canWalkLeft = point->left;
+				this->canWalkRight = point->right;
+				this->canWalkUp = point->above;
+				this->canWalkDown = point->under;
+				if (canSwitchScene)
+				{
+					if (point->IsContainPortal())
+						CGame::GetInstance()->SwitchScene(point->GetSceneId());
+
+				}
+			}
+
+		}
+	}
+}
+void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
@@ -191,7 +234,6 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		listBullet[i]->Update(dt, coObj);
 	}
 
-
 	// reset untouchable timer if untouchable time has passed
 	if (GetTickCount64() - untouchable_start > MARIO_UNTOUCHABLE_TIME)
 	{
@@ -233,9 +275,9 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			}
 			break;
 		case Type::GOOMBA:
-			if (untouchable == 0 && GetState()!=MState::Die)
+			if (untouchable == 0 && GetState() != MState::Die)
 			{
-				if (this->IsCollidingWithObjectNy(coObj->at(i)))
+				if (this->IsCollidingWithObjectNy_1(coObj->at(i)))
 				{
 					if (coObj->at(i)->GetState() != STATE_DESTROYED && coObj->at(i)->GetState() != EState::DIE_BY_CRUSH && coObj->at(i)->GetState() != EState::DIE_BY_ATTACK)
 					{
@@ -257,7 +299,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 		case Type::KOOPAS:
 			if (untouchable == 0 && GetState() != MState::Die)
 			{
-				if (this->IsCollidingWithObjectNy(coObj->at(i)))
+				if (this->IsCollidingWithObjectNy_1(coObj->at(i)))
 				{
 					CKoopas* koopas = dynamic_cast<CKoopas*>(coObj->at(i));
 					if (koopas->GetState() != KOOPAS_STATE_IDLE)
@@ -312,14 +354,14 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 							newkoopas->vx = -newkoopas->vx;
 						UpdateLevel();
 					}
-					
+
 				}
-				else if (this->IsAABB(coObj->at(i))&& !isHolding && isOnGround)
+				else if (this->IsAABB(coObj->at(i)) && !isHolding && isOnGround)
 				{
 					UpdateLevel();
 				}
 			}
-		
+
 			break;
 		}
 	}
@@ -402,6 +444,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 					if (ground->interact)
 					{
 						x += dx;
+						y += dy;
 					}
 				}
 
@@ -410,7 +453,7 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 			{
 				//ko di xuyen qua duoc ne
 				//xet block, pipe,...
-				if (e->obj->GetType() == Type::GROUND )
+				if (e->obj->GetType() == Type::GROUND)
 				{
 					CGround* ground = dynamic_cast<CGround*>(e->obj);
 					if (ground->interact)
@@ -451,291 +494,264 @@ void CMario::Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>*
 
 	//Collide with items and coins
 	CollideWithItem(coItem);
+
 }
 
 void CMario::Render()
 {
-	//con lua
-	if (GetLevel() == Level::Fire)
+	switch (stage)
 	{
-		if (isFalling)
+	case ID_SCENE_WORLD_MAP:
+		if (GetLevel() == Level::Fire)
+			ani = FIRE_WORLD_MAP;
+		else if (GetLevel() == Level::Raccoon)
+			ani = RACCOON_WORLD_MAP;
+		else if (GetLevel() == Level::Big)
+			ani = MARIO_WORLD_MAP;
+		else
+			ani = mario_WORLD_MAP;
+		break;
+	default:
+		//con lua
+		if (GetLevel() == Level::Fire)
 		{
-			if (nx > 0)
-				ani = FIRE_ANI_FALL_RIGHT;
-			else
-				ani = FIRE_ANI_FALL_LEFT;
-		}
-		else if (isHolding)
-		{
-			switch (state)
+			if (isFalling)
 			{
-			case MState::Walk_right:
-			case MState::Run_right:
-				ani = FIRE_ANI_WALK_HOLD_RIGHT;
-				break;
-			case MState::Walk_left:
-			case MState::Run_left:
-				ani = FIRE_ANI_WALK_HOLD_LEFT;
-				break;
-			case MState::Jump:
-			case MState::Jump_low:
 				if (nx > 0)
-					ani = FIRE_ANI_ON_AIR_HOLD_RIGHT;
+					ani = FIRE_ANI_FALL_RIGHT;
 				else
-					ani = FIRE_ANI_ON_AIR_HOLD_LEFT;
-				break;
-			default:
-				if (!isOnGround)
+					ani = FIRE_ANI_FALL_LEFT;
+			}
+			else if (isHolding)
+			{
+				switch (state)
 				{
+				case MState::Walk_right:
+				case MState::Run_right:
+					ani = FIRE_ANI_WALK_HOLD_RIGHT;
+					break;
+				case MState::Walk_left:
+				case MState::Run_left:
+					ani = FIRE_ANI_WALK_HOLD_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (nx > 0)
+						ani = FIRE_ANI_ON_AIR_HOLD_RIGHT;
+					else
+						ani = FIRE_ANI_ON_AIR_HOLD_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = FIRE_ANI_WALK_HOLD_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = FIRE_ANI_WALK_HOLD_LEFT;
+						else if (nx > 0)
+							ani = FIRE_ANI_IDLE_HOLD_RIGHT;
+						else
+							ani = FIRE_ANI_IDLE_HOLD_LEFT;
+					}
 					break;
 				}
-				else
-				{
-					if (nx > 0 && (vx > 0 || vx < 0))
-						ani = FIRE_ANI_WALK_HOLD_RIGHT;
-					else if (nx < 0 && (vx > 0 || vx < 0))
-						ani = FIRE_ANI_WALK_HOLD_LEFT;
-					else if (nx > 0)
-						ani = FIRE_ANI_IDLE_HOLD_RIGHT;
-					else
-						ani = FIRE_ANI_IDLE_HOLD_LEFT;
-				}
-				break;
 			}
-		}
-		else
-			switch (state)
-			{
-			case MState::Die:
-				ani = MARIO_ANI_DIE;
-				break;
-			case MState::Stop:
-				if (nx > 0)
-					ani = FIRE_ANI_STOP_RIGHT;
-				else
-					ani = FIRE_ANI_STOP_LEFT;
-				break;
-			case MState::Walk_right:
-				ani = FIRE_ANI_WALK_RIGHT;
-				break;
-			case MState::Walk_left:
-				ani = FIRE_ANI_WALK_LEFT;
-				break;
-			case MState::Run_right:
-				if (vx < MARIO_RUN_SPEED_THRESH)
+			else
+				switch (state)
+				{
+				case MState::Die:
+					ani = MARIO_ANI_DIE;
+					break;
+				case MState::Stop:
+					if (nx > 0)
+						ani = FIRE_ANI_STOP_RIGHT;
+					else
+						ani = FIRE_ANI_STOP_LEFT;
+					break;
+				case MState::Walk_right:
 					ani = FIRE_ANI_WALK_RIGHT;
-				else
-					ani = FIRE_ANI_RUN_RIGHT;
-				break;
-			case MState::Run_left:
-				if (vx > -MARIO_RUN_SPEED_THRESH)
+					break;
+				case MState::Walk_left:
 					ani = FIRE_ANI_WALK_LEFT;
-				else
-					ani = FIRE_ANI_RUN_LEFT;
-				break;
-			case MState::Attack:
-				if (isOnGround)
-				{
-					if (nx > 0)
-						ani = FIRE_ANI_FIGHT_IDLE_RIGHT;
+					break;
+				case MState::Run_right:
+					if (vx < MARIO_RUN_SPEED_THRESH)
+						ani = FIRE_ANI_WALK_RIGHT;
 					else
-						ani = FIRE_ANI_FIGHT_IDLE_LEFT;
-				}
-				else
-				{
-					if (nx > 0)
-						ani = FIRE_ANI_ATTACK_RIGHT;
+						ani = FIRE_ANI_RUN_RIGHT;
+					break;
+				case MState::Run_left:
+					if (vx > -MARIO_RUN_SPEED_THRESH)
+						ani = FIRE_ANI_WALK_LEFT;
 					else
-						ani = FIRE_ANI_ATTACK_LEFT;
-				}
-				break;
-			case MState::Jump:
-			case MState::Jump_low:
-				if (isSitting)
-				{
+						ani = FIRE_ANI_RUN_LEFT;
+					break;
+				case MState::Attack:
+					if (isOnGround)
+					{
+						if (nx > 0)
+							ani = FIRE_ANI_FIGHT_IDLE_RIGHT;
+						else
+							ani = FIRE_ANI_FIGHT_IDLE_LEFT;
+					}
+					else
+					{
+						if (nx > 0)
+							ani = FIRE_ANI_ATTACK_RIGHT;
+						else
+							ani = FIRE_ANI_ATTACK_LEFT;
+					}
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (isSitting)
+					{
+						if (nx > 0)
+							ani = FIRE_ANI_SIT_RIGHT;
+						else
+							ani = FIRE_ANI_SIT_LEFT;
+					}
+					else
+						if (vy < 0)
+						{
+							if (nx > 0)
+								ani = FIRE_ANI_JUMP_RIGHT;
+							else
+								ani = FIRE_ANI_JUMP_LEFT;
+						}
+						else
+						{
+							if (nx > 0)
+								ani = FIRE_ANI_FALL_RIGHT;
+							else
+								ani = FIRE_ANI_FALL_LEFT;
+						}
+					break;
+				case MState::Sit:
 					if (nx > 0)
 						ani = FIRE_ANI_SIT_RIGHT;
 					else
 						ani = FIRE_ANI_SIT_LEFT;
-				}
-				else
-					if (vy < 0)
+					break;
+				default:
+					if (!isOnGround)
 					{
-						if (nx > 0)
-							ani = FIRE_ANI_JUMP_RIGHT;
-						else
-							ani = FIRE_ANI_JUMP_LEFT;
+						break;
 					}
 					else
 					{
-						if (nx > 0)
-							ani = FIRE_ANI_FALL_RIGHT;
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = FIRE_ANI_WALK_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = FIRE_ANI_WALK_LEFT;
+						else if (nx > 0)
+							ani = FIRE_ANI_IDLE_RIGHT;
 						else
-							ani = FIRE_ANI_FALL_LEFT;
+							ani = FIRE_ANI_IDLE_LEFT;
 					}
-				break;
-			case MState::Sit:
-				if (nx > 0)
-					ani = FIRE_ANI_SIT_RIGHT;
-				else
-					ani = FIRE_ANI_SIT_LEFT;
-				break;
-			default:
-				if (!isOnGround)
-				{
 					break;
 				}
-				else
-				{
-					if (nx > 0 && (vx > 0 || vx < 0))
-						ani = FIRE_ANI_WALK_RIGHT;
-					else if (nx < 0 && (vx > 0 || vx < 0))
-						ani = FIRE_ANI_WALK_LEFT;
-					else if (nx > 0)
-						ani = FIRE_ANI_IDLE_RIGHT;
-					else
-						ani = FIRE_ANI_IDLE_LEFT;
-				}
-				break;
-			}
 
-	}
-	//con raccoon
-	else if (GetLevel() == Level::Raccoon)
-	{
-		if (isFalling)
-		{
-			if (isWaggingTail)
-			{
-				if (nx > 0)
-					ani = RACCOON_ANI_WAG_TAIL_RIGHT;
-				else
-					ani = RACCOON_ANI_WAG_TAIL_LEFT;
-			}
-			else
-			{
-				if (nx > 0)
-					ani = RACCOON_ANI_FALL_RIGHT;
-				else
-					ani = RACCOON_ANI_FALL_LEFT;
-			}
 		}
-		else if (isHolding)
+		//con raccoon
+		else if (GetLevel() == Level::Raccoon)
 		{
-			switch (state)
+			if (isFalling)
 			{
-			case MState::Walk_right:
-			case MState::Run_right:
-				ani = RACCOON_ANI_WALK_HOLD_RIGHT;
-				break;
-			case MState::Walk_left:
-			case MState::Run_left:
-				ani = RACCOON_ANI_WALK_HOLD_LEFT;
-				break;
-			case MState::Jump:
-			case MState::Jump_low:
-				if (nx > 0)
-					ani = RACCOON_ANI_ON_AIR_HOLD_RIGHT;
-				else
-					ani = RACCOON_ANI_ON_AIR_HOLD_LEFT;
-				break;
-			default:
-				if (!isOnGround)
-				{
-					break;
-				}
-				else
-				{
-					if (nx > 0 && (vx > 0 || vx < 0))
-						ani = RACCOON_ANI_WALK_HOLD_RIGHT;
-					else if (nx < 0 && (vx > 0 || vx < 0))
-						ani = RACCOON_ANI_WALK_HOLD_LEFT;
-					else if (nx > 0)
-						ani = RACCOON_ANI_IDLE_HOLD_RIGHT;
-					else
-						ani = RACCOON_ANI_IDLE_HOLD_LEFT;
-				}
-				break;
-			}
-		}
-		else
-			switch (state)
-			{
-			case MState::Die:
-				ani = MARIO_ANI_DIE;
-				break;
-			case MState::Stop:
-				if (nx > 0)
-					ani = RACCOON_ANI_STOP_RIGHT;
-				else
-					ani = RACCOON_ANI_STOP_LEFT;
-				break;
-			case MState::Walk_right:
-				ani = RACCOON_ANI_WALK_RIGHT;//
-				break;
-			case MState::Walk_left:
-				ani = RACCOON_ANI_WALK_LEFT;//
-				break;
-			case MState::Run_right:
-				if (vx < MARIO_RUN_SPEED_THRESH)
-					ani = RACCOON_ANI_WALK_RIGHT;//
-				else
-					ani = RACCOON_ANI_RUN_RIGHT;
-				break;
-			case MState::Run_left:
-				if (vx > -MARIO_RUN_SPEED_THRESH)
-					ani = RACCOON_ANI_WALK_LEFT;//
-				else
-					ani = RACCOON_ANI_RUN_LEFT;
-				break;
-			case MState::Fly:
-				if (!flyTimer->IsTimeUp())
-				{
-					if (vx > 0)
-						ani = RACCOON_ANI_FLY_RIGHT;
-					else
-						ani = RACCOON_ANI_FLY_LEFT;
-				}
-				else
-				{
-					if (isWaggingTail)
-					{
-						if (nx > 0)
-							ani = RACCOON_ANI_WAG_TAIL_RIGHT;
-						else
-							ani = RACCOON_ANI_WAG_TAIL_LEFT;
-					}
-					else
-					{
-						if (nx > 0)
-							ani = RACCOON_ANI_FALL_RIGHT;
-						else
-							ani = RACCOON_ANI_FALL_LEFT;
-					}
-				}
-				break;
-			case MState::Attack:
-				if (nx > 0)
-					ani = RACCOON_ANI_FIGHT_IDLE_RIGHT;
-				else
-					ani = RACCOON_ANI_FIGHT_IDLE_LEFT;
-				break;
-			case MState::Jump:
-			case MState::Jump_low:
-				if (isSitting)
+				if (isWaggingTail)
 				{
 					if (nx > 0)
-						ani = RACCOON_ANI_SIT_RIGHT;
+						ani = RACCOON_ANI_WAG_TAIL_RIGHT;
 					else
-						ani = RACCOON_ANI_SIT_LEFT;
+						ani = RACCOON_ANI_WAG_TAIL_LEFT;
 				}
 				else
-					if (vy < 0)
+				{
+					if (nx > 0)
+						ani = RACCOON_ANI_FALL_RIGHT;
+					else
+						ani = RACCOON_ANI_FALL_LEFT;
+				}
+			}
+			else if (isHolding)
+			{
+				switch (state)
+				{
+				case MState::Walk_right:
+				case MState::Run_right:
+					ani = RACCOON_ANI_WALK_HOLD_RIGHT;
+					break;
+				case MState::Walk_left:
+				case MState::Run_left:
+					ani = RACCOON_ANI_WALK_HOLD_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (nx > 0)
+						ani = RACCOON_ANI_ON_AIR_HOLD_RIGHT;
+					else
+						ani = RACCOON_ANI_ON_AIR_HOLD_LEFT;
+					break;
+				default:
+					if (!isOnGround)
 					{
-						if (nx > 0)
-							ani = RACCOON_ANI_JUMP_RIGHT;
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = RACCOON_ANI_WALK_HOLD_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = RACCOON_ANI_WALK_HOLD_LEFT;
+						else if (nx > 0)
+							ani = RACCOON_ANI_IDLE_HOLD_RIGHT;
 						else
-							ani = RACCOON_ANI_JUMP_LEFT;
+							ani = RACCOON_ANI_IDLE_HOLD_LEFT;
+					}
+					break;
+				}
+			}
+			else
+				switch (state)
+				{
+				case MState::Die:
+					ani = MARIO_ANI_DIE;
+					break;
+				case MState::Stop:
+					if (nx > 0)
+						ani = RACCOON_ANI_STOP_RIGHT;
+					else
+						ani = RACCOON_ANI_STOP_LEFT;
+					break;
+				case MState::Walk_right:
+					ani = RACCOON_ANI_WALK_RIGHT;//
+					break;
+				case MState::Walk_left:
+					ani = RACCOON_ANI_WALK_LEFT;//
+					break;
+				case MState::Run_right:
+					if (vx < MARIO_RUN_SPEED_THRESH)
+						ani = RACCOON_ANI_WALK_RIGHT;//
+					else
+						ani = RACCOON_ANI_RUN_RIGHT;
+					break;
+				case MState::Run_left:
+					if (vx > -MARIO_RUN_SPEED_THRESH)
+						ani = RACCOON_ANI_WALK_LEFT;//
+					else
+						ani = RACCOON_ANI_RUN_LEFT;
+					break;
+				case MState::Fly:
+					if (!flyTimer->IsTimeUp())
+					{
+						if (vx > 0)
+							ani = RACCOON_ANI_FLY_RIGHT;
+						else
+							ani = RACCOON_ANI_FLY_LEFT;
 					}
 					else
 					{
@@ -754,267 +770,309 @@ void CMario::Render()
 								ani = RACCOON_ANI_FALL_LEFT;
 						}
 					}
-				break;
-			case MState::Sit:
-				if (nx > 0)
-					ani = RACCOON_ANI_SIT_RIGHT;
-				else
-					ani = RACCOON_ANI_SIT_LEFT;
-				break;
-			default:
-				if (!isOnGround)
-				{
+					break;
+				case MState::Attack:
+					if (nx > 0)
+						ani = RACCOON_ANI_FIGHT_IDLE_RIGHT;
+					else
+						ani = RACCOON_ANI_FIGHT_IDLE_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (isSitting)
+					{
+						if (nx > 0)
+							ani = RACCOON_ANI_SIT_RIGHT;
+						else
+							ani = RACCOON_ANI_SIT_LEFT;
+					}
+					else
+						if (vy < 0)
+						{
+							if (nx > 0)
+								ani = RACCOON_ANI_JUMP_RIGHT;
+							else
+								ani = RACCOON_ANI_JUMP_LEFT;
+						}
+						else
+						{
+							if (isWaggingTail)
+							{
+								if (nx > 0)
+									ani = RACCOON_ANI_WAG_TAIL_RIGHT;
+								else
+									ani = RACCOON_ANI_WAG_TAIL_LEFT;
+							}
+							else
+							{
+								if (nx > 0)
+									ani = RACCOON_ANI_FALL_RIGHT;
+								else
+									ani = RACCOON_ANI_FALL_LEFT;
+							}
+						}
+					break;
+				case MState::Sit:
+					if (nx > 0)
+						ani = RACCOON_ANI_SIT_RIGHT;
+					else
+						ani = RACCOON_ANI_SIT_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = RACCOON_ANI_WALK_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = RACCOON_ANI_WALK_LEFT;
+						else if (nx > 0)
+							ani = RACCOON_ANI_IDLE_RIGHT;
+						else
+							ani = RACCOON_ANI_IDLE_LEFT;
+					}
 					break;
 				}
-				else
-				{
-					if (nx > 0 && (vx > 0 || vx < 0))
-						ani = RACCOON_ANI_WALK_RIGHT;
-					else if (nx < 0 && (vx > 0 || vx < 0))
-						ani = RACCOON_ANI_WALK_LEFT;
-					else if (nx > 0)
-						ani = RACCOON_ANI_IDLE_RIGHT;
-					else
-						ani = RACCOON_ANI_IDLE_LEFT;
-				}
-				break;
-			}
 
-	}
-	//con lon
-	else if (GetLevel() == Level::Big)
-	{
-	if (isFalling)
-	{
-		if (nx > 0)
-			ani = MARIO_ANI_FALL_RIGHT;
-		else
-			ani = MARIO_ANI_FALL_LEFT;
-	}
-	else if (isHolding)
-	{
-		switch (state)
-		{
-		case MState::Walk_right:
-		case MState::Run_right:
-			ani = MARIO_ANI_WALK_HOLD_RIGHT;
-			break;
-		case MState::Walk_left:
-		case MState::Run_left:
-			ani = MARIO_ANI_WALK_HOLD_LEFT;
-			break;
-		case MState::Jump:
-		case MState::Jump_low:
-			if (nx > 0)
-				ani = MARIO_ANI_ON_AIR_HOLD_RIGHT;
-			else
-				ani = MARIO_ANI_ON_AIR_HOLD_LEFT;
-			break;
-		default:
-			if (!isOnGround)
-			{
-				break;
-			}
-			else
-			{
-				if (nx > 0 && (vx > 0 || vx < 0))
-					ani = MARIO_ANI_WALK_HOLD_RIGHT;
-				else if (nx < 0 && (vx > 0 || vx < 0))
-					ani = MARIO_ANI_WALK_HOLD_LEFT;
-				else if (nx > 0)
-					ani = MARIO_ANI_IDLE_HOLD_RIGHT;
-				else
-					ani = MARIO_ANI_IDLE_HOLD_LEFT;
-			}
-			break;
 		}
-	}
-	else
-		switch (state)
+		//con lon
+		else if (GetLevel() == Level::Big)
 		{
-		case MState::Die:
-			ani = MARIO_ANI_DIE;
-			break;
-		case MState::Stop:
-			if (nx > 0)
-				ani = MARIO_ANI_STOP_RIGHT;
-			else
-				ani = MARIO_ANI_STOP_LEFT;
-			break;
-		case MState::Walk_right:
-			ani = MARIO_ANI_WALK_RIGHT;
-			break;
-		case MState::Walk_left:
-			ani = MARIO_ANI_WALK_LEFT;
-			break;
-		case MState::Run_right:
-			if (vx < MARIO_RUN_SPEED_THRESH)
-				ani = MARIO_ANI_WALK_RIGHT;
-			else
-				ani = MARIO_ANI_RUN_RIGHT;
-			break;
-		case MState::Run_left:
-			if (vx > -MARIO_RUN_SPEED_THRESH)
-				ani = MARIO_ANI_WALK_LEFT;
-			else
-				ani = MARIO_ANI_RUN_LEFT;
-			break;
-		case MState::Jump:
-		case MState::Jump_low:
-			if (isSitting)
+			if (isFalling)
 			{
 				if (nx > 0)
-					ani = MARIO_ANI_SIT_RIGHT;
+					ani = MARIO_ANI_FALL_RIGHT;
 				else
-					ani = MARIO_ANI_SIT_LEFT;
+					ani = MARIO_ANI_FALL_LEFT;
+			}
+			else if (isHolding)
+			{
+				switch (state)
+				{
+				case MState::Walk_right:
+				case MState::Run_right:
+					ani = MARIO_ANI_WALK_HOLD_RIGHT;
+					break;
+				case MState::Walk_left:
+				case MState::Run_left:
+					ani = MARIO_ANI_WALK_HOLD_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (nx > 0)
+						ani = MARIO_ANI_ON_AIR_HOLD_RIGHT;
+					else
+						ani = MARIO_ANI_ON_AIR_HOLD_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = MARIO_ANI_WALK_HOLD_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = MARIO_ANI_WALK_HOLD_LEFT;
+						else if (nx > 0)
+							ani = MARIO_ANI_IDLE_HOLD_RIGHT;
+						else
+							ani = MARIO_ANI_IDLE_HOLD_LEFT;
+					}
+					break;
+				}
 			}
 			else
-				if (vy < 0)
+				switch (state)
 				{
+				case MState::Die:
+					ani = MARIO_ANI_DIE;
+					break;
+				case MState::Stop:
 					if (nx > 0)
-						ani = MARIO_ANI_JUMP_RIGHT;
+						ani = MARIO_ANI_STOP_RIGHT;
 					else
-						ani = MARIO_ANI_JUMP_LEFT;
-				}
-				else
-				{
-					if (nx > 0)
-						ani = MARIO_ANI_FALL_RIGHT;
-					else
-						ani = MARIO_ANI_FALL_LEFT;
-				}
-			break;
-		case MState::Sit:
-			if (nx > 0)
-				ani = MARIO_ANI_SIT_RIGHT;
-			else
-				ani = MARIO_ANI_SIT_LEFT;
-			break;
-		default:
-			if (!isOnGround)
-			{
-				break;
-			}
-			else
-			{
-				if (nx > 0 && (vx > 0 || vx < 0))
+						ani = MARIO_ANI_STOP_LEFT;
+					break;
+				case MState::Walk_right:
 					ani = MARIO_ANI_WALK_RIGHT;
-				else if (nx < 0 && (vx > 0 || vx < 0))
+					break;
+				case MState::Walk_left:
 					ani = MARIO_ANI_WALK_LEFT;
-				else if (nx > 0)
-					ani = MARIO_ANI_IDLE_RIGHT;
-				else
-					ani = MARIO_ANI_IDLE_LEFT;
-			}
-			break;
-		}
+					break;
+				case MState::Run_right:
+					if (vx < MARIO_RUN_SPEED_THRESH)
+						ani = MARIO_ANI_WALK_RIGHT;
+					else
+						ani = MARIO_ANI_RUN_RIGHT;
+					break;
+				case MState::Run_left:
+					if (vx > -MARIO_RUN_SPEED_THRESH)
+						ani = MARIO_ANI_WALK_LEFT;
+					else
+						ani = MARIO_ANI_RUN_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (isSitting)
+					{
+						if (nx > 0)
+							ani = MARIO_ANI_SIT_RIGHT;
+						else
+							ani = MARIO_ANI_SIT_LEFT;
+					}
+					else
+						if (vy < 0)
+						{
+							if (nx > 0)
+								ani = MARIO_ANI_JUMP_RIGHT;
+							else
+								ani = MARIO_ANI_JUMP_LEFT;
+						}
+						else
+						{
+							if (nx > 0)
+								ani = MARIO_ANI_FALL_RIGHT;
+							else
+								ani = MARIO_ANI_FALL_LEFT;
+						}
+					break;
+				case MState::Sit:
+					if (nx > 0)
+						ani = MARIO_ANI_SIT_RIGHT;
+					else
+						ani = MARIO_ANI_SIT_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = MARIO_ANI_WALK_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = MARIO_ANI_WALK_LEFT;
+						else if (nx > 0)
+							ani = MARIO_ANI_IDLE_RIGHT;
+						else
+							ani = MARIO_ANI_IDLE_LEFT;
+					}
+					break;
+				}
 
-	}
-	//con nho
-	else
-	{
-	if (isFalling)
-	{
-		if (nx > 0)
-			ani = mario_ANI_JUMP_RIGHT;
+		}
+		//con nho
 		else
-			ani = mario_ANI_JUMP_LEFT;
-	}
-	else if (isHolding)
-	{
-		switch (state)
 		{
-		case MState::Walk_right:
-		case MState::Run_right:
-			ani = mario_ANI_WALK_HOLD_RIGHT;
-			break;
-		case MState::Walk_left:
-		case MState::Run_left:
-			ani = mario_ANI_WALK_HOLD_LEFT;
-			break;
-		case MState::Jump:
-		case MState::Jump_low:
-			if (nx > 0)
-				ani = mario_ANI_ON_AIR_HOLD_RIGHT;
-			else
-				ani = mario_ANI_ON_AIR_HOLD_LEFT;
-			break;
-		default:
-			if (!isOnGround)
+			if (isFalling)
 			{
-				break;
+				if (nx > 0)
+					ani = mario_ANI_JUMP_RIGHT;
+				else
+					ani = mario_ANI_JUMP_LEFT;
 			}
-			else
+			else if (isHolding)
 			{
-				if (nx > 0 && (vx > 0 || vx < 0))
+				switch (state)
+				{
+				case MState::Walk_right:
+				case MState::Run_right:
 					ani = mario_ANI_WALK_HOLD_RIGHT;
-				else if (nx < 0 && (vx > 0 || vx < 0))
+					break;
+				case MState::Walk_left:
+				case MState::Run_left:
 					ani = mario_ANI_WALK_HOLD_LEFT;
-				else if (nx > 0)
-					ani = mario_ANI_IDLE_HOLD_RIGHT;
-				else
-					ani = mario_ANI_IDLE_HOLD_LEFT;
-			}
-			break;
-		}
-	}
-	else
-		switch (state)
-		{
-		case MState::Die:
-			ani = MARIO_ANI_DIE;
-			break;
-		case MState::Stop:
-			if (nx < 0)
-				ani = mario_ANI_STOP_RIGHT;
-			else
-				ani = mario_ANI_STOP_LEFT;
-			break;
-		case MState::Walk_right:
-			ani = mario_ANI_WALK_RIGHT;
-			break;
-		case MState::Walk_left:
-			ani = mario_ANI_WALK_LEFT;
-			break;
-		case MState::Run_right:
-			if (vx < MARIO_RUN_SPEED_THRESH)
-				ani = mario_ANI_WALK_RIGHT;
-			else
-				ani = mario_ANI_RUN_RIGHT;
-			break;
-		case MState::Run_left:
-			if (vx > -MARIO_RUN_SPEED_THRESH)
-				ani = mario_ANI_WALK_LEFT;
-			else
-				ani = mario_ANI_RUN_LEFT;
-			break;
-		case MState::Jump:
-		case MState::Jump_low:
-			if (nx > 0)
-				ani = mario_ANI_JUMP_RIGHT;
-			else
-				ani = mario_ANI_JUMP_LEFT;
-			break;
-		default:
-			if (!isOnGround)
-			{
-				break;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (nx > 0)
+						ani = mario_ANI_ON_AIR_HOLD_RIGHT;
+					else
+						ani = mario_ANI_ON_AIR_HOLD_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = mario_ANI_WALK_HOLD_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = mario_ANI_WALK_HOLD_LEFT;
+						else if (nx > 0)
+							ani = mario_ANI_IDLE_HOLD_RIGHT;
+						else
+							ani = mario_ANI_IDLE_HOLD_LEFT;
+					}
+					break;
+				}
 			}
 			else
-			{
-				if (nx > 0 && (vx > 0 || vx < 0))
+				switch (state)
+				{
+				case MState::Die:
+					ani = MARIO_ANI_DIE;
+					break;
+				case MState::Stop:
+					if (nx < 0)
+						ani = mario_ANI_STOP_RIGHT;
+					else
+						ani = mario_ANI_STOP_LEFT;
+					break;
+				case MState::Walk_right:
 					ani = mario_ANI_WALK_RIGHT;
-				else if (nx < 0 && (vx > 0 || vx < 0))
+					break;
+				case MState::Walk_left:
 					ani = mario_ANI_WALK_LEFT;
-				else if (nx > 0)
-					ani = mario_ANI_IDLE_RIGHT;
-				else
-					ani = mario_ANI_IDLE_LEFT;
-			}
-			break;
+					break;
+				case MState::Run_right:
+					if (vx < MARIO_RUN_SPEED_THRESH)
+						ani = mario_ANI_WALK_RIGHT;
+					else
+						ani = mario_ANI_RUN_RIGHT;
+					break;
+				case MState::Run_left:
+					if (vx > -MARIO_RUN_SPEED_THRESH)
+						ani = mario_ANI_WALK_LEFT;
+					else
+						ani = mario_ANI_RUN_LEFT;
+					break;
+				case MState::Jump:
+				case MState::Jump_low:
+					if (nx > 0)
+						ani = mario_ANI_JUMP_RIGHT;
+					else
+						ani = mario_ANI_JUMP_LEFT;
+					break;
+				default:
+					if (!isOnGround)
+					{
+						break;
+					}
+					else
+					{
+						if (nx > 0 && (vx > 0 || vx < 0))
+							ani = mario_ANI_WALK_RIGHT;
+						else if (nx < 0 && (vx > 0 || vx < 0))
+							ani = mario_ANI_WALK_LEFT;
+						else if (nx > 0)
+							ani = mario_ANI_IDLE_RIGHT;
+						else
+							ani = mario_ANI_IDLE_LEFT;
+					}
+					break;
+				}
 		}
-	}
 
+	}
 	int alpha = 255;
 	if (untouchable) alpha = 128;
 
@@ -1033,12 +1091,22 @@ void CMario::SetState(int state)
 
 	switch (state)
 	{
+	case MState::Walk_down:
+		vy = MARIO_WALKING_SPEED;
+		isIdling = false;
+		break;
+	case MState::Walk_up:
+		vy = -MARIO_WALKING_SPEED;
+		isIdling = false;
+		break;
 	case MState::Walk_right:
 		vx = MARIO_WALKING_SPEED;
+		isIdling = false;
 		nx = 1;
 		break;
 	case MState::Walk_left:
 		vx = -MARIO_WALKING_SPEED;
+		isIdling = false;
 		nx = -1;
 		break;
 	case MState::Run_right:
@@ -1078,6 +1146,7 @@ void CMario::SetState(int state)
 		break;
 	case MState::Stop:
 	case MState::Idle:
+		isIdling = true;
 		DecreaseSpeedToStop();
 		break;
 	case MState::Sit:
@@ -1096,40 +1165,49 @@ void CMario::GetBoundingBox(float& left, float& top, float& right, float& bottom
 {
 	left = x;
 	top = y;
-	switch (level)
+	switch (stage)
 	{
-	case Level::Raccoon:
-		right = x + MARIO_RACCOON_BBOX_WIDTH;
-		bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
-
-		if (nx > 0)
-		{
-			left = x + 7;
-			right = left + MARIO_RACCOON_BBOX_WIDTH;
-		}
-		else
-		{
-			left = x + 7;
-			right = left + MARIO_RACCOON_BBOX_WIDTH;
-		}
-		if (isSitting)
-		{
-			top = y + 10;
-		}
-		break;
-	case Level::Fire:
-	case Level::Big:
-		right = x + MARIO_BIG_BBOX_WIDTH;
-		bottom = y + MARIO_BIG_BBOX_HEIGHT;
-		if (isSitting)
-		{
-			top = y + 10;
-		}
+	case ID_SCENE_WORLD_MAP:
+		right = x + 16;
+		bottom = y + 16;
 		break;
 	default:
-		right = x + MARIO_SMALL_BBOX_WIDTH;
-		bottom = y + MARIO_SMALL_BBOX_HEIGHT;
-		break;
+		switch (level)
+		{
+		case Level::Raccoon:
+			right = x + MARIO_RACCOON_BBOX_WIDTH;
+			bottom = y + MARIO_RACCOON_BBOX_HEIGHT;
+
+			if (nx > 0)
+			{
+				left = x + 7;
+				right = left + MARIO_RACCOON_BBOX_WIDTH;
+			}
+			else
+			{
+				left = x + 7;
+				right = left + MARIO_RACCOON_BBOX_WIDTH;
+			}
+			if (isSitting)
+			{
+				top = y + 10;
+			}
+			break;
+		case Level::Fire:
+		case Level::Big:
+			right = x + MARIO_BIG_BBOX_WIDTH;
+			bottom = y + MARIO_BIG_BBOX_HEIGHT;
+			if (isSitting)
+			{
+				top = y + 10;
+			}
+			break;
+		default:
+			right = x + MARIO_SMALL_BBOX_WIDTH;
+			bottom = y + MARIO_SMALL_BBOX_HEIGHT;
+			break;
+		}
+
 	}
 
 }

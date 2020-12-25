@@ -12,7 +12,7 @@ CItem::~CItem()
 {
 }
 
-void CItem::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CItem::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 	//if (disapperTimer->IsTimeUp())

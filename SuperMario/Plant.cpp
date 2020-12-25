@@ -30,7 +30,7 @@ bool CPlant::CheckPlayerInZone(D3DXVECTOR4 player)
 	return AABBCheck(l_plant, t_plant, r_plant, b_plant, player.x, player.y, player.z, player.w);
 }
 
-void CPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
+void CPlant::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
 {
 	CGameObject::Update(dt);
 	y += dy;

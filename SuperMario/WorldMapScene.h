@@ -3,33 +3,21 @@
 #include "Textures.h"
 #include "Scence.h"
 #include "GameObject.h"
-#include "Brick.h"
 #include "Mario.h"
-#include "Goomba.h"
-#include "Koopas.h"
 #include "TileMap.h"
 #include "Ground.h"
 #include "Effect.h"
-#include "Item.h"
-#include "SuperMushroom.h"
-#include "FireBallEffect.h"
-#include "SuperLeaf.h"
 #include "HUD.h"
 #include "Camera.h"
+#include "MapPoint.h"
 
-class CPlayScene : public CScene
+class CWorldMapScene : public CScene
 {
 protected:
 	CMario* player = nullptr;					// A play scene has to have player, right? 
 	CTileMap* map = nullptr;
-	LPCAMERA cam;
 	LPHUD hud;
-
 	vector<CGameObject*> listObj;
-	vector<CGameObject*> listEnemy;
-	vector<CGameObject*> listItem;
-	vector<CEffect*> listEffect;
-
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
 	void _ParseSection_ANIMATIONS(string line);
@@ -39,7 +27,7 @@ protected:
 
 
 public:
-	CPlayScene(int id, LPCWSTR filePath);
+	CWorldMapScene(int id, LPCWSTR filePath);
 
 	virtual void Load();
 	virtual void Update(ULONGLONG dt);
@@ -51,13 +39,13 @@ public:
 	//friend class CPlayScenceKeyHandler;
 };
 
-class CPlayScenceKeyHandler : public CScenceKeyHandler
+class CWorldMapScenceKeyHandler : public CScenceKeyHandler
 {
 public:
 
 	virtual void KeyState(BYTE* states);
 	virtual void OnKeyDown(int KeyCode);
-	virtual void OnKeyUp(int KeyCode);
-	CPlayScenceKeyHandler(CScene* s) :CScenceKeyHandler(s) {};
+	virtual void OnKeyUp(int KeyCode) {};
+	CWorldMapScenceKeyHandler(CScene* s) :CScenceKeyHandler(s) {};
 };
 

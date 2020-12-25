@@ -46,7 +46,7 @@ void CTileMap::LoadMap()
 	CTextures* texture = CTextures::GetInstance();
 	texture->Add(Id, MapPNG, D3DCOLOR_XRGB(255, 0, 255));
 
-	LPDIRECT3DTEXTURE9 texTileMap = texture->Get(Id);
+	LPDIRECT3DTEXTURE9 texTileMap = texture->Get(Id);	
 
 	int id_sprite = 1;
 	for (UINT i = 0; i < num_row_read; i++)

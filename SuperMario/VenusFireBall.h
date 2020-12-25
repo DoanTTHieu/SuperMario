@@ -20,7 +20,7 @@ class CVenusFireBall :
 public:
 	CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario);
 	~CVenusFireBall();
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
 	void SetSpeed();
 };
 

@@ -15,6 +15,6 @@ public:
 
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects);
 
 };

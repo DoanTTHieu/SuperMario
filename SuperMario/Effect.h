@@ -19,14 +19,14 @@ class CEffect :
 {
 protected:
 
-	DWORD startEffect;
+	ULONGLONG startEffect;
 	int effectType;
 public:
 	CEffect(D3DXVECTOR2 position, int type);
 	~CEffect();
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(DWORD dt);
+	virtual void Update(ULONGLONG dt);
 	virtual void Render();
 	int GetEffectType() { return effectType; }
 };

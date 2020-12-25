@@ -16,7 +16,7 @@ CBullet::CBullet(D3DXVECTOR2 position, int nx)
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(21));
 
 }
-void CBullet::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CBullet::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 

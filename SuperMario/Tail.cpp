@@ -13,7 +13,7 @@ CTail::CTail()
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 }
 
-void CTail::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx)
+void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx)
 {
 
 	CGameObject::Update(dt);

@@ -25,7 +25,7 @@ void CPiranhaPlant::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 }
 
-void CPiranhaPlant::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
+void CPiranhaPlant::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
 {
 	CPlant::Update(dt, coObjects, player);
 	//1

@@ -15,7 +15,7 @@ class CMario : public CGameObject
 	int level;
 	int life;
 	int time;
-
+	int stage;
 	int untouchable;
 	ULONGLONG untouchable_start;
 	CTimer* play_timer = new CTimer(TIME_DEFAULT);
@@ -41,12 +41,12 @@ public:
 	CMario(float x = 0.0f, float y = 0.0f);
 	~CMario();
 
-	//virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
 	virtual void Render();
 
 	void SetState(int state);
-	
+	void SetStage(int stage) { this->stage = stage; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	
 	bool isOnGround;
@@ -59,6 +59,13 @@ public:
 	bool isHolding;
 	bool isFlying;//cam_y theo mario khi bay, ko theo khi nhay
 	bool isFalling;
+	bool isIdling;
+
+	bool canWalkLeft;
+	bool canWalkRight;
+	bool canWalkUp;
+	bool canWalkDown;
+	bool canSwitchScene;
 
 	LPGAMEOBJECT colidingGround;
 

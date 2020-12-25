@@ -34,7 +34,7 @@ void CVenusFireTrap::GetBoundingBox(float& l, float& t, float& r, float& b)
 
 }
 
-void CVenusFireTrap::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
+void CVenusFireTrap::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR4 player)
 {
 	CPlant::Update(dt, coObjects,player);
 	if (player.x < start_x)

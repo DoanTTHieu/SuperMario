@@ -1,5 +1,5 @@
 #include "VenusFireBall.h"
-
+#include "Utils.h"
 
 CVenusFireBall::CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario) :CBullet(position, nx)
 {
@@ -7,7 +7,7 @@ CVenusFireBall::CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario) :C
 	this->type = Type::VENUS_FIRE_BALL;
 }
 
-void CVenusFireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CVenusFireBall::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 	SetSpeed();
@@ -16,7 +16,9 @@ void CVenusFireBall::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
 	y += dy;
 	
 	if (IsOutOfCamera())
-		SetState(STATE_DESTROYED);
+	{
+		state = STATE_DESTROYED;
+	}
 }
 
 CVenusFireBall::~CVenusFireBall()
@@ -25,7 +27,7 @@ CVenusFireBall::~CVenusFireBall()
 
 void CVenusFireBall::SetSpeed()
 {
-	vx = nx * BULLET_SPEED_X;
+	vx = nx * BULLET_SPEED_X*0.5;
 	//vx = nx * BULLET_SPEED_X*0.004;
 	switch (zone)
 	{

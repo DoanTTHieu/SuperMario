@@ -62,6 +62,7 @@ public:
 
 	void Load(LPCWSTR gameFile);
 	LPSCENE GetCurrentScene() { return scenes[current_scene]; }
+	int GetCurrentSceneId() { return current_scene; }
 	void SwitchScene(int scene_id);
 
 	int GetScreenWidth() { return screen_width; }

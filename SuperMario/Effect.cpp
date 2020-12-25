@@ -19,7 +19,7 @@ void CEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 	l = t = r = b = 0;
 }
 
-void CEffect::Update(DWORD dt)
+void CEffect::Update(ULONGLONG dt)
 {
 	if (GetTickCount64() - startEffect > EFFECT_TIME)
 		state = STATE_DESTROYED;

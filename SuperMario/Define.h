@@ -1,4 +1,5 @@
 #pragma once
+#define ID_SCENE_WORLD_MAP	4
 
 enum Type
 {
@@ -24,7 +25,7 @@ enum Type
 
 	//
 	PORTAL = 12,
-
+	MAP_POINT = 13,
 };
 
 enum MState
@@ -41,6 +42,8 @@ enum MState
 	Fly = 10,
 	Stop = 11,
 	Attack = 12,
+	Walk_down = 13,
+	Walk_up = 14,
 };
 
 enum Level
@@ -61,8 +64,8 @@ enum KoopaType
 
 enum GoombaType
 {
-	normal = 01,
-	red_para = 02,
+	yellow = 1,
+	red_para = 2,
 };
 
 enum BrickType
@@ -106,6 +109,8 @@ enum VenusFireTrapType
 #define OBJECT_TYPE_PIRANHA_PLANT	14
 //
 #define OBJECT_TYPE_PORTAL			50
+#define OBJECT_MAP_POINT			51
+
 
 
 #define MAX_SCENE_LINE 1024
@@ -121,6 +126,7 @@ enum VenusFireTrapType
 #define MARIO_JUMP_SPEED_Y				0.25f
 #define MARIO_JUMP_DEFLECT_SPEED		0.1f
 #define MARIO_GRAVITY					0.0005f
+#define GOOMBA_GRAVITY					0.0005f
 
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f
@@ -223,6 +229,11 @@ enum VenusFireTrapType
 #define FIRE_ANI_IDLE_HOLD_LEFT				84
 #define FIRE_ANI_WALK_HOLD_LEFT				85
 #define FIRE_ANI_ON_AIR_HOLD_LEFT			86
+
+#define mario_WORLD_MAP						87
+#define MARIO_WORLD_MAP						88
+#define RACCOON_WORLD_MAP					89
+#define FIRE_WORLD_MAP						90
 
 //==============================================SIZE========================================
 #define MARIO_BIG_BBOX_WIDTH				14

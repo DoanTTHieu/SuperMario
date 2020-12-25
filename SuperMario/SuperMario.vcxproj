@@ -129,6 +129,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapPoint.cpp" />
     <ClCompile Include="Mario.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="PiranhaPlant.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VenusFireBall.cpp" />
     <ClCompile Include="VenusFireTrap.cpp" />
+    <ClCompile Include="WorldMapScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico" />
@@ -170,6 +172,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="MapPoint.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="PiranhaPlant.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VenusFireBall.h" />
     <ClInclude Include="VenusFireTrap.h" />
+    <ClInclude Include="WorldMapScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

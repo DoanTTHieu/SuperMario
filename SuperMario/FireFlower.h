@@ -8,6 +8,6 @@ public:
 	CFireFlower(D3DXVECTOR2 position);
 	~CFireFlower();
 
-	virtual void Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
 
 };

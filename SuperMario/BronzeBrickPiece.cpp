@@ -26,7 +26,7 @@ void CBronzeBrickPiece::GetBoundingBox(float& l, float& t, float& r, float& b)
 	}
 }
 
-void CBronzeBrickPiece::Update(DWORD dt, vector<LPGAMEOBJECT>* colliable_objects)
+void CBronzeBrickPiece::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects)
 {
 	CGameObject::Update(dt);
 	vy += PIECE_GRAVITY * dt;

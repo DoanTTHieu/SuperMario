@@ -143,6 +143,8 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 
 		obj = CMario::GetInstance();
 		player = (CMario*)obj;
+		player->SetStage(this->id);
+
 		player->SetPosition(x, y);
 		hud = new CHUD();
 
@@ -150,7 +152,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		break;
 	case OBJECT_TYPE_GOOMBA: 
 	{
-		obj = new CGoomba();
+		int gtype = atoi(tokens[4].c_str());
+		obj = new CGoomba(gtype);
+		if (gtype==2) DebugOut(L"red para goobaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!\n");
 	}
 	break;
 	case OBJECT_TYPE_COIN:
@@ -319,7 +323,7 @@ void CPlayScene::Load()
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
-void CPlayScene::Update(DWORD dt)
+void CPlayScene::Update(ULONGLONG dt)
 {
 	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
 	// TO-DO: This is a "dirty" way, need a more organized way 
@@ -400,7 +404,7 @@ void CPlayScene::Update(DWORD dt)
 			i--;
 		}
 	}
-
+	//DebugOut(L"sl: %d\n",listObj.size());
 	//for (size_t i = 0; i < listEnemy.size(); i++)
 	//{
 	//	if (listEnemy[i]->GetState() == STATE_DESTROYED|| (listEnemy[i]->IsOutOfCamera()&& listEnemy[i]->GetType()==Type::VENUS_FIRE_BALL))

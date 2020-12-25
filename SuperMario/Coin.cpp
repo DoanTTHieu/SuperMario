@@ -14,7 +14,7 @@ CCoin::~CCoin()
 }
 
 
-void CCoin::Update(DWORD dt, vector<LPGAMEOBJECT>* coObjects)
+void CCoin::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
 
