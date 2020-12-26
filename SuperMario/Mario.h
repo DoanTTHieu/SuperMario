@@ -68,6 +68,8 @@ public:
 	bool canWalkUp;
 	bool canWalkDown;
 	bool canSwitchScene;
+	bool canGoThroughPipe_Up;
+	bool canGoThroughPipe_Down;
 
 	LPGAMEOBJECT colidingGround;
 

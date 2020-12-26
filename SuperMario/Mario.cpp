@@ -12,6 +12,7 @@
 #include "Portal.h"
 #include "Ground.h"
 #include "Brick.h"
+#include "Pipe.h"
 #include "Item.h"
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
@@ -51,6 +52,8 @@ CMario::CMario(float x, float y) : CGameObject()
 	canWalkDown = false;
 
 	canSwitchScene = false;
+	canGoThroughPipe_Up = false;
+	canGoThroughPipe_Down = false;
 
 	start_x = x;
 	start_y = y;
@@ -370,16 +373,17 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 
 			break;
 
-		case Type::PORTAL:
-			//if (this->IsCollidingWithObject(coObj->at(i)))
-			if(this->IsAABB(coObj->at(i)))
-			{
-				CPortal* portal = dynamic_cast<CPortal*>(coObj->at(i));
-				SetPosition(portal->GetDestination().x, portal->GetDestination().y);
-				this->inHiddenArea = !this->inHiddenArea;
-				//CGame::GetInstance()->SwitchScene(portal->GetSceneId());
-			}
-			break;
+		//case Type::PORTAL:
+		//	//if (this->IsCollidingWithObject(coObj->at(i)))
+		//	if(this->IsAABB(coObj->at(i)))
+		//	{
+		//		CPortal* portal = dynamic_cast<CPortal*>(coObj->at(i));
+		//		SetPosition(portal->GetDestination().x, portal->GetDestination().y);
+		//		DebugOut(L"aaaaaaaaaaaaaaaaaaaaaaaaaa: %d\n", this->inHiddenArea);
+		//		this->inHiddenArea = !this->inHiddenArea;
+		//		//CGame::GetInstance()->SwitchScene(portal->GetSceneId());
+		//	}
+		//	break;
 		}
 	}
 
@@ -393,6 +397,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	if (state != MState::Die)
 		CalcPotentialCollisions(&groundObjs, coEvents);
 
+	DebugOut(L"shshshhhhsh: %d\n", groundObjs.size());
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
 	{
@@ -427,6 +432,32 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
+
+			if (e->ny != 0)
+			{
+				if (e->ny > 0)
+					vy = 0;
+				if (e->obj->GetType() == Type::PIPE)
+				{
+					CPipe* pipe = dynamic_cast<CPipe*>(e->obj);
+					if (pipe->IsHasPortal())
+					{
+						if (pipe->GetDirection() && this->canGoThroughPipe_Up)
+						{
+							this->inHiddenArea = !this->inHiddenArea;
+							SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);
+							
+						}
+						else if (!pipe->GetDirection() && this->canGoThroughPipe_Down)
+						{
+							this->inHiddenArea = !this->inHiddenArea;
+							SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);	
+						}
+						
+					}
+
+				}
+			}
 
 			if (e->ny > 0)
 			{

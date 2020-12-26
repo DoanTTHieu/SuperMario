@@ -210,7 +210,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_PIPE:
 	{
 		int t = atoi(tokens[4].c_str());
-		obj = new CPipe(t);
+		int hasPortal = atoi(tokens[5].c_str());
+		float des_x = strtof(tokens[6].c_str(), NULL);
+		float des_y = strtof(tokens[7].c_str(), NULL);
+		int dir = atoi(tokens[8].c_str());
+		DebugOut(L"d2: %d\n", dir);
+		obj = new CPipe(t, hasPortal, { des_x, des_y }, dir);
 	}
 	break;
 	default:
@@ -628,6 +633,24 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 		return;
 	if (game->IsKeyDown(DIK_A))
 		mario->canHoldShell = true;
+
+	if (game->IsKeyDown(DIK_UP))
+	{
+		mario->canGoThroughPipe_Up = true;
+	}
+	else
+	{
+		mario->canGoThroughPipe_Up = false;
+	}
+
+	if (game->IsKeyDown(DIK_DOWN))
+	{
+		mario->canGoThroughPipe_Down = true;
+	}
+	else
+	{
+		mario->canGoThroughPipe_Down = false;
+	}
 
 	if (mario->isOnGround)
 	{

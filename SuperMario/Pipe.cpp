@@ -1,9 +1,14 @@
 #include "Pipe.h"
-
-CPipe::CPipe(int t)
+#include "Utils.h"
+CPipe::CPipe(int t, bool hasPortal, D3DXVECTOR2 des, bool dir)
 {
 	this->type = Type::PIPE;
 	this->pipeType = t;
+	this->hasPortal = hasPortal;
+	this->destination.x = des.x;
+	this->destination.y = des.y;
+	this->direction = dir;
+	DebugOut(L"d1: %d\n", this->direction);
 }
 
 void CPipe::Render()
@@ -14,7 +19,7 @@ void CPipe::Render()
 		ani = PIPE_ANI_SHORT;
 	animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CPipe::GetBoundingBox(float& l, float& t, float& r, float& b)
