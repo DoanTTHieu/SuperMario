@@ -279,7 +279,7 @@ void CWorldMapScene::Render()
 		listObj[i]->Render();
 	}
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player,0);
 }
 
 /*
@@ -301,19 +301,19 @@ void CWorldMapScenceKeyHandler::OnKeyDown(int KeyCode)
 	{
 	case DIK_RIGHT:
 		if(mario->isIdling && mario->canWalkRight)
-		mario->SetState(MState::Walk_right);
+			mario->SetState(MState::Walk_right);
 		break;
 	case DIK_LEFT:
 		if (mario->isIdling && mario->canWalkLeft)
-		mario->SetState(MState::Walk_left);
+			mario->SetState(MState::Walk_left);
 		break;
 	case DIK_UP:
 		if (mario->isIdling && mario->canWalkUp)
-		mario->SetState(MState::Walk_up);
+			mario->SetState(MState::Walk_up);
 		break;
 	case DIK_DOWN:
 		if (mario->isIdling && mario->canWalkDown)
-		mario->SetState(MState::Walk_down);
+			mario->SetState(MState::Walk_down);
 		break;
 	}
 

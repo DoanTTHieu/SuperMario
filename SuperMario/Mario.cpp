@@ -42,6 +42,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	isFlying = false;
 	attackStart = 0;
 
+	inHiddenArea = false;
 	colidingGround = NULL;
 
 	canWalkLeft = false;
@@ -114,7 +115,8 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-
+	DebugOut(L"x: %f    n", x);
+	DebugOut(L"y: %f\n", y);
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
@@ -181,6 +183,8 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		{
 			state = MState::Attack;
 			tail->SetState(KILL_ENEMY);
+
+			DebugOut(L"YUCCCCCCCCCCCCCCCCC: \n");
 			//cap nhat nx cua mario 
 			//con thieu moot truong hop khi ani = 4
 			if (GetTickCount64() - attackStart < MARIO_TIME_ATTACK / 2 && changedNx == 0)
@@ -227,6 +231,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 
 	//tail update
 	if (tail) tail->Update(dt, coObj, { x, y }, nx);
+	DebugOut(L"hdhdh: %d", coObj->size());
 
 	//update list dan trong mario
 	for (size_t i = 0; i < listBullet.size(); i++)
@@ -265,6 +270,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		case Type::PIPE:
 			groundObjs.push_back(coObj->at(i));
 			break;
+
 		case Type::PIRANHA_PLANT:
 		case Type::VENUS_FIRE_TRAP:
 		case Type::VENUS_FIRE_BALL:
@@ -363,6 +369,17 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			}
 
 			break;
+
+		case Type::PORTAL:
+			//if (this->IsCollidingWithObject(coObj->at(i)))
+			if(this->IsAABB(coObj->at(i)))
+			{
+				CPortal* portal = dynamic_cast<CPortal*>(coObj->at(i));
+				SetPosition(portal->GetDestination().x, portal->GetDestination().y);
+				this->inHiddenArea = !this->inHiddenArea;
+				//CGame::GetInstance()->SwitchScene(portal->GetSceneId());
+			}
+			break;
 		}
 	}
 
@@ -396,19 +413,17 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		x += min_tx * dx + nx * 0.4f;
 		y += min_ty * dy + ny * 0.25f;
 
-		if (ny != 0)
+		if (ny == -1)
 		{
 			vy = 0;
-			if (ny == -1)
-			{
-				colidingGround = objectY;
-				isOnGround = true;
-				isFlying = false;
-				isblockJump = false;
-				isWaggingTail = false;
-				isFalling = false;
-			}
+			colidingGround = objectY;
+			isOnGround = true;
+			isFlying = false;
+			isblockJump = false;
+			isWaggingTail = false;
+			isFalling = false;
 		}
+
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
@@ -1081,7 +1096,7 @@ void CMario::Render()
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 	
-	//if (tail) tail->Render();
+	if (tail) tail->Render();
 	//RenderBoundingBox();
 }
 

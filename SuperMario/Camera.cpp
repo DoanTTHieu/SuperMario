@@ -7,7 +7,7 @@ CCamera::CCamera()
 	height = SCREEN_HEIGHT-32;
 	width = SCREEN_WIDTH;
 	lockUpdate = false;
-	CGame::GetInstance()->SetCamPos(0, 200);
+	CGame::GetInstance()->SetCamPos(0, 250);
 }
 
 void CCamera::Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying)
@@ -21,6 +21,14 @@ void CCamera::Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, 
 		position.x = end.x;
 	if (position.x < start.x)
 		position.x = start.x;
+
+	if (lockUpdateY)
+	{
+		CGame::GetInstance()->SetCamPosX(position.x);
+		CGame::GetInstance()->SetCamPosY(608 - SCREEN_HEIGHT + 110);
+		return;
+
+	}
 	if (isFlying|| playerPos.y < end.y-64)
 	{
 		position.y = int(playerPos.y - height / 2 + 16);

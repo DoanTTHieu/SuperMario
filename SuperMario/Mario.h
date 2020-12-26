@@ -60,6 +60,8 @@ public:
 	bool isFlying;//cam_y theo mario khi bay, ko theo khi nhay
 	bool isFalling;
 	bool isIdling;
+	bool inHiddenArea;
+
 
 	bool canWalkLeft;
 	bool canWalkRight;

@@ -20,7 +20,7 @@ public:
 	CHUD();
 	~CHUD();
 
-	void Render(D3DXVECTOR2 position, CMario * mario);
+	void Render(D3DXVECTOR2 position, CMario * mario, int reamainingTime);
 };
 
 typedef CHUD* LPHUD;

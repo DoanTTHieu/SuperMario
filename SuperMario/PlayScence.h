@@ -25,6 +25,9 @@ protected:
 	LPCAMERA cam;
 	LPHUD hud;
 
+	CTimer* playTimer = new CTimer(PLAY_TIME * MINISEC_PER_SEC);
+	int remainingTime=0;
+
 	vector<CGameObject*> listObj;
 	vector<CGameObject*> listEnemy;
 	vector<CGameObject*> listItem;
@@ -39,6 +42,7 @@ protected:
 
 
 public:
+
 	CPlayScene(int id, LPCWSTR filePath);
 
 	virtual void Load();

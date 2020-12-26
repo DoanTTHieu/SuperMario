@@ -184,8 +184,10 @@ void CTail::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		default:
 			break;
 		}
-		right = left + 10;
-		bottom = top + 5;
+		//right = left + 10;
+		//bottom = top + 5;
+		right = left + 20;
+		bottom = top + 10;
 	}
 	else
 		left = top = bottom = right = 0;

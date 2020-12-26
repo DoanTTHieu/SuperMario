@@ -18,6 +18,8 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	CScene(id, filePath)
 {
 	key_handler = new CPlayScenceKeyHandler(this);
+	playTimer->Start();
+	DebugOut(L"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa: %d\n", id);
 }
 
 /*
@@ -192,7 +194,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float r = strtof(tokens[4].c_str(), NULL);
 		float b = strtof(tokens[5].c_str(), NULL);
 		int scene_id = atoi(tokens[6].c_str());
-		obj = new CPortal(x, y, r, b, scene_id);
+		float des_x = strtof(tokens[7].c_str(), NULL);
+		float des_y = strtof(tokens[8].c_str(), NULL);
+		obj = new CPortal(x, y, r, b, scene_id, { des_x, des_y });
 	}
 	break;
 	case OBJECT_TYPE_GROUND:
@@ -330,6 +334,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	//	//mario
 	//player->Update(dt, &listObj, &listItem);
 
+	this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime())/ MINISEC_PER_SEC);
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
 		if (listObj[i]->GetType() == Type::BRICK)
@@ -439,7 +444,15 @@ void CPlayScene::Update(ULONGLONG dt)
 		cam->LockUpdate();
 	if(cam->IsLockUpdate() && player->GetState() != MState::Die)
 		cam->UnlockUpdate();
-	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2.25) , float(map->GetMapHeight() - SCREEN_HEIGHT+64) }, player->isFlying);
+	if (player->inHiddenArea)
+		cam->LockUpdateY();
+	if (cam->IsLockUpdateY() && !player->inHiddenArea)
+		cam->UnlockUpdateY();
+
+	//thieu dieu kien inHiddenArea = false -> cho gia tri int = 1 -> port -> *-1
+	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2-226) , float(map->GetMapHeight()-14 *16 - SCREEN_HEIGHT+64) /*(float)200*/ }, player->isFlying);
+	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() /*- SCREEN_WIDTH * 2*/-226) , float(0/*map->GetMapHeight()*/ /*- SCREEN_HEIGHT+64*/) }, player->isFlying);
+	DebugOut(L"map: %d\n", map->GetMapHeight());
 }
 
 void CPlayScene::Render()
@@ -457,7 +470,7 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect.at(i)->Render();
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, remainingTime);
 }
 
 /*

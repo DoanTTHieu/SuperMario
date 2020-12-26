@@ -483,6 +483,7 @@
 
 
 #POINT
+#type	x	y	ani_set	portal	idscene	l	r	up	down
 51	32	48	2	0	0	0	1	0	0
 51	64	16	2	1	2	0	1	0	1
 51	64	48	2	0	0	1	0	1	1

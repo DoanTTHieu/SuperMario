@@ -346,6 +346,7 @@ void CGame::_ParseSection_SCENES(string line)
 		scene = new CWorldMapScene(id, path);
 	else 
 		scene = new CPlayScene(id, path);
+	DebugOut(L"idddddddddddddddddd: %d\n", id);
 	scenes[id] = scene;
 }
 

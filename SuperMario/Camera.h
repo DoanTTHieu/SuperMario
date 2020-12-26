@@ -17,6 +17,7 @@ private:
 	int height;
 
 	bool lockUpdate;
+	bool lockUpdateY;
 public:
 	CCamera();
 	~CCamera() {}
@@ -29,6 +30,10 @@ public:
 	bool IsLockUpdate() { return lockUpdate; }
 	void LockUpdate() { lockUpdate = true; }
 	void UnlockUpdate() { lockUpdate = false; }
+
+	bool IsLockUpdateY() { return lockUpdateY; }
+	void LockUpdateY() { lockUpdateY = true; }
+	void UnlockUpdateY() { lockUpdateY = false; }
 };
 
 typedef CCamera* LPCAMERA;

@@ -23,14 +23,14 @@ char* IntToChar(int value, int len = 10)
 	return c;
 }
 
-void CHUD::Render(D3DXVECTOR2 position, CMario * player)
+void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime)
 {
 	background->Draw(position.x, position.y+192);
 
 	board->at(0)->Render(position.x, position.y + 192/*218*//*+ 432*/);
 
 	// scores
-	text.Render(IntToChar(player->GetScore(), 7), { position.x+100, /*448*/ position.y+208 });
+	text.Render(IntToChar(player->GetScore(), 7), { position.x+100, /*448*/ position.y+207 });
 
 	// money
 	int coin = player->GetCoin();
@@ -39,10 +39,11 @@ void CHUD::Render(D3DXVECTOR2 position, CMario * player)
 	text.Render(IntToChar(player->GetCoin(), length), { position.x+140, position.y + 199 /*439*/ });
 
 	// player's life
-	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 20, position.y + 208/*448*/});
+	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 20, position.y + 207/*448*/});
 
 	// time
-	//text.Render(IntToChar(player->GetTime(), 3), { 141, 3 });
+	//text.Render(IntToChar(remainingTime, 3), { 141, 3 });
+	text.Render(IntToChar(remainingTime, 3), { position.x + 141, position.y + 207 });
 
 	//// item
 	//GetItemSprite()->Draw(165, 31);
