@@ -57,7 +57,22 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 	//neu ko bi cam thi update binh thuong
 	if (!isBeingHeld)
 	{
-		vy += MARIO_GRAVITY * dt;
+		vy += KOOPA_GRAVITY * dt;
+		
+		vector<LPGAMEOBJECT> groundObjs;
+
+		for (int i = 0; i < coObjects->size(); i++)
+		{
+			switch (coObjects->at(i)->GetType())
+			{
+			case Type::BRICK:
+			case Type::GROUND:
+			case Type::PIPE:
+				groundObjs.push_back(coObjects->at(i));
+				break;
+			}
+		}
+
 
 		vector<LPCOLLISIONEVENT> coEvents;
 		vector<LPCOLLISIONEVENT> coEventsResult;
@@ -143,11 +158,16 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->nx != 0)
 					{
 						vx = -vx;
-						if (brick->GetBrickType() == BrickType::question)
+						if (state == KOOPAS_STATE_DIE_MOVE && brick->GetBrickType() == BrickType::bronze)
+						{
+							brick->SetState(STATE_BROKEN);
+						}
+						else if (brick->GetBrickType() == BrickType::question)
 						{
 							brick->SetBrickType(BrickType::question_broken);
 							brick->SetState(STATE_BEING_TOSSED);
 						}
+
 					}
 				}
 				else if (e->obj->GetType() == Type::PIPE)

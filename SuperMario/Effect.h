@@ -9,7 +9,7 @@
 enum EffectType
 {
 	fireBall = 01,
-	broze_bick_broken = 02,
+	text = 02,
 
 };
 
@@ -26,7 +26,7 @@ public:
 	~CEffect();
 
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(ULONGLONG dt);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
 	virtual void Render();
 	int GetEffectType() { return effectType; }
 };

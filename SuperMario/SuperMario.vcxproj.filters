@@ -132,6 +132,15 @@
     <ClInclude Include="CoinEffect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScoreEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LastItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpeedBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico">
@@ -251,6 +260,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CoinEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScoreEffect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LastItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpeedBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,7 +18,6 @@ class CMario : public CGameObject
 	int stage;
 	int untouchable;
 	ULONGLONG untouchable_start;
-	CTimer* play_timer = new CTimer(TIME_DEFAULT);
 	
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
@@ -42,7 +41,7 @@ public:
 	~CMario();
 
 	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
-	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect);
 	virtual void Render();
 
 	void SetState(int state);
@@ -62,6 +61,7 @@ public:
 	bool isIdling;
 	bool inHiddenArea;
 
+	bool isAutoGo;
 
 	bool canWalkLeft;
 	bool canWalkRight;

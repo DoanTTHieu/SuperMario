@@ -15,8 +15,9 @@ CTail::CTail()
 
 void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx)
 {
-
 	CGameObject::Update(dt);
+	x += dx;
+	y += dy;
 	this->x = playerPos.x;
 	this->y = playerPos.y;
 	this->nx = playerNx;
@@ -115,35 +116,6 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 			}
 		}
 	}
-
-	if (coEvents.size() == 0)
-	{
-		x += dx;
-		y += dy;
-	}
-	else
-	{
-		float min_tx, min_ty, nx = 0, ny = 0;
-		float rdx = 0;
-		float rdy = 0;
-
-		// TODO: This is a very ugly designed function!!!!
-		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
-
-		// block every object first!
-		y += min_ty * dy + ny * 0.4f;
-		x += min_tx * dx + nx * 0.4f;
-
-		//
-		// Collision logic with other objects
-		//
-		for (UINT i = 0; i < coEventsResult.size(); i++)
-		{
-			LPCOLLISIONEVENT e = coEventsResult[i];
-		}
-	}
-
-	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
 }
 
 CTail::~CTail()
@@ -184,10 +156,11 @@ void CTail::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		default:
 			break;
 		}
-		//right = left + 10;
-		//bottom = top + 5;
-		right = left + 20;
-		bottom = top + 10;
+
+		right = left + 10;
+		bottom = top + 5;
+		//right = left + 20;
+		//bottom = top + 10;
 	}
 	else
 		left = top = bottom = right = 0;
@@ -197,8 +170,8 @@ void CTail::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void CTail::Render()
 {
-	if (state == KILL_ENEMY) 
-		nx > 0 ? ani = RACCOON_ANI_IDLE_RIGHT : RACCOON_ANI_IDLE_LEFT;
+	/*if (state == KILL_ENEMY) 
+		nx > 0 ? ani = RACCOON_ANI_IDLE_RIGHT : RACCOON_ANI_IDLE_LEFT;*/
 	RenderBoundingBox();
 }
 
@@ -206,14 +179,16 @@ void CTail::SetState(int state)
 {
 	CGameObject::SetState(state);
 
-	switch (state)
-	{
-	case STATE_DESTROYED:
-		break;
-	case KILL_ENEMY:
+	//switch (state)
+	//{
+	//case STATE_DESTROYED:
+	//	break;
+	//case KILL_ENEMY:
+	//{
 
-		break;
-	default:
-		break;
-	}
+	//}
+	//	break;
+	//default:
+	//	break;
+	//}
 }

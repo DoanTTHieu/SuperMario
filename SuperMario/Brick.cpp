@@ -37,7 +37,7 @@ void CBrick::Render()
 		ani = BRICK_ANI_NORMAL;
 	animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 
 }
 

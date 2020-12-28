@@ -4,6 +4,7 @@
 
 #define PIPE_ANI_LONG		0
 #define PIPE_ANI_SHORT		1
+#define BLACK_ANI_SHORT		2
 
 #define PIPE_BBOX_WIDTH			32
 #define PIPE_BBOX_HEIGHT_LONG	48

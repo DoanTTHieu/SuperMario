@@ -17,6 +17,8 @@
 #include "PiranhaPlant.h"
 #include "VenusFireTrap.h"
 #include "MapPoint.h"
+#include "CoinEffect.h"
+#include "ScoreEffect.h"
 
 CMario* CMario::__instance = nullptr;
 
@@ -42,6 +44,7 @@ CMario::CMario(float x, float y) : CGameObject()
 	isHolding = false;
 	isFlying = false;
 	attackStart = 0;
+	isAutoGo = false;
 
 	inHiddenArea = false;
 	colidingGround = NULL;
@@ -79,6 +82,7 @@ CMario::~CMario()
 	//__instance = NULL;
 }
 
+//update  WorldMap Scene
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 {
 	CGameObject::Update(dt);
@@ -114,12 +118,13 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 		}
 	}
 }
-void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem)
+
+void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect)
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	DebugOut(L"x: %f    n", x);
-	DebugOut(L"y: %f\n", y);
+
+	//DebugOut(L"x: %f\n", x);
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
@@ -187,7 +192,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			state = MState::Attack;
 			tail->SetState(KILL_ENEMY);
 
-			DebugOut(L"YUCCCCCCCCCCCCCCCCC: \n");
 			//cap nhat nx cua mario 
 			//con thieu moot truong hop khi ani = 4
 			if (GetTickCount64() - attackStart < MARIO_TIME_ATTACK / 2 && changedNx == 0)
@@ -233,8 +237,12 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	}
 
 	//tail update
+	//if(tail->GetState()==KILL_ENEMY)
+	//	DebugOut(L"YESSSSSSSSSSSS: \n");
+	//else
+	//	DebugOut(L"NOOOOOOOOOOOOOOOOOO: \n");
 	if (tail) tail->Update(dt, coObj, { x, y }, nx);
-	DebugOut(L"hdhdh: %d", coObj->size());
+	//DebugOut(L"hdhdh: %d\n", coObj->size());
 
 	//update list dan trong mario
 	for (size_t i = 0; i < listBullet.size(); i++)
@@ -293,6 +301,10 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 						CGoomba* goomba = dynamic_cast<CGoomba*>(coObj->at(i));
 						goomba->DieByCrush();
 						AddScore(100);
+						float bx, by;
+						goomba->GetPosition(bx, by);
+						CGameObject* effect = new CScoreEffect({ bx, by }, 100);
+						listEffect->push_back(effect);
 						vy = -0.2f;
 					}
 				}
@@ -324,6 +336,10 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 						{
 							koopas->Idle();
 							AddScore(100);
+							float bx, by;
+							koopas->GetPosition(bx, by);
+							CGameObject* effect = new CScoreEffect({ bx, by }, 100);
+							listEffect->push_back(effect);
 							vy = -0.2f;
 						}
 					}
@@ -397,7 +413,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	if (state != MState::Die)
 		CalcPotentialCollisions(&groundObjs, coEvents);
 
-	DebugOut(L"shshshhhhsh: %d\n", groundObjs.size());
 	// No collision occured, proceed normally
 	if (coEvents.size() == 0)
 	{
@@ -432,7 +447,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
 			LPCOLLISIONEVENT e = coEventsResult[i];
-
+			//hidden map
 			if (e->ny != 0)
 			{
 				if (e->ny > 0)
@@ -474,13 +489,17 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 							else
 								brick->SetState(STATE_DESTROYED);
 						}
-						brick->SetState(STATE_BEING_TOSSED);
-						brick->sl--;
 						if (brick->containItem == 2)
 						{
 							AddScore(100);
 							AddCoin();
+							float bx, by;
+							brick->GetPosition(bx, by);
+							CGameObject* effect = new CCoinEffect({ bx, by });
+							listEffect->push_back(effect);
 						}
+						brick->SetState(STATE_BEING_TOSSED);
+						brick->sl--;
 					}
 
 				}
@@ -541,6 +560,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	//Collide with items and coins
 	CollideWithItem(coItem);
 
+	DebugOut(L"state: %d\n", state);
 }
 
 void CMario::Render()
@@ -1127,7 +1147,7 @@ void CMario::Render()
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 	
-	if (tail) tail->Render();
+	//if (tail) tail->Render();
 	//RenderBoundingBox();
 }
 
@@ -1267,7 +1287,13 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 	{
 		if (IsAABB(coItem->at(i)))
 		{
-			if (coItem->at(i)->GetType() == Type::COIN)
+			if (coItem->at(i)->GetType() == Type::LAST_ITEM)
+			{
+				SetState(MState::Walk_right);
+				isAutoGo = true;
+				DebugOut(L"Gooooooooooooooooooooooooooooooooo\n");
+			}
+			else if (coItem->at(i)->GetType() == Type::COIN)
 			{
 				AddCoin();
 				AddScore(100);
@@ -1290,7 +1316,11 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 					break;
 				}
 				AddScore(1000);
-
+				//float bx, by;
+				//item->GetPosition(bx, by);
+				//CGameObject* effect = new CScoreEffect({ bx, by }, 100);
+				//listEffect->push_back(effect);
+				
 			}
 			coItem->at(i)->SetState(STATE_DESTROYED);
 

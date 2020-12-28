@@ -1,5 +1,6 @@
 #include "Goomba.h"
 #include "Ground.h"
+#include "Koopas.h"
 #include "Brick.h"
 #include "Utils.h"
 
@@ -162,6 +163,14 @@ void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 					}
 					else
 						x += dx;
+				}
+			}
+			else if (e->obj->GetType() == Type::KOOPAS)
+			{
+				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+				if (e->nx != 0)
+				{
+					x += dx;
 				}
 			}
 		}

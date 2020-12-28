@@ -29,6 +29,9 @@ enum Type
 	//
 	PORTAL = 12,
 	MAP_POINT = 13,
+
+	//end Scene
+	LAST_ITEM = 14
 };
 
 enum MState
@@ -114,7 +117,7 @@ enum VenusFireTrapType
 #define OBJECT_TYPE_PORTAL			50
 #define OBJECT_MAP_POINT			51
 
-
+#define OBJECT_TYPE_LAST_ITEM			100
 
 #define MAX_SCENE_LINE 1024
 
@@ -130,6 +133,7 @@ enum VenusFireTrapType
 #define MARIO_JUMP_DEFLECT_SPEED		0.1f
 #define MARIO_GRAVITY					0.0005f
 #define GOOMBA_GRAVITY					0.0005f
+#define KOOPA_GRAVITY					0.0007f
 
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f

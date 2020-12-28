@@ -19,8 +19,9 @@ void CEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 	l = t = r = b = 0;
 }
 
-void CEffect::Update(ULONGLONG dt)
+void CEffect::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
+	CGameObject::Update(dt);
 	if (GetTickCount64() - startEffect > EFFECT_TIME)
 		state = STATE_DESTROYED;
 }
@@ -32,8 +33,8 @@ void CEffect::Render()
 	case EffectType::fireBall:
 		ani = ANI_FIREBALL_EFFECT;
 		break;
-	case EffectType::broze_bick_broken:
-		ani = ANI_BRONZE_BRICK_BROKEN_EFFECT;
+	case EffectType::text:
+		ani = 3;
 		break;
 	}
 	animation_set->at(ani)->Render(x, y);

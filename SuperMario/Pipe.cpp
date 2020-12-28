@@ -16,7 +16,12 @@ void CPipe::Render()
 	if (pipeType == PipeType::pipe_Long)
 		ani = PIPE_ANI_LONG;
 	else
-		ani = PIPE_ANI_SHORT;
+	{
+		if (direction)
+			ani = BLACK_ANI_SHORT;
+		else
+			ani = PIPE_ANI_SHORT;
+	}
 	animation_set->at(ani)->Render(x, y);
 
 	RenderBoundingBox();

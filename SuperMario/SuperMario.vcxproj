@@ -129,6 +129,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Koopas.cpp" />
+    <ClCompile Include="LastItem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapPoint.cpp" />
     <ClCompile Include="Mario.cpp" />
@@ -138,6 +139,8 @@
     <ClCompile Include="PlayScence.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Scence.cpp" />
+    <ClCompile Include="ScoreEffect.cpp" />
+    <ClCompile Include="SpeedBar.cpp" />
     <ClCompile Include="Sprites.cpp" />
     <ClCompile Include="SuperLeaf.cpp" />
     <ClCompile Include="SuperMushroom.cpp" />
@@ -174,6 +177,7 @@
     <ClInclude Include="Item.h" />
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
+    <ClInclude Include="LastItem.h" />
     <ClInclude Include="MapPoint.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Pipe.h" />
@@ -182,6 +186,8 @@
     <ClInclude Include="PlayScence.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Scence.h" />
+    <ClInclude Include="ScoreEffect.h" />
+    <ClInclude Include="SpeedBar.h" />
     <ClInclude Include="Sprites.h" />
     <ClInclude Include="SuperLeaf.h" />
     <ClInclude Include="SuperMushroom.h" />

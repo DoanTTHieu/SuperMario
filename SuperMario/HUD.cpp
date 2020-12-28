@@ -23,7 +23,7 @@ char* IntToChar(int value, int len = 10)
 	return c;
 }
 
-void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime)
+void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime, int stage)
 {
 	background->Draw(position.x, position.y+192);
 
@@ -39,7 +39,7 @@ void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime)
 	text.Render(IntToChar(player->GetCoin(), length), { position.x+140, position.y + 199 /*439*/ });
 
 	// player's life
-	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 20, position.y + 207/*448*/});
+	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 38, position.y + 207/*448*/});
 
 	// time
 	//text.Render(IntToChar(remainingTime, 3), { 141, 3 });
@@ -49,6 +49,7 @@ void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime)
 	//GetItemSprite()->Draw(165, 31);
 
 	//world map
+	text.Render(IntToChar(stage, 1), { position.x + 38, position.y + 199 });
 
 	//speedbar
 

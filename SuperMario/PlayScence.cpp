@@ -11,6 +11,8 @@
 #include "VenusFireTrap.h"
 #include "Pipe.h"
 #include "Coin.h"
+#include "ScoreEffect.h"
+#include "LastItem.h"
 
 using namespace std;
 
@@ -164,6 +166,12 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CCoin();
 	}
 	break;
+	case OBJECT_TYPE_LAST_ITEM:
+	{
+		obj = new CLastItem();
+		DebugOut(L"noooooooooooooooooooooooooooooooooooooo!\n");
+	}
+	break;
 	case OBJECT_TYPE_BRICK: 
 	{
 		int btype = atoi(tokens[4].c_str());
@@ -243,6 +251,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		listObj.push_back(obj);
 		break;
 	case Type::COIN:
+	case Type::LAST_ITEM:
 		listItem.push_back(obj);
 		break;
 	}
@@ -339,7 +348,10 @@ void CPlayScene::Update(ULONGLONG dt)
 	//	//mario
 	//player->Update(dt, &listObj, &listItem);
 
-	this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime())/ MINISEC_PER_SEC);
+	if(player->GetState()!=MState::Die)
+		this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime())/ MINISEC_PER_SEC);
+	
+	//duyet list object
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
 		if (listObj[i]->GetType() == Type::BRICK)
@@ -361,6 +373,7 @@ void CPlayScene::Update(ULONGLONG dt)
 		
 	}
 
+	//update
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
 		if (listObj[i]->GetType() == Type::PIRANHA_PLANT || listObj[i]->GetType() == Type::VENUS_FIRE_TRAP)
@@ -378,8 +391,16 @@ void CPlayScene::Update(ULONGLONG dt)
 		listItem[i]->Update(dt, &listObj);
 	}
 
-	//mario
-	player->Update(dt, &listObj, &listItem);
+	////mario
+	player->Update(dt, &listObj, &listItem, &listEffect);
+
+	if (player->isAutoGo && player->IsOutOfCamera())
+	{
+		//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
+		//listEffect.push_back(effect);
+
+		//CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/2);
+	}
 
 	for (size_t i = 0; i < player->listBullet.size(); i++)
 	{
@@ -387,7 +408,8 @@ void CPlayScene::Update(ULONGLONG dt)
 		{
 			float bx, by;
 			player->listBullet[i]->GetPosition(bx, by);
-			CEffect* effect = new CEffect({ bx, by }, EffectType::fireBall);
+			//CEffect* effect = new CEffect({ bx, by }, EffectType::fireBall);
+			CGameObject* effect = new CEffect({ bx, by }, EffectType::fireBall);
 			listEffect.push_back(effect);
 		}
 	}
@@ -403,6 +425,14 @@ void CPlayScene::Update(ULONGLONG dt)
 	for (size_t i = 0; i < listEffect.size(); i++)
 	{
 		listEffect[i]->Update(dt);
+		//if coin
+		if (listEffect[i]->GetType() == Type::COIN && listEffect[i]->GetState() == STATE_DESTROYED)
+		{
+			float bx, by;
+			listEffect[i]->GetPosition(bx, by);
+			CGameObject* effect = new CScoreEffect({ bx, by }, 100);
+			listEffect.push_back(effect);
+		}
 	}
 
 	//xoa obj co state = STATE_DESTROYED
@@ -457,7 +487,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	//thieu dieu kien inHiddenArea = false -> cho gia tri int = 1 -> port -> *-1
 	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2-226) , float(map->GetMapHeight()-14 *16 - SCREEN_HEIGHT+64) /*(float)200*/ }, player->isFlying);
 	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() /*- SCREEN_WIDTH * 2*/-226) , float(0/*map->GetMapHeight()*/ /*- SCREEN_HEIGHT+64*/) }, player->isFlying);
-	DebugOut(L"map: %d\n", map->GetMapHeight());
+	//DebugOut(L"map: %d\n", map->GetMapHeight());
 }
 
 void CPlayScene::Render()
@@ -475,7 +505,7 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listEffect.size(); i++)
 		listEffect.at(i)->Render();
 	player->Render();
-	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, remainingTime);
+	hud->Render({ CGame::GetInstance()->GetCamPosX(), CGame::GetInstance()->GetCamPosY() }, player, remainingTime, this->id);
 }
 
 /*
@@ -629,6 +659,8 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 
 	if (mario->GetState() == MState::Die)
 		return;
+	if (mario->isAutoGo)
+		return;
 	if (mario->isWaitingForAni)
 		return;
 	if (game->IsKeyDown(DIK_A))
@@ -713,7 +745,7 @@ void CPlayScenceKeyHandler::KeyState(BYTE* states)
 			else
 				mario->Idle();
 		}
-		else mario->Idle();
+		else if(!mario->isAutoGo) mario->Idle();
 	}
 	else
 	{

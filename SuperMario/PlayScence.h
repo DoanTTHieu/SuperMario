@@ -31,7 +31,7 @@ protected:
 	vector<CGameObject*> listObj;
 	vector<CGameObject*> listEnemy;
 	vector<CGameObject*> listItem;
-	vector<CEffect*> listEffect;
+	vector<CGameObject*> listEffect;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
