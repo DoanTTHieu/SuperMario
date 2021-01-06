@@ -85,6 +85,8 @@ CMario::~CMario()
 //update  WorldMap Scene
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 {
+	DebugOut(L"1111111111111111111111\n");
+	DebugOut(L"1111111: %d\n", GetState());
 	CGameObject::Update(dt);
 	x += dx;
 	y += dy;
@@ -122,12 +124,20 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect)
 {
+	
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	//DebugOut(L"state: %d\n", GetState());
+	if (GetState() > 12)
+	{
+		SetState(MState::Idle);
+	}
 	//DebugOut(L"x: %f\n", x);
 
-	//DebugOut(L"x: %f\n", x);
+	DebugOut(L"2222222222222222222222222222222\n");
+	DebugOut(L"222222: %d\n", GetState());
+	DebugOut(L"x: %f\n", x);
+	DebugOut(L"y: %f\n", y);
+
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 

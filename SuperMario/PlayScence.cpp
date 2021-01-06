@@ -469,13 +469,13 @@ void CPlayScene::Update(ULONGLONG dt)
 	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() /*- SCREEN_WIDTH * 2*/-226) , float(0/*map->GetMapHeight()*/ /*- SCREEN_HEIGHT+64*/) }, player->isFlying);
 	//DebugOut(L"map: %d\n", map->GetMapHeight());
 	
-	//if (player->isAutoGo && player->IsOutOfCamera())
-	//{
-	//	//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
-	//	//listEffect.push_back(effect);
+	if (player->isAutoGo && player->IsOutOfCamera())
+	{
+		//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
+		//listEffect.push_back(effect);
 
-	//	CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/2);
-	//}
+		CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/4);
+	}
 }
 
 void CPlayScene::Render()
@@ -639,6 +639,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
+	DebugOut(L"33333333333333333333333\n");
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 

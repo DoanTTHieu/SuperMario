@@ -39,32 +39,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			isBeingHeld = false;
 	}
 
-	//if (colidingGround && Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
-	//{
-	//	float kl, kt, kr, kb, gl, gt, gr, gb;
-	//	colidingGround->GetBoundingBox(gl, gt, gr, gb);
-	//	GetBoundingBox(kl, kt, kr, kb);
-	//	start.x = gl - 5.0f;
-	//	start.y = end.y = gb;
-	//	end.x = gr - 5.0f;
-	//	if (colidingGround->GetType() == Type::BRICK)
-	//	{
-	//		CBrick* brick = dynamic_cast<CBrick*>(colidingGround);
-	//		if (brick->GetBrickType() == BrickType::bronze)
-	//		{
-	//			
-	//		}
-	//	}
-	//	if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
-	//	{
-	//		if(kl < start.x)
-	//			this->x = gl-4.0f;//them de cho rua khoi bi lac
-	//		else
-	//			this->x = gr -5.5f;//them de cho rua khoi bi lac
-	//		this->vx = -vx;
-	//	}
-	//}
-
 	//neu ko bi cam thi update binh thuong
 	if (!isBeingHeld)
 	{
@@ -78,71 +52,97 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					bronzeBricks.push_back(coObjects->at(i));
 			}
 		}
-		DebugOut(L"n: %d\n", bronzeBricks.size());
 
-		for (int i = 0; i < bronzeBricks.size(); i++)
+		if (colidingGround&& Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
 		{
-			//tim cuc gach ma con rua dang dung o tren
-			if (colidingGround && colidingGround == bronzeBricks.at(i))
+			float kl, kt, kr, kb, gl, gt, gr, gb;
+			GetBoundingBox(kl, kt, kr, kb);
+			colidingGround->GetBoundingBox(gl, gt, gr, gb);
+
+			if (colidingGround->GetType() == Type::BRICK)
 			{
-				//DebugOut(L"at: x_%f  y_%f\n", /*bronzeBricks.at(i)->start_x*/colidingGround->start_x,/* bronzeBricks.at(i)->start_y*/colidingGround->start_y);
-				//DebugOut(L"2at: x_%f  y_%f\n", bronzeBricks.at(i)->start_x, bronzeBricks.at(i)->start_y);
-
-				if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+				CBrick* brick = dynamic_cast<CBrick*>(colidingGround);
+				if (brick->GetBrickType() == BrickType::bronze)
 				{
-					float kl, kt, kr, kb, gl, gt, gr, gb;
-					colidingGround->GetBoundingBox(gl, gt, gr, gb);
-					GetBoundingBox(kl, kt, kr, kb);
-					bool check = false;
-
-					//KIEM TRA CON BRONZE BRICK NAO NUA KO
-					for (int j = 0; j < bronzeBricks.size()/* && i!=j*/; j++)
+					for (int i = 0; i < bronzeBricks.size(); i++)
 					{
-						
-						if (colidingGround->start_y == bronzeBricks.at(j)->start_y)
+						//tim cuc gach ma con rua dang dung o tren
+						if (colidingGround == bronzeBricks.at(i))
 						{
-							float l, t, r, b;
-							bronzeBricks.at(j)->GetBoundingBox(l, t, r, b);
+							bool check = false;
 
-							if ((i != j)&& AABBCheck(l, t, r, b, gl - 1.0f, gt, gr + 1.0f, gb))
+							//KIEM TRA CON BRONZE BRICK NAO NUA KO
+							for (int j = 0; j < bronzeBricks.size(); j++)
 							{
-								check = true;
-								if (bronzeBricks.at(j)->start_x < colidingGround->start_x)
+								//if (colidingGround->start_y == bronzeBricks.at(j)->start_y)
 								{
-									start.x = bronzeBricks.at(j)->start_x - 5.0f;
-									if (end.x < (gr - 5.0f)||end.x<0)
-										end.x = gr - 5.0f;
+									float l, t, r, b;
+									bronzeBricks.at(j)->GetBoundingBox(l, t, r, b);
+
+									if ((i != j) && AABBCheck(l, t, r, b, gl - 1.0f, gt, gr + 1.0f, gb))
+									{
+										check = true;
+										if (bronzeBricks.at(j)->start_x < colidingGround->start_x)
+										{
+											if (start.x < 0)
+												start.x = bronzeBricks.at(j)->start_x - 5.0f;
+											else if (start.x > bronzeBricks.at(j)->start_x - 5.0f)
+												start.x = bronzeBricks.at(j)->start_x - 5.0f;
+											if (end.x < (gr - 5.0f) || end.x < 0)
+											{
+												end.x = gr - 5.0f;
+											}
+											
+										}
+										if (bronzeBricks.at(j)->start_x > colidingGround->start_x)
+										{
+											if (end.x < 0)
+												end.x = bronzeBricks.at(j)->start_x + 16.0f - 5.0f;
+											else if (end.x < bronzeBricks.at(j)->start_x + 16.0f - 5.0f)
+												end.x = bronzeBricks.at(j)->start_x + 16.0f - 5.0f;
+											if (start.x > (gl - 5.0f) || start.x < 0)
+											{
+												start.x = gl - 5.0f;
+											}
+										}
+									}
 								}
-								if (bronzeBricks.at(j)->start_x > colidingGround->start_x)
-								{
-									end.x = bronzeBricks.at(j)->start_x + 16.0f - 5.0f;
-									if (start.x > (gl - 5.0f)||start.x<0)
-										start.x = gl - 5.0f;
-								}
+								//DebugOut(L"start: %f\n", start.x);
+								//DebugOut(L"end: %f\n", end.x);
+							}
+							if (!check)
+							{
+								start.x = gl - 5.0f;
+								start.y = end.y = gb;
+								end.x = gr - 5.0f;
 							}
 						}
-						DebugOut(L"start: %f\n", start.x);
-						DebugOut(L"end: %f\n", end.x);
-
-					}
-					if (!check)
-					{
-						start.x = gl - 5.0f;
-						start.y = end.y = gb;
-						end.x = gr - 5.0f;
-					}
-
-					if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
-					{
-						if (kl < start.x)
-							this->x = gl - 4.0f;//them de cho rua khoi bi lac
-						else
-							this->x = gr - 5.5f;//them de cho rua khoi bi lac
-						this->vx = -vx;
 					}
 				}
+				else//khong phai bronzebrick
+				{
+					start.x = gl - 5.0f;
+					start.y = end.y = gb;
+					end.x = gr - 5.0f;
+				}
 			}
+			else//colorbox, ground
+			{
+				start.x = gl - 5.0f;
+				start.y = end.y = gb;
+				end.x = gr - 5.0f;
+			}
+			if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
+			{
+				if (kl < start.x)
+					this->x = gl - 4.0f;//them de cho rua khoi bi lac
+				else
+					this->x = gr - 5.5f;//them de cho rua khoi bi lac
+				this->vx = -vx;
+			}
+
 		}
+
 
 		vy += KOOPA_GRAVITY * dt;
 		
@@ -185,7 +185,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 
 			// block every object first!
 			x += min_tx * dx + nx * 0.4f;
-			y += min_ty * dy + ny * 0.4f;
+			y += min_ty * dy + ny * 0.6f;
 
 			if (ny != 0) 
 			{
@@ -389,7 +389,7 @@ void CKoopas::Render()
 	//DebugOut(L"ani:%d \n", ani);
 	animation_set->at(ani)->Render(x, y);
 	
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CKoopas::SetState(int state)

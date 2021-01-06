@@ -139,6 +139,7 @@
     <ClCompile Include="PlayScence.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="Scence.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScoreEffect.cpp" />
     <ClCompile Include="SpeedBar.cpp" />
     <ClCompile Include="Sprites.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="PlayScence.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="Scence.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScoreEffect.h" />
     <ClInclude Include="SpeedBar.h" />
     <ClInclude Include="Sprites.h" />
