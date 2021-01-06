@@ -22,7 +22,9 @@ class CMario : public CGameObject
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
 	
-	CTail* tail = new CTail();
+	/*CTail* tail = new CTail();*/
+
+
 	CKoopas* koopas = new CKoopas();
 
 	CBullet* CreateBullet(float x, float y, int nx)
@@ -34,7 +36,7 @@ class CMario : public CGameObject
 
 public:
 	static CMario* GetInstance();
-
+	CTail* tail = CTail::GetInstance();
 	vector< LPGAMEOBJECT> listBullet;
 
 	CMario(float x = 0.0f, float y = 0.0f);

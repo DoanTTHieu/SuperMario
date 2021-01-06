@@ -39,7 +39,13 @@ class CKoopas : public CEnemy
 {
 	int Ktype;
 
+	D3DXVECTOR2 start = { -1,-1 };
+	D3DXVECTOR2 end = { -1,-1 };
+
 public:
+	
+
+
 	bool checkSupine = false;
 	bool isBeingHeld = false;
 	bool checkDone = false;

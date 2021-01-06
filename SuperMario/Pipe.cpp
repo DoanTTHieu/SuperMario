@@ -8,7 +8,6 @@ CPipe::CPipe(int t, bool hasPortal, D3DXVECTOR2 des, bool dir)
 	this->destination.x = des.x;
 	this->destination.y = des.y;
 	this->direction = dir;
-	DebugOut(L"d1: %d\n", this->direction);
 }
 
 void CPipe::Render()

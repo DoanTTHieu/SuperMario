@@ -254,6 +254,7 @@ void CWorldMapScene::Load()
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
 
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
+	CGame::GetInstance()->SetCamPos(0, 0);
 }
 
 void CWorldMapScene::Update(ULONGLONG dt)

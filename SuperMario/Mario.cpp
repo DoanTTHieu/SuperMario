@@ -25,7 +25,7 @@ CMario* CMario::__instance = nullptr;
 CMario::CMario(float x, float y) : CGameObject()
 {
 	type = Type::MARIO;
-
+	DebugOut(L"tesssssssssssssssssssssssssssssssss\n");
 	score = 100;
 	coin = 0;
 	life = 4;
@@ -94,8 +94,9 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 		{
 			if (this->IsCollidingWithObjectNx(coObj->at(i))||this->IsCollidingWithObjectNy(coObj->at(i)) )
 			{
-				vx = vy = 0;
-				isIdling = true;
+				/*vx = vy = 0;
+				isIdling = true;*/
+				SetState(MState::Idle_WM);
 
 				x = coObj->at(i)->x;
 				y = coObj->at(i)->y;
@@ -123,6 +124,8 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
+	//DebugOut(L"state: %d\n", GetState());
+	//DebugOut(L"x: %f\n", x);
 
 	//DebugOut(L"x: %f\n", x);
 	// Simple fall down
@@ -132,7 +135,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		flyTimer->Stop();
 	if (!isAttack && tail)	tail->SetState(STATE_DESTROYED);
 
-	//can sua
 	//dieu kien tha
 	if (isHolding)
 	{
@@ -237,12 +239,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	}
 
 	//tail update
-	//if(tail->GetState()==KILL_ENEMY)
-	//	DebugOut(L"YESSSSSSSSSSSS: \n");
-	//else
-	//	DebugOut(L"NOOOOOOOOOOOOOOOOOO: \n");
 	if (tail) tail->Update(dt, coObj, { x, y }, nx);
-	//DebugOut(L"hdhdh: %d\n", coObj->size());
 
 	//update list dan trong mario
 	for (size_t i = 0; i < listBullet.size(); i++)
@@ -559,8 +556,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 
 	//Collide with items and coins
 	CollideWithItem(coItem);
-
-	DebugOut(L"state: %d\n", state);
 }
 
 void CMario::Render()
@@ -1147,7 +1142,7 @@ void CMario::Render()
 	for (size_t i = 0; i < listBullet.size(); i++)
 		listBullet[i]->Render();
 	
-	//if (tail) tail->Render();
+	if (tail) tail->Render();
 	//RenderBoundingBox();
 }
 
@@ -1157,6 +1152,10 @@ void CMario::SetState(int state)
 
 	switch (state)
 	{
+	case MState::Idle_WM:
+		vx = vy = 0;
+		isIdling = true;
+		break;
 	case MState::Walk_down:
 		vy = MARIO_WALKING_SPEED;
 		isIdling = false;

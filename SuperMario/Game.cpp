@@ -346,7 +346,6 @@ void CGame::_ParseSection_SCENES(string line)
 		scene = new CWorldMapScene(id, path);
 	else 
 		scene = new CPlayScene(id, path);
-	DebugOut(L"idddddddddddddddddd: %d\n", id);
 	scenes[id] = scene;
 }
 
@@ -393,7 +392,7 @@ void CGame::SwitchScene(int scene_id)
 {
 	DebugOut(L"[INFO] Switching to scene %d\n", scene_id);
 
-	scenes[current_scene]->Unload();;
+	scenes[current_scene]->Unload();
 
 	CTextures::GetInstance()->Clear();
 	CSprites::GetInstance()->Clear();

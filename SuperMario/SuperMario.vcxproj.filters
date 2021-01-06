@@ -141,6 +141,9 @@
     <ClInclude Include="SpeedBar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WorldMapObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico">
@@ -269,6 +272,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SpeedBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMapObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -39,24 +39,111 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			isBeingHeld = false;
 	}
 
-	if (colidingGround && Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
-	{
-		float kl, kt, kr, kb, gl, gt, gr, gb;
-		colidingGround->GetBoundingBox(gl, gt, gr, gb);
-		GetBoundingBox(kl, kt, kr, kb);
-		if (kl < gl-5.0f || kl > gr-5.0f)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
-		{
-			if(kl < gl - 5.0f)
-				this->x = gl-4.0f;//them de cho rua khoi bi lac
-			else
-				this->x = gr -5.5f;//them de cho rua khoi bi lac
-			this->vx = -vx;
-		}
-	}
+	//if (colidingGround && Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+	//{
+	//	float kl, kt, kr, kb, gl, gt, gr, gb;
+	//	colidingGround->GetBoundingBox(gl, gt, gr, gb);
+	//	GetBoundingBox(kl, kt, kr, kb);
+	//	start.x = gl - 5.0f;
+	//	start.y = end.y = gb;
+	//	end.x = gr - 5.0f;
+	//	if (colidingGround->GetType() == Type::BRICK)
+	//	{
+	//		CBrick* brick = dynamic_cast<CBrick*>(colidingGround);
+	//		if (brick->GetBrickType() == BrickType::bronze)
+	//		{
+	//			
+	//		}
+	//	}
+	//	if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
+	//	{
+	//		if(kl < start.x)
+	//			this->x = gl-4.0f;//them de cho rua khoi bi lac
+	//		else
+	//			this->x = gr -5.5f;//them de cho rua khoi bi lac
+	//		this->vx = -vx;
+	//	}
+	//}
 
 	//neu ko bi cam thi update binh thuong
 	if (!isBeingHeld)
 	{
+		vector<LPGAMEOBJECT> bronzeBricks;
+		for (int i = 0; i < coObjects->size(); i++)
+		{
+			if (coObjects->at(i)->GetType() == Type::BRICK)
+			{
+				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
+				if (brick->GetBrickType() == BrickType::bronze)
+					bronzeBricks.push_back(coObjects->at(i));
+			}
+		}
+		DebugOut(L"n: %d\n", bronzeBricks.size());
+
+		for (int i = 0; i < bronzeBricks.size(); i++)
+		{
+			//tim cuc gach ma con rua dang dung o tren
+			if (colidingGround && colidingGround == bronzeBricks.at(i))
+			{
+				//DebugOut(L"at: x_%f  y_%f\n", /*bronzeBricks.at(i)->start_x*/colidingGround->start_x,/* bronzeBricks.at(i)->start_y*/colidingGround->start_y);
+				//DebugOut(L"2at: x_%f  y_%f\n", bronzeBricks.at(i)->start_x, bronzeBricks.at(i)->start_y);
+
+				if (Ktype == KoopaType::Red_troopa && GetState() != KOOPAS_STATE_DIE_MOVE)
+				{
+					float kl, kt, kr, kb, gl, gt, gr, gb;
+					colidingGround->GetBoundingBox(gl, gt, gr, gb);
+					GetBoundingBox(kl, kt, kr, kb);
+					bool check = false;
+
+					//KIEM TRA CON BRONZE BRICK NAO NUA KO
+					for (int j = 0; j < bronzeBricks.size()/* && i!=j*/; j++)
+					{
+						
+						if (colidingGround->start_y == bronzeBricks.at(j)->start_y)
+						{
+							float l, t, r, b;
+							bronzeBricks.at(j)->GetBoundingBox(l, t, r, b);
+
+							if ((i != j)&& AABBCheck(l, t, r, b, gl - 1.0f, gt, gr + 1.0f, gb))
+							{
+								check = true;
+								if (bronzeBricks.at(j)->start_x < colidingGround->start_x)
+								{
+									start.x = bronzeBricks.at(j)->start_x - 5.0f;
+									if (end.x < (gr - 5.0f)||end.x<0)
+										end.x = gr - 5.0f;
+								}
+								if (bronzeBricks.at(j)->start_x > colidingGround->start_x)
+								{
+									end.x = bronzeBricks.at(j)->start_x + 16.0f - 5.0f;
+									if (start.x > (gl - 5.0f)||start.x<0)
+										start.x = gl - 5.0f;
+								}
+							}
+						}
+						DebugOut(L"start: %f\n", start.x);
+						DebugOut(L"end: %f\n", end.x);
+
+					}
+					if (!check)
+					{
+						start.x = gl - 5.0f;
+						start.y = end.y = gb;
+						end.x = gr - 5.0f;
+					}
+
+					if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
+					{
+						if (kl < start.x)
+							this->x = gl - 4.0f;//them de cho rua khoi bi lac
+						else
+							this->x = gr - 5.5f;//them de cho rua khoi bi lac
+						this->vx = -vx;
+					}
+				}
+			}
+		}
+
 		vy += KOOPA_GRAVITY * dt;
 		
 		vector<LPGAMEOBJECT> groundObjs;
@@ -79,9 +166,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 
 		coEvents.clear();
 		CalcPotentialCollisions(coObjects, coEvents);
-		//
-		// TO-DO: make sure Koopas can interact with the world and to each of them too!
-		// 
 
 		if (coEvents.size() == 0)
 		{
@@ -99,15 +183,10 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			// TODO: This is a very ugly designed function!!!!
 			FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy, objectX, objectY);
 
-			// how to push back Mario if collides with a moving objects, what if Mario is pushed this way into another object?
-			//if (rdx != 0 && rdx!=dx)
-				//x += nx*abs(rdx); 
-
 			// block every object first!
 			x += min_tx * dx + nx * 0.4f;
-			y += min_ty * dy + ny * 0.4f;///chinh lai xet va cham koopas voi brick -> cai nay do no xet y trung hop r
+			y += min_ty * dy + ny * 0.4f;
 
-			//if (nx != 0) vx = 0;
 			if (ny != 0) 
 			{
 				vy = 0;
@@ -120,7 +199,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					}
 				}
 				
-				
 				if (checkDone && ny == -1)
 				{
 					//if (state==KOOPAS_STATE_IDLE && checkSupine)
@@ -131,9 +209,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				}
 			}
 
-			//
-			// Collision logic with other objects
-			//
 			for (UINT i = 0; i < coEventsResult.size(); i++)
 			{
 				LPCOLLISIONEVENT e = coEventsResult[i];
@@ -150,7 +225,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 						else
 							vx = -vx;
 					}
-					
 				}
 				else if (e->obj->GetType() == Type::BRICK)
 				{
@@ -188,6 +262,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 		}
 
 		for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
+
 	}
 	else // ko co tac dung cua trong luc
 	{

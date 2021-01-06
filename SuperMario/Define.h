@@ -50,6 +50,7 @@ enum MState
 	Attack = 12,
 	Walk_down = 13,
 	Walk_up = 14,
+	Idle_WM = 15
 };
 
 enum Level
@@ -133,7 +134,7 @@ enum VenusFireTrapType
 #define MARIO_JUMP_DEFLECT_SPEED		0.1f
 #define MARIO_GRAVITY					0.0005f
 #define GOOMBA_GRAVITY					0.0005f
-#define KOOPA_GRAVITY					0.0007f
+#define KOOPA_GRAVITY					0.005f
 
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f

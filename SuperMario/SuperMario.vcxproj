@@ -151,6 +151,7 @@
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="VenusFireBall.cpp" />
     <ClCompile Include="VenusFireTrap.cpp" />
+    <ClCompile Include="WorldMapObject.cpp" />
     <ClCompile Include="WorldMapScene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +200,7 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="VenusFireBall.h" />
     <ClInclude Include="VenusFireTrap.h" />
+    <ClInclude Include="WorldMapObject.h" />
     <ClInclude Include="WorldMapScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

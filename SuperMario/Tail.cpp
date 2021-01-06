@@ -8,9 +8,17 @@
 #include "Define.h"
 #include "Mario.h"
 
+CTail* CTail::__instance = nullptr;
+
 CTail::CTail()
 {
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
+}
+
+CTail* CTail::GetInstance()
+{
+	if (__instance == NULL) __instance = new CTail();
+	return __instance;
 }
 
 void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 playerPos, int playerNx)
@@ -156,11 +164,8 @@ void CTail::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 		default:
 			break;
 		}
-
 		right = left + 10;
 		bottom = top + 5;
-		//right = left + 20;
-		//bottom = top + 10;
 	}
 	else
 		left = top = bottom = right = 0;
@@ -170,25 +175,12 @@ void CTail::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 
 void CTail::Render()
 {
-	/*if (state == KILL_ENEMY) 
-		nx > 0 ? ani = RACCOON_ANI_IDLE_RIGHT : RACCOON_ANI_IDLE_LEFT;*/
+	if (state == KILL_ENEMY) 
+		nx > 0 ? ani = RACCOON_ANI_FIGHT_IDLE_RIGHT : RACCOON_ANI_FIGHT_IDLE_LEFT;
 	RenderBoundingBox();
 }
 
 void CTail::SetState(int state)
 {
 	CGameObject::SetState(state);
-
-	//switch (state)
-	//{
-	//case STATE_DESTROYED:
-	//	break;
-	//case KILL_ENEMY:
-	//{
-
-	//}
-	//	break;
-	//default:
-	//	break;
-	//}
 }

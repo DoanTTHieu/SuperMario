@@ -21,7 +21,6 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 {
 	key_handler = new CPlayScenceKeyHandler(this);
 	playTimer->Start();
-	DebugOut(L"aaaaaaaaaaaaaaaaaaaaaaaaaaaaa: %d\n", id);
 }
 
 /*
@@ -145,7 +144,10 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		//player = (CMario*)obj;
 		// Add simon
 
+		//player = CMario::GetInstance();
 		obj = CMario::GetInstance();
+		if(CMario::GetInstance()->tail)
+			CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 		player = (CMario*)obj;
 		player->SetStage(this->id);
 
@@ -158,7 +160,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	{
 		int gtype = atoi(tokens[4].c_str());
 		obj = new CGoomba(gtype);
-		if (gtype==2) DebugOut(L"red para goobaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!\n");
 	}
 	break;
 	case OBJECT_TYPE_COIN:
@@ -169,7 +170,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_LAST_ITEM:
 	{
 		obj = new CLastItem();
-		DebugOut(L"noooooooooooooooooooooooooooooooooooooo!\n");
 	}
 	break;
 	case OBJECT_TYPE_BRICK: 
@@ -222,7 +222,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		float des_x = strtof(tokens[6].c_str(), NULL);
 		float des_y = strtof(tokens[7].c_str(), NULL);
 		int dir = atoi(tokens[8].c_str());
-		DebugOut(L"d2: %d\n", dir);
 		obj = new CPipe(t, hasPortal, { des_x, des_y }, dir);
 	}
 	break;
@@ -343,11 +342,6 @@ void CPlayScene::Load()
 
 void CPlayScene::Update(ULONGLONG dt)
 {
-	// We know that Mario is the first object in the list hence we won't add him into the colliable object list
-	// TO-DO: This is a "dirty" way, need a more organized way 
-	//	//mario
-	//player->Update(dt, &listObj, &listItem);
-
 	if(player->GetState()!=MState::Die)
 		this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime())/ MINISEC_PER_SEC);
 	
@@ -394,13 +388,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	////mario
 	player->Update(dt, &listObj, &listItem, &listEffect);
 
-	if (player->isAutoGo && player->IsOutOfCamera())
-	{
-		//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
-		//listEffect.push_back(effect);
 
-		//CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/2);
-	}
 
 	for (size_t i = 0; i < player->listBullet.size(); i++)
 	{
@@ -444,15 +432,7 @@ void CPlayScene::Update(ULONGLONG dt)
 			i--;
 		}
 	}
-	//DebugOut(L"sl: %d\n",listObj.size());
-	//for (size_t i = 0; i < listEnemy.size(); i++)
-	//{
-	//	if (listEnemy[i]->GetState() == STATE_DESTROYED|| (listEnemy[i]->IsOutOfCamera()&& listEnemy[i]->GetType()==Type::VENUS_FIRE_BALL))
-	//	{
-	//		listEnemy.erase(listEnemy.begin() + i);
-	//		i--;
-	//	}
-	//}
+
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
 		if (listItem[i]->GetState() == STATE_DESTROYED|| (listItem[i]->IsOutOfCamera() && listItem[i]->GetType()==Type::ITEM))
@@ -488,6 +468,14 @@ void CPlayScene::Update(ULONGLONG dt)
 	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2-226) , float(map->GetMapHeight()-14 *16 - SCREEN_HEIGHT+64) /*(float)200*/ }, player->isFlying);
 	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() /*- SCREEN_WIDTH * 2*/-226) , float(0/*map->GetMapHeight()*/ /*- SCREEN_HEIGHT+64*/) }, player->isFlying);
 	//DebugOut(L"map: %d\n", map->GetMapHeight());
+	
+	//if (player->isAutoGo && player->IsOutOfCamera())
+	//{
+	//	//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
+	//	//listEffect.push_back(effect);
+
+	//	CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/2);
+	//}
 }
 
 void CPlayScene::Render()
@@ -496,9 +484,6 @@ void CPlayScene::Render()
 	for (size_t i = 0; i < listObj.size(); i++)
 		if (listObj.at(i) != NULL)
 			listObj[i]->Render();
-	//for (size_t i = 0; i < listEnemy.size(); i++)
-	//	if (listEnemy.at(i) != NULL)
-	//		listEnemy[i]->Render();
 	for (size_t i = 0; i < listItem.size(); i++)
 		if (listItem.at(i) != NULL)
 			listItem.at(i)->Render();
