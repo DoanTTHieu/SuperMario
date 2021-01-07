@@ -150,6 +150,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 		player = (CMario*)obj;
 		player->SetStage(this->id);
+		player->Refresh();
 
 		player->SetPosition(x, y);
 		hud = new CHUD();
@@ -474,7 +475,7 @@ void CPlayScene::Update(ULONGLONG dt)
 		//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
 		//listEffect.push_back(effect);
 
-		CGame::GetInstance()->SwitchScene(/*ID_SCENE_WORLD_MAP*/4);
+		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
 	}
 }
 
@@ -522,6 +523,7 @@ void CPlayScene::Unload()
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
+	DebugOut(L"777777777777777777777777\n");
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
@@ -581,6 +583,7 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 {
+DebugOut(L"222223333333333333\n");
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	if (mario->GetState() == MState::Die)
 		return;
@@ -634,7 +637,7 @@ void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 	case DIK_LEFT:
 		mario->nx = -1;
 		break;
-	}
+	}	
 }
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)

@@ -18,10 +18,10 @@ CMapPoint::~CMapPoint()
 
 void CMapPoint::GetBoundingBox(float& left, float& top, float& right, float& bottom)
 {
-	top = y;
-	left = x;
-	right = x + POINT_WIDTH;
-	bottom = y + POINT_HEIGHT;
+	top = y+10;
+	left = x+10;
+	right = x + 6/*POINT_WIDTH*/;
+	bottom = y + 6/*POINT_HEIGHT*/;
 }
 
 void CMapPoint::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
@@ -35,7 +35,7 @@ void CMapPoint::Render()
 	//ani = 0;
 	//animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CMapPoint::SetState(int state)

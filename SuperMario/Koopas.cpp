@@ -229,8 +229,9 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (e->obj->GetType() == Type::BRICK)
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-					if (e->nx != 0)
+					if (e->nx != 0&& brick->start_y <(y + KOOPAS_BBOX_HEIGHT))
 					{
+						//if(GetKoopaType()!=KoopaType::Red_troopa)
 						vx = -vx;
 						if (state == KOOPAS_STATE_DIE_MOVE && brick->GetBrickType() == BrickType::bronze)
 						{

@@ -24,8 +24,7 @@ CMario* CMario::__instance = nullptr;
 
 CMario::CMario(float x, float y) : CGameObject()
 {
-	type = Type::MARIO;
-	DebugOut(L"tesssssssssssssssssssssssssssssssss\n");
+	type = Type::MARIO;;
 	score = 100;
 	coin = 0;
 	life = 4;
@@ -85,8 +84,8 @@ CMario::~CMario()
 //update  WorldMap Scene
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 {
-	DebugOut(L"1111111111111111111111\n");
-	DebugOut(L"1111111: %d\n", GetState());
+	//DebugOut(L"1111111111111111111111\n");
+	//DebugOut(L"1111111: %d\n", GetState());
 	CGameObject::Update(dt);
 	x += dx;
 	y += dy;
@@ -94,8 +93,45 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 	{
 		if (coObj->at(i)->GetType() == Type::MAP_POINT)
 		{
+			//di hoi dut
+			/*if (this->IsCollidingWithObjectNx1(coObj->at(i)))
+			{
+				if (x < coObj->at(i)->x)
+				{
+					SetState(MState::Idle_WM);
+					x = coObj->at(i)->x;
+				}
+			}
+			if (this->IsCollidingWithObjectNx_1(coObj->at(i)))
+			{
+				if (x > coObj->at(i)->x)
+				{
+					SetState(MState::Idle_WM);
+					x = coObj->at(i)->x;
+				}
+			}
+
+			if (this->IsCollidingWithObjectNy_1(coObj->at(i)))
+			{
+				if (y > coObj->at(i)->y)
+				{
+					SetState(MState::Idle_WM);
+					y = coObj->at(i)->y;
+				}
+
+			}
+			if (this->IsCollidingWithObjectNy1(coObj->at(i)))
+			{
+				if (y < coObj->at(i)->y)
+				{
+					SetState(MState::Idle_WM);
+					y = coObj->at(i)->y;
+				}
+			}*/
+
 			if (this->IsCollidingWithObjectNx(coObj->at(i))||this->IsCollidingWithObjectNy(coObj->at(i)) )
 			{
+
 				/*vx = vy = 0;
 				isIdling = true;*/
 				SetState(MState::Idle_WM);
@@ -103,6 +139,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 				x = coObj->at(i)->x;
 				y = coObj->at(i)->y;
 			}
+
 			if (this->IsAABB(coObj->at(i)))
 			{
 				CMapPoint* point = dynamic_cast<CMapPoint*>(coObj->at(i));
@@ -133,10 +170,10 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	}
 	//DebugOut(L"x: %f\n", x);
 
-	DebugOut(L"2222222222222222222222222222222\n");
-	DebugOut(L"222222: %d\n", GetState());
-	DebugOut(L"x: %f\n", x);
-	DebugOut(L"y: %f\n", y);
+	//DebugOut(L"2222222222222222222222222222222\n");
+	//DebugOut(L"222222: %d\n", GetState());
+	//DebugOut(L"x: %f\n", x);
+	//DebugOut(L"y: %f\n", y);
 
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
@@ -1153,7 +1190,7 @@ void CMario::Render()
 		listBullet[i]->Render();
 	
 	if (tail) tail->Render();
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CMario::SetState(int state)
@@ -1349,6 +1386,32 @@ void CMario::Reset()
 	SetSpeed(0, 0);
 }
 
+void CMario::Refresh()
+{
+	//isOnGround = true;
+	isSitting = false;
+	isblockJump = false;
+	isAttack = false;
+	isWaggingTail = false;
+	canHoldShell = false;
+	isHolding = false;
+	isFlying = false;
+	attackStart = 0;
+	isAutoGo = false;
+
+	inHiddenArea = false;
+	colidingGround = NULL;
+
+	canWalkLeft = false;
+	canWalkRight = false;
+	canWalkUp = false;
+	canWalkDown = false;
+
+	canSwitchScene = false;
+	canGoThroughPipe_Up = false;
+	canGoThroughPipe_Down = false;
+}
+
 void CMario::Small()
 {
 	Idle();
@@ -1431,7 +1494,10 @@ void CMario::Sit() {
 }
 
 void CMario::Idle() {
-	SetState(MState::Idle);
+	if (GetStage() == ID_SCENE_WORLD_MAP)
+		SetState(MState::Idle_WM);
+	else
+		SetState(MState::Idle);
 	isSitting = false;
 }
 

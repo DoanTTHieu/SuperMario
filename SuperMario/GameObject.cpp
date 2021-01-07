@@ -224,6 +224,19 @@ bool CGameObject::IsCollidingWithObjectNy_1(LPGAMEOBJECT object)
 	delete e;
 	return false;
 }
+bool CGameObject::IsCollidingWithObjectNy1(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->ny == 1)
+			return true;
+	delete e;
+	return false;
+}
 bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
 {
 	if (!object)
@@ -233,6 +246,33 @@ bool CGameObject::IsCollidingWithObjectNy(LPGAMEOBJECT object)
 	bool res = e->t > 0 && e->t <= 1.0f;
 	if (res)
 		if (e->ny != 0)
+			return true;
+	delete e;
+	return false;
+}
+
+bool CGameObject::IsCollidingWithObjectNx_1(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx == -1)
+			return true;
+	delete e;
+	return false;
+}
+bool CGameObject::IsCollidingWithObjectNx1(LPGAMEOBJECT object)
+{
+	if (!object)
+		return false;
+	LPCOLLISIONEVENT e = SweptAABBEx(object);
+	//collision codition
+	bool res = e->t > 0 && e->t <= 1.0f;
+	if (res)
+		if (e->nx == 1)
 			return true;
 	delete e;
 	return false;

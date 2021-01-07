@@ -135,7 +135,7 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		obj = CMario::GetInstance();
 		player = (CMario*)obj;
 		player->SetStage(this->id);
-
+		player->Refresh();
 		player->SetPosition(x, y);
 		hud = new CHUD();
 

@@ -118,8 +118,11 @@ public:
 	bool IsOutOfCamera();
 	bool IsAABB(LPGAMEOBJECT object);
 	bool IsCollidingWithObject(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNx1(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNx_1(LPGAMEOBJECT object);
 	bool IsCollidingWithObjectNx(LPGAMEOBJECT object);
 	bool IsCollidingWithObjectNy(LPGAMEOBJECT object);
+	bool IsCollidingWithObjectNy1(LPGAMEOBJECT object);
 	bool IsCollidingWithObjectNy_1(LPGAMEOBJECT object);
 	~CGameObject();
 };

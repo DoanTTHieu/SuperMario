@@ -48,6 +48,7 @@ public:
 
 	void SetState(int state);
 	void SetStage(int stage) { this->stage = stage; }
+	int GetStage() { return this->stage; }
 	void StartUntouchable() { untouchable = 1; untouchable_start = GetTickCount64(); }
 	
 	bool isOnGround;
@@ -94,6 +95,7 @@ public:
 	int changedNx = 0;
 
 	void Reset();
+	void Refresh();
 	void Small();
 	void Big();
 	void Raccoon();
