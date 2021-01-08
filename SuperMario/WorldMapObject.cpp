@@ -1,13 +1,23 @@
 #include "WorldMapObject.h"
 
-CWorldMapObject::CWorldMapObject(int w, int h, bool i)
+CWorldMapObject::CWorldMapObject(int t)
 {
-	type = Type::GROUND;
+	this->WM_obj_type = t;
+	type = Type::WM_OBJECT;
+	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(3));
 }
 
 void CWorldMapObject::Render()
 {
-	//animation_set->at(0)->Render(x, y);
+	if (GetWMObjectType() == WM_Obj_Type::plant)
+		ani = WM_OBJ_ANI_PLANT;
+	else if (GetWMObjectType() == WM_Obj_Type::help)
+		ani = WM_OBJ_ANI_HELP;
+	else
+	{
+		ani = WM_OBJ_ANI_GUARD_LEFT;
+	}
+	animation_set->at(ani)->Render(x, y);
 	//RenderBoundingBox();
 }
 

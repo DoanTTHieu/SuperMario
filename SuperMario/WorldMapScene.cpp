@@ -152,6 +152,13 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		obj = new CMapPoint(Portal, idscene, l, r, a, u);
 	}
 		break;
+	case OBJECT_WORLD_MAP_OBJ:
+	{
+		int t = atoi(tokens[4].c_str());
+		obj = new CWorldMapObject(t);
+		DebugOut(L"shskskfjksj\n");
+	}
+		break;
 	default:
 		DebugOut(L"[ERR] Invalid object type: %d\n", object_type);
 		return;
@@ -167,9 +174,11 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 	//list obj pushback
 	switch (obj->GetType())
 	{
+	case Type::WM_OBJECT:
 	case Type::MAP_POINT:
 		listObj.push_back(obj);
 		break;
+
 	}
 }
 

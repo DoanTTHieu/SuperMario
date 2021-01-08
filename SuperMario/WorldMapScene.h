@@ -10,6 +10,7 @@
 #include "HUD.h"
 #include "Camera.h"
 #include "MapPoint.h"
+#include "WorldMapObject.h"
 
 class CWorldMapScene : public CScene
 {

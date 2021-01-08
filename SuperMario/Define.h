@@ -32,7 +32,8 @@ enum Type
 
 	//end Scene
 	LAST_ITEM = 14,
-	P_SWITCH = 15
+	P_SWITCH = 15,
+	WM_OBJECT = 16,
 };
 
 enum MState
@@ -90,6 +91,13 @@ enum VenusFireTrapType
 	green = 01
 };
 
+enum WM_Obj_Type
+{
+	plant = 01,
+	help = 02,
+	guard = 03
+};
+
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16
@@ -118,6 +126,8 @@ enum VenusFireTrapType
 //
 #define OBJECT_TYPE_PORTAL			50
 #define OBJECT_MAP_POINT			51
+#define OBJECT_WORLD_MAP_OBJ		52
+
 
 #define OBJECT_TYPE_LAST_ITEM			100
 
