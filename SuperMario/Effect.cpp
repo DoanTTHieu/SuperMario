@@ -6,8 +6,10 @@ CEffect::CEffect(D3DXVECTOR2 position, int type)
 	x = position.x;
 	y = position.y;
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(41));
-	//startEffect = GetTickCount64();
-	effectTimer->Start();
+	if(effectType == EffectType::fireBall)
+		startEffect = GetTickCount64();
+	else 
+		effectTimer->Start();
 }
 
 CEffect::~CEffect()
@@ -22,9 +24,14 @@ void CEffect::GetBoundingBox(float& l, float& t, float& r, float& b)
 void CEffect::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
-	//if (GetTickCount64() - startEffect > EFFECT_TIME)
-	if(effectTimer && effectTimer->IsTimeUp())
-		state = STATE_DESTROYED;
+	if (effectType == EffectType::fireBall)
+	{
+		if (GetTickCount64() - startEffect > EFFECT_TIME)
+			state = STATE_DESTROYED;
+	}
+	else
+		if(effectTimer && effectTimer->IsTimeUp())
+			state = STATE_DESTROYED;
 }
 
 void CEffect::Render()

@@ -717,7 +717,7 @@
 #stop left
 144	168	150
 #fight left
-145	169	100	170	100	171	100
+145	169	100	170	100	161	100
 #fight while jumping left
 146	174	100	173	100	172	100
 #sitting left

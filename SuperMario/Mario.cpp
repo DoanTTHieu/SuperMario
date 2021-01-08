@@ -1179,7 +1179,7 @@ void CMario::Render()
 		listBullet[i]->Render();
 	
 	if (tail) tail->Render();
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CMario::SetState(int state)
@@ -1326,7 +1326,6 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 			{
 				SetState(MState::Walk_right);
 				isAutoGo = true;
-				DebugOut(L"Gooooooooooooooooooooooooooooooooo\n");
 			}
 			else if (coItem->at(i)->GetType() == Type::COIN)
 			{

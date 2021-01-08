@@ -134,12 +134,10 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		}
 		obj = CMario::GetInstance();
 		player = (CMario*)obj;
-		//player= CMario::GetInstance();
 		player->SetStage(this->id);
 		player->Refresh();
 		float px, py;
 		player->GetWorldMapPosition(px, py);
-		//DebugOut(L"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: %f %f\n", px, py);
 		if (px == -1 && py == -1)
 			player->SetPosition(x, y);
 		else

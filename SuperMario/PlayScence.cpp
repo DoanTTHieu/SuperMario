@@ -141,11 +141,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			DebugOut(L"[ERROR] MARIO object was created before!\n");
 			return;
 		}
-		//obj = new CMario(x, y);
-		//player = (CMario*)obj;
-		// Add simon
 
-		//player = CMario::GetInstance();
 		obj = CMario::GetInstance();
 		if(CMario::GetInstance()->tail)
 			CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
@@ -368,11 +364,7 @@ void CPlayScene::Update(ULONGLONG dt)
 				if(item!=NULL)
 					listItem.push_back(item);
 			}
-
 		}
-		//if (listObj[i]->GetType() == Type::COIN)
-		//	listItem.push_back(listObj[i]);
-		
 	}
 
 	//update
@@ -434,8 +426,7 @@ void CPlayScene::Update(ULONGLONG dt)
 			CEffect* effect = dynamic_cast<CEffect*>(listEffect[i]);
 			if (effect->GetEffectType() == EffectType::text && effect->GetState() == STATE_DESTROYED)
 				player->canSwitchScene = true;
-		}
-		
+		}	
 	}
 
 	//xoa obj co state = STATE_DESTROYED
@@ -488,8 +479,6 @@ void CPlayScene::Update(ULONGLONG dt)
 	{
 		CGameObject* effect = new CEffect({ 2640, 270 }, EffectType::text);
 		listEffect.push_back(effect);
-		
-		/*CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);*/
 	}
 
 	if(player->canSwitchScene)

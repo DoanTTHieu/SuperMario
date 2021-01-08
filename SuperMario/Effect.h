@@ -6,7 +6,7 @@
 #define ANI_BRONZE_BRICK_BROKEN_EFFECT		1
 
 
-#define EFFECT_TIME	120
+#define EFFECT_TIME		120
 #define EFFECT_TIMER	2000
 enum EffectType
 {
