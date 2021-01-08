@@ -31,7 +31,8 @@ enum Type
 	MAP_POINT = 13,
 
 	//end Scene
-	LAST_ITEM = 14
+	LAST_ITEM = 14,
+	P_SWITCH = 15
 };
 
 enum MState

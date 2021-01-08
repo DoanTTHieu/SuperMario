@@ -138,6 +138,7 @@
     <ClCompile Include="Plant.cpp" />
     <ClCompile Include="PlayScence.cpp" />
     <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="P_Switch.cpp" />
     <ClCompile Include="Scence.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="ScoreEffect.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Plant.h" />
     <ClInclude Include="PlayScence.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="P_Switch.h" />
     <ClInclude Include="Scence.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ScoreEffect.h" />

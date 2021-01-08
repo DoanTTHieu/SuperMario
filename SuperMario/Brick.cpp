@@ -31,10 +31,16 @@ void CBrick::Render()
 			piece->Render();
 		return;
 	}
+
 	if (Btype == BrickType::question_broken)
 		ani = BRICK_ANI_BROKEN;
 	else
-		ani = BRICK_ANI_NORMAL;
+	{
+		if (state == BRICK_STATE_HIDDEN)
+			ani = BRICK_ANI_HIDDEN;
+		else
+			ani = BRICK_ANI_NORMAL;
+	}
 	animation_set->at(ani)->Render(x, y);
 
 	RenderBoundingBox();

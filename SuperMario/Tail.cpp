@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "Define.h"
 #include "Mario.h"
+#include "P_Switch.h"
 
 CTail* CTail::__instance = nullptr;
 
@@ -39,25 +40,40 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 	{
 		if (IsAABB(coObjects->at(i)))
 		{
-			if (coObjects->at(i)->GetType() == Type::BRICK)
+			if (coObjects->at(i)->GetType() == Type::P_SWITCH)
+			{
+
+			}
+			else if (coObjects->at(i)->GetType() == Type::BRICK)
 			{
 				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
 				if (brick->GetBrickType() != BrickType::question_broken)
 				{
-					if (brick->GetItemRemaining() == 1)
+					if (brick->GetItemRemaining() == 1 && brick->GetBrickType() == BrickType::question)
 					{
-						if (brick->GetBrickType() == BrickType::question)
+						//if (brick->GetBrickType() == BrickType::question)
 							//brick->SetState(STATE_BROKEN);
 							brick->SetBrickType(BrickType::question_broken);
-						else
-							brick->SetState(STATE_DESTROYED);
+						/*else
+							brick->SetState(STATE_DESTROYED);*/
 					}
 					if (brick->GetBrickType() != BrickType::bronze)
 						brick->SetState(STATE_BEING_TOSSED);
 					else
 						//brick->SetState(STATE_DESTROYED);
-						if(!brick->isBroken)
-							brick->SetState(STATE_BROKEN);
+						if (!brick->isBroken)
+						{
+							
+							if (brick->containItem == 3)
+							{
+								CGameObject* obj = new CP_Switch(brick->start_x, brick->start_y-16);
+								coObjects->push_back(obj);
+								brick->SetBrickType(BrickType::question_broken);
+							}
+							else
+								brick->SetState(STATE_BROKEN);
+							CMario::GetInstance()->AddScore(10);
+						}
 					if (brick->containItem == 2)
 					{
 						CMario::GetInstance()->AddScore(100);

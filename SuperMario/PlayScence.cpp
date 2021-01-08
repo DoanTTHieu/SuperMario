@@ -13,6 +13,7 @@
 #include "Coin.h"
 #include "ScoreEffect.h"
 #include "LastItem.h"
+#include "P_Switch.h"
 
 using namespace std;
 
@@ -364,7 +365,10 @@ void CPlayScene::Update(ULONGLONG dt)
 				if(item!=NULL)
 					listItem.push_back(item);
 			}
+
 		}
+		//if (listObj[i]->GetType() == Type::COIN)
+		//	listItem.push_back(listObj[i]);
 		
 	}
 
@@ -583,7 +587,6 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 
 void CPlayScenceKeyHandler::OnKeyUp(int KeyCode)
 {
-DebugOut(L"222223333333333333\n");
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 	if (mario->GetState() == MState::Die)
 		return;
@@ -642,7 +645,6 @@ DebugOut(L"222223333333333333\n");
 
 void CPlayScenceKeyHandler::KeyState(BYTE* states)
 {
-	DebugOut(L"33333333333333333333333\n");
 	CGame* game = CGame::GetInstance();
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();
 

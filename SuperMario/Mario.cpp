@@ -19,6 +19,7 @@
 #include "MapPoint.h"
 #include "CoinEffect.h"
 #include "ScoreEffect.h"
+#include "P_Switch.h"
 
 CMario* CMario::__instance = nullptr;
 
@@ -432,7 +433,11 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			}
 
 			break;
-
+		case Type::P_SWITCH:
+			if(this->IsCollidingWithObjectNy(coObj->at(i)))
+			//if (this->IsAABB(coObj->at(i)))
+				coObj->at(i)->SetState(STATE_OFF);
+			break;
 		//case Type::PORTAL:
 		//	//if (this->IsCollidingWithObject(coObj->at(i)))
 		//	if(this->IsAABB(coObj->at(i)))
@@ -517,6 +522,24 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 
 				}
 			}
+
+			if (dynamic_cast<CBrick*>(e->obj))
+			{
+
+				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+				if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
+				{
+					/*if(e->nx!=0 || e->ny!=0)*/
+					{
+						x += dx;
+						y += dy;
+						AddCoin();
+						AddScore(100);
+						brick->SetState(STATE_DESTROYED);
+					}
+				}
+			}
+
 
 			if (e->ny > 0)
 			{

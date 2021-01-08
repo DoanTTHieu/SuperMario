@@ -48,7 +48,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			if (coObjects->at(i)->GetType() == Type::BRICK)
 			{
 				CBrick* brick = dynamic_cast<CBrick*>(coObjects->at(i));
-				if (brick->GetBrickType() == BrickType::bronze)
+				if (brick->GetBrickType() == BrickType::bronze && brick->GetState() != BRICK_STATE_HIDDEN)
 					bronzeBricks.push_back(coObjects->at(i));
 			}
 		}
@@ -62,7 +62,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			if (colidingGround->GetType() == Type::BRICK)
 			{
 				CBrick* brick = dynamic_cast<CBrick*>(colidingGround);
-				if (brick->GetBrickType() == BrickType::bronze)
+				if (brick->GetBrickType() == BrickType::bronze && brick->GetState() != BRICK_STATE_HIDDEN)
 				{
 					for (int i = 0; i < bronzeBricks.size(); i++)
 					{
@@ -233,7 +233,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					{
 						//if(GetKoopaType()!=KoopaType::Red_troopa)
 						vx = -vx;
-						if (state == KOOPAS_STATE_DIE_MOVE && brick->GetBrickType() == BrickType::bronze)
+						if (state == KOOPAS_STATE_DIE_MOVE && brick->GetBrickType() == BrickType::bronze && brick->GetState()!= BRICK_STATE_HIDDEN)
 						{
 							brick->SetState(STATE_BROKEN);
 						}

@@ -442,6 +442,13 @@
 722	293	188	309	204	20
 723	312	188	328	204	20
 724	331	188	347	204	20
+
+#================P-SWITCH=================
+731	178	144	194	160	20
+732	156	144	172	160	20
+# pressed already
+733	200	144	216	160	20
+
 					
 #==================PIPE===================
 # long pipe
@@ -886,6 +893,11 @@
 #bronze brick
 712	721	100	722	100	723	100	724	100
 
+# ======= P-SWITCH =======
+721	731	450	732	150
+# pressed already
+722	733	100
+
 # ========== PIPE ==========
 # long pipe
 1001	2001	100
@@ -926,10 +938,14 @@
 11	701
 # QUESTION MARK BRICK
 12	702	703
-#bronze brick
-13	712
+#bronze brick	//cuc gach chua cai PSWitch chuyen thanh question_broken
+13	712	703	351
+#		       #coin	
 #PIPE
 14	1001	1002	1003
+#P_SWITCH
+15	721	722
+
 #=============WEAPON================
 #FIRE BALL
 21	201
@@ -996,7 +1012,7 @@
 #12	1373	200	52	3
 #12	2112	340	53	2
 
-12	2000	340	53	2
+#12	2000	340	53	2
 
 #VENUS FIRE TRAP
 #type	x	y	ani_set	type_piranha_plant
@@ -1026,7 +1042,7 @@
 #=====================STATIC OBJECTS================
 # QUESTION BRICK (hint: I created the list using Excel!) ----
 #type 	x	y	ani	brick_type	isContainItem	int sl
-#isContainItem	0=0 chua	1=chua item	2=chua coin
+#isContainItem	0=0 chua	1=chua item	2=chua coin  3=p_switch	4=nam xanh
 #brick type	1=normal	2=question	3=question_broken	4=bronze
 1	192	352	12	2	2	1
 1	176	352	12	2	2	1
@@ -1053,15 +1069,18 @@
 1	2016	400	13	4	0	0
 1	2032	384	13	4	0	0
 1	2032	400	13	4	0	0
-1	2048	400	13	4	0	0
 
-#1	2096	384	13	4	0	0
-#1	2096	400	13	4	0	0
-#1	2112	400	13	4	0	0
+1	2032	368	13	4	3	1
 
-1	2096	370	13	4	0	0
+#1	2048	400	13	4	0	0
+
+1	2096	384	13	4	0	0
 1	2096	400	13	4	0	0
 1	2112	400	13	4	0	0
+
+#1	2096	370	13	4	0	0
+#1	2096	400	13	4	0	0
+#1	2112	400	13	4	0	0
 
 # COIN
 4	1073	320	32

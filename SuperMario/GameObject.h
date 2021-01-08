@@ -77,7 +77,7 @@ public:
 
 	int GetState() { return state; }
 	int GetType() { return type; }
-
+	void SetType(int x) { type = x; }
 	void RenderBoundingBox();
 
 	void SetAnimationSet(LPANIMATION_SET ani_set) { animation_set = ani_set; }
