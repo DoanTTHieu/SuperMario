@@ -150,6 +150,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		if(CMario::GetInstance()->tail)
 			CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 		player = (CMario*)obj;
+		float px, py;
+		player->GetWorldMapPosition(px, py);
+		DebugOut(L"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: %f %f\n", px, py);
 		player->SetStage(this->id);
 		player->Refresh();
 
@@ -426,6 +429,13 @@ void CPlayScene::Update(ULONGLONG dt)
 			CGameObject* effect = new CScoreEffect({ bx, by }, 100);
 			listEffect.push_back(effect);
 		}
+		if (dynamic_cast<CEffect*>(listEffect[i]))
+		{
+			CEffect* effect = dynamic_cast<CEffect*>(listEffect[i]);
+			if (effect->GetEffectType() == EffectType::text && effect->GetState() == STATE_DESTROYED)
+				player->canSwitchScene = true;
+		}
+		
 	}
 
 	//xoa obj co state = STATE_DESTROYED
@@ -476,11 +486,15 @@ void CPlayScene::Update(ULONGLONG dt)
 	
 	if (player->isAutoGo && player->IsOutOfCamera())
 	{
-		//CGameObject* effect = new CEffect({ 2700, 350 }, EffectType::text);
-		//listEffect.push_back(effect);
-
-		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
+		CGameObject* effect = new CEffect({ 2640, 270 }, EffectType::text);
+		listEffect.push_back(effect);
+		
+		/*CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);*/
 	}
+
+	if(player->canSwitchScene)
+		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
+
 }
 
 void CPlayScene::Render()

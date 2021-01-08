@@ -85,51 +85,15 @@ CMario::~CMario()
 //update  WorldMap Scene
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 {
-	//DebugOut(L"1111111111111111111111\n");
-	//DebugOut(L"1111111: %d\n", GetState());
 	CGameObject::Update(dt);
+	DebugOut(L"x: %f\n", x);
+	DebugOut(L"y: %f\n", y);
 	x += dx;
 	y += dy;
 	for (int i = 0; i < coObj->size(); i++)
 	{
 		if (coObj->at(i)->GetType() == Type::MAP_POINT)
 		{
-			//di hoi dut
-			/*if (this->IsCollidingWithObjectNx1(coObj->at(i)))
-			{
-				if (x < coObj->at(i)->x)
-				{
-					SetState(MState::Idle_WM);
-					x = coObj->at(i)->x;
-				}
-			}
-			if (this->IsCollidingWithObjectNx_1(coObj->at(i)))
-			{
-				if (x > coObj->at(i)->x)
-				{
-					SetState(MState::Idle_WM);
-					x = coObj->at(i)->x;
-				}
-			}
-
-			if (this->IsCollidingWithObjectNy_1(coObj->at(i)))
-			{
-				if (y > coObj->at(i)->y)
-				{
-					SetState(MState::Idle_WM);
-					y = coObj->at(i)->y;
-				}
-
-			}
-			if (this->IsCollidingWithObjectNy1(coObj->at(i)))
-			{
-				if (y < coObj->at(i)->y)
-				{
-					SetState(MState::Idle_WM);
-					y = coObj->at(i)->y;
-				}
-			}*/
-
 			if (this->IsCollidingWithObjectNx(coObj->at(i))||this->IsCollidingWithObjectNy(coObj->at(i)) )
 			{
 
@@ -148,6 +112,8 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 				this->canWalkRight = point->right;
 				this->canWalkUp = point->above;
 				this->canWalkDown = point->under;
+				SetWorldMapPosition(point->start_x, point->start_y);
+				DebugOut(L"111111111111111111qqqqqqq11111111: %f %f\n", point->start_x, point->start_y);
 				if (canSwitchScene)
 				{
 					if (point->IsContainPortal())
@@ -1433,6 +1399,10 @@ void CMario::Refresh()
 	canSwitchScene = false;
 	canGoThroughPipe_Up = false;
 	canGoThroughPipe_Down = false;
+	if (GetStage() == ID_SCENE_WORLD_MAP)
+		SetState(MState::Idle_WM);
+	else
+		SetState(MState::Idle);
 }
 
 void CMario::Small()

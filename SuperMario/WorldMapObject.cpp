@@ -6,11 +6,9 @@ CWorldMapObject::CWorldMapObject(int t)
 	this->WM_obj_type = t;
 	type = Type::WM_OBJECT;
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(3));
-	//this->start_x = x;
 	GetPosition(this->start_x, this->start_y);
 	if (GetWMObjectType() == WM_Obj_Type::guard)
 	{
-		DebugOut(L"start: %f\n", this->start_x);
 		vx = 0.015f;
 	}
 

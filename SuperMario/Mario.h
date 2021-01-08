@@ -19,6 +19,7 @@ class CMario : public CGameObject
 	int untouchable;
 	ULONGLONG untouchable_start;
 	
+	D3DXVECTOR2 WM_position = { -1,-1 };
 	vector<LPGAMEOBJECT> interactableObject;
 	//vector< LPGAMEOBJECT> listEffect;
 	
@@ -34,6 +35,7 @@ class CMario : public CGameObject
 	}
 
 
+
 public:
 	static CMario* GetInstance();
 	CTail* tail = CTail::GetInstance();
@@ -45,6 +47,9 @@ public:
 	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects = NULL);
 	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector <LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect);
 	virtual void Render();
+
+	void SetWorldMapPosition(float x, float y) { WM_position.x = x; WM_position.y = y; }
+	void GetWorldMapPosition(float& x, float& y) { x = this->WM_position.x; y = this->WM_position.y; }
 
 	void SetState(int state);
 	void SetStage(int stage) { this->stage = stage; }

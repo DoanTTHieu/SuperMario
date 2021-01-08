@@ -134,9 +134,16 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		}
 		obj = CMario::GetInstance();
 		player = (CMario*)obj;
+		//player= CMario::GetInstance();
 		player->SetStage(this->id);
 		player->Refresh();
-		player->SetPosition(x, y);
+		float px, py;
+		player->GetWorldMapPosition(px, py);
+		//DebugOut(L"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: %f %f\n", px, py);
+		if (px == -1 && py == -1)
+			player->SetPosition(x, y);
+		else
+			player->SetPosition(px, py);
 		hud = new CHUD();
 
 		DebugOut(L"[INFO] Player object created!\n");
@@ -150,13 +157,14 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 		int a = atoi(tokens[8].c_str());
 		int u = atoi(tokens[9].c_str());
 		obj = new CMapPoint(Portal, idscene, l, r, a, u);
+		obj->SetPosition(x, y);
 	}
 		break;
 	case OBJECT_WORLD_MAP_OBJ:
 	{
 		int t = atoi(tokens[4].c_str());
 		obj = new CWorldMapObject(t);
-		DebugOut(L"shskskfjksj\n");
+		obj->SetPosition(x, y);
 	}
 		break;
 	default:
@@ -165,7 +173,7 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 	}
 
 	// General object setup
-	obj->SetPosition(x, y);
+	/*obj->SetPosition(x, y);*/
 	obj->GetPosition(obj->start_x, obj->start_y);
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
