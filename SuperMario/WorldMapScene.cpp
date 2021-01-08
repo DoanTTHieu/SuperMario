@@ -166,6 +166,7 @@ void CWorldMapScene::_ParseSection_OBJECTS(string line)
 
 	// General object setup
 	obj->SetPosition(x, y);
+	obj->GetPosition(obj->start_x, obj->start_y);
 
 	LPANIMATION_SET ani_set = animation_sets->Get(ani_set_id);
 
@@ -297,6 +298,10 @@ void CWorldMapScene::Render()
 */
 void CWorldMapScene::Unload()
 {
+	for (size_t i = 0; i < listObj.size(); i++)
+		delete listObj[i];
+	listObj.clear();
+
 	player = NULL;
 	delete hud;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);

@@ -5,8 +5,9 @@
 56	textures\hud.png	255	0	255
 999	textures\raccoon_3.png	255	255	255
 57	textures\hud_background.png	255	255	255
-60	textures\WorldMapTileset.png	0	255	555
-61	textures\WorldMapTileset.png	0	255	555
+60	textures\WorldMapTileset.png	0	0	555
+61	textures\WorldMapTileset1.png	0	0	555
+62	map\Grass_Land_bank.png	255	255	255
 # id	left	top	right	bottom	texture_id
 [SPRITES]
 # BIG MARIO
@@ -239,8 +240,10 @@
 204	1	17	17	32	60
 
 #help
-205	18	2	34	17	60
-206	1	50	17	66	60
+#205	18	2	34	17	60
+#206	1	50	17	66	60
+205	80	32	96	48	62
+206	160	32	176	48	62
 
 #guard
 #right
@@ -481,7 +484,7 @@
 201	201	300	202	300	203	300	204	300
 
 #help
-205	205	100	206	100
+205	205	300	206	300
 
 #guard
 #right
@@ -591,10 +594,12 @@
 52	224	112	3	1
 52	224	128	3	1
 52	224	144	3	1
-52	224	160	3	1
 
 #help
 52	208	96	3	2
+
+#guard
+52	112	112	3	3
 
 
 [TILEMAP]
