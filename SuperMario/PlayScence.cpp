@@ -148,7 +148,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		player = (CMario*)obj;
 		float px, py;
 		player->GetWorldMapPosition(px, py);
-		DebugOut(L"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: %f %f\n", px, py);
 		player->SetStage(this->id);
 		player->Refresh();
 

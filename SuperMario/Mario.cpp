@@ -113,7 +113,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 				this->canWalkUp = point->above;
 				this->canWalkDown = point->under;
 				SetWorldMapPosition(point->start_x, point->start_y);
-				DebugOut(L"111111111111111111qqqqqqq11111111: %f %f\n", point->start_x, point->start_y);
 				if (canSwitchScene)
 				{
 					if (point->IsContainPortal())
