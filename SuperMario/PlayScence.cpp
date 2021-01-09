@@ -351,6 +351,9 @@ void CPlayScene::Update(ULONGLONG dt)
 		if (listObj[i]->GetType() == Type::BRICK)
 		{
 			CBrick* brick = dynamic_cast<CBrick*>(listObj[i]);
+			//push vao listitem
+			if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
+				listItem.push_back(brick);
 			if (brick->diddropItem)
 			{
 				brick->diddropItem = false;
@@ -366,6 +369,47 @@ void CPlayScene::Update(ULONGLONG dt)
 		}
 	}
 
+	//xoa ra khoi list object
+	for (size_t i = 0; i < listObj.size(); i++)
+	{
+		if (listObj[i]->GetType() == Type::BRICK)
+		{
+			CBrick* brick = dynamic_cast<CBrick*>(listObj[i]);
+			if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
+			{
+				listObj.erase(listObj.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	//them vao listObject
+	for (size_t i = 0; i < listItem.size(); i++)
+	{
+		if (listItem[i]->GetType() == Type::BRICK)
+		{
+			CBrick* brick = dynamic_cast<CBrick*>(listItem[i]);
+			//push vao listitem
+			if (brick->GetBrickType() == BrickType::bronze && brick->GetState() != BRICK_STATE_HIDDEN)
+				listObj.push_back(brick);
+		}
+	}
+
+
+	//xoa ra khoi list Item
+	for (size_t i = 0; i < listItem.size(); i++)
+	{
+		if (listItem[i]->GetType() == Type::BRICK)
+		{
+			CBrick* brick = dynamic_cast<CBrick*>(listItem[i]);
+			if (brick->GetBrickType() == BrickType::bronze && brick->GetState() != BRICK_STATE_HIDDEN)
+			{
+				listItem.erase(listItem.begin() + i);
+				i--;
+			}
+		}
+	}
+
 	//update
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
@@ -375,6 +419,11 @@ void CPlayScene::Update(ULONGLONG dt)
 			player->GetBoundingBox(l, t, r, b);
 			CPlant* plant = dynamic_cast<CPlant*>(listObj[i]);
 			plant->Update(dt, &listObj, { l,t,r,b });
+		}
+		if (listObj[i]->GetType() == Type::P_SWITCH)
+		{
+			CP_Switch* PSwitch = dynamic_cast<CP_Switch*>(listObj[i]);
+			PSwitch->Update(dt, &listObj, &listItem);
 		}
 		else
 			listObj[i]->Update(dt, &listObj);

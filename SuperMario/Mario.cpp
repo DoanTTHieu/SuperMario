@@ -130,16 +130,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 	
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	if (GetState() > 12)
-	{
-		SetState(MState::Idle);
-	}
-	//DebugOut(L"x: %f\n", x);
-
-	//DebugOut(L"2222222222222222222222222222222\n");
-	//DebugOut(L"222222: %d\n", GetState());
-	//DebugOut(L"x: %f\n", x);
-	//DebugOut(L"y: %f\n", y);
 
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
@@ -488,22 +478,21 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 				}
 			}
 
-			if (dynamic_cast<CBrick*>(e->obj))
-			{
-
-				CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-				if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
-				{
-					/*if(e->nx!=0 || e->ny!=0)*/
-					{
-						x += dx;
-						y += dy;
-						AddCoin();
-						AddScore(100);
-						brick->SetState(STATE_DESTROYED);
-					}
-				}
-			}
+			//if (dynamic_cast<CBrick*>(e->obj))
+			//{
+			//	CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+			//	if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
+			//	{
+			//		/*if(e->nx!=0 || e->ny!=0)*/
+			//		{
+			//			x += dx;
+			//			y += dy;
+			//			AddCoin();
+			//			AddScore(100);
+			//			brick->SetState(STATE_DESTROYED);
+			//		}
+			//	}
+			//}
 
 
 			if (e->ny > 0)
@@ -1327,6 +1316,11 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 				isAutoGo = true;
 			}
 			else if (coItem->at(i)->GetType() == Type::COIN)
+			{
+				AddCoin();
+				AddScore(100);
+			}
+			else if (coItem->at(i)->GetType() == Type::BRICK)
 			{
 				AddCoin();
 				AddScore(100);

@@ -41,7 +41,7 @@ void CP_Switch::GetBoundingBox(float& l, float& t, float& r, float& b)
 	}
 }
 
-void CP_Switch::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects)
+void CP_Switch::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects, vector<LPGAMEOBJECT>* colObj)
 {
 	CGameObject::Update(dt);
 	vector<LPGAMEOBJECT> bronzeBricks;
@@ -66,11 +66,11 @@ void CP_Switch::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects)
 	if (changeTimer && changeTimer->IsTimeUp())
 	{
 		//tien bien lai thanh gach
-		for (int i = 0; i < objects->size(); i++)
+		for (int i = 0; i < colObj->size(); i++)
 		{
-			if (dynamic_cast<CBrick*>(objects->at(i)))
+			if (dynamic_cast<CBrick*>(colObj->at(i)))
 			{
-				CBrick* brick = dynamic_cast<CBrick*>(objects->at(i));
+				CBrick* brick = dynamic_cast<CBrick*>(colObj->at(i));
 				if (brick->GetBrickType() == BrickType::bronze)
 				{
 					if (brick->GetState() == BRICK_STATE_HIDDEN)

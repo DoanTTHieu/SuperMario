@@ -5,8 +5,8 @@
 56	textures\hud.png	255	0	255
 999	textures\raccoon_3.png	255	255	255
 57	textures\hud_background.png	255	255	255
-60	textures\WorldMapTileset.png	0	0	555
-61	textures\WorldMapTileset1.png	0	0	555
+60	textures\WorldMapTileset.png	0	0	255
+61	textures\WorldMapTileset1.png	0	0	255
 62	map\Grass_Land_bank.png	255	255	255
 # id	left	top	right	bottom	texture_id
 [SPRITES]

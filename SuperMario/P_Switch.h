@@ -23,7 +23,7 @@ public:
 	CTimer* changeTimer = new CTimer(TIME_CHANGE);
 	virtual void Render();
 	virtual void GetBoundingBox(float& l, float& t, float& r, float& b);
-	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects);
+	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* colliable_objects, vector<LPGAMEOBJECT>* coObj);
 
 	void SetState(int state);
 };

@@ -122,14 +122,14 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				else//khong phai bronzebrick
 				{
 					start.x = gl - 5.0f;
-					start.y = end.y = gb;
+					//start.y = end.y = gb;
 					end.x = gr - 5.0f;
 				}
 			}
 			else//colorbox, ground
 			{
 				start.x = gl - 5.0f;
-				start.y = end.y = gb;
+				//start.y = end.y = gb;
 				end.x = gr - 5.0f;
 			}
 			if (kl < start.x || kl > end.x)//vi lay toa do cua rua la top left nen de rua di tren gach hop ly thi phai tru
@@ -229,9 +229,19 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				else if (e->obj->GetType() == Type::BRICK)
 				{
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
+					if (e->nx != 0 || e->ny != 0)
+					{
+						if (brick->GetBrickType() == BrickType::bronze)
+						{
+							if (brick->GetState() == BRICK_STATE_HIDDEN)
+							{
+								x += dx;
+								y += dy;
+							}
+						}
+					}
 					if (e->nx != 0&& brick->start_y <(y + KOOPAS_BBOX_HEIGHT))
 					{
-						//if(GetKoopaType()!=KoopaType::Red_troopa)
 						vx = -vx;
 						if (state == KOOPAS_STATE_DIE_MOVE && brick->GetBrickType() == BrickType::bronze && brick->GetState()!= BRICK_STATE_HIDDEN)
 						{
