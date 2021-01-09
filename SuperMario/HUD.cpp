@@ -5,6 +5,7 @@ CHUD::CHUD()
 {
 	this->board = CAnimationSets::GetInstance()->Get(1101);
 	this->background = CSprites::GetInstance()->Get(1102);
+	speedBar = new CSpeedBar();
 }
 
 CHUD::~CHUD()
@@ -52,5 +53,5 @@ void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime, int 
 	text.Render(IntToChar(stage, 1), { position.x + 38, position.y + 199 });
 
 	//speedbar
-
+	speedBar->Render(position.x+51, position.y + 199, player->vx);
 }

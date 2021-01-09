@@ -7,6 +7,7 @@
 #include "Animations.h"
 #include "Sprites.h"
 #include "Text.h"
+#include "SpeedBar.h"
 
 class CHUD
 {
@@ -15,6 +16,7 @@ class CHUD
 
 	//LPDIRECT3DTEXTURE9 texBackground;
 	CText text;
+	CSpeedBar* speedBar = nullptr;
 
 public:
 	CHUD();

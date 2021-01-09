@@ -193,7 +193,7 @@ void CTail::Render()
 {
 	if (state == KILL_ENEMY) 
 		nx > 0 ? ani = RACCOON_ANI_FIGHT_IDLE_RIGHT : RACCOON_ANI_FIGHT_IDLE_LEFT;
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CTail::SetState(int state)

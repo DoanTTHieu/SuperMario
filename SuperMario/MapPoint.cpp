@@ -35,7 +35,7 @@ void CMapPoint::Render()
 	//ani = 0;
 	//animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CMapPoint::SetState(int state)

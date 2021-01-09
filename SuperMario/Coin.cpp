@@ -22,7 +22,7 @@ void CCoin::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 void CCoin::Render()
 {
 	animation_set->at(1)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CCoin::GetBoundingBox(float& l, float& t, float& r, float& b)
