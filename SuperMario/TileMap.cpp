@@ -1,6 +1,6 @@
 #include "TileMap.h"
 
-CTileMap::CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Map_rows, int  Map_cols, int Num_row_read, int Num_col_read, int Tile_width, int Tile_height)
+CTileMap::CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Map_rows, int  Map_cols, int Num_row_read, int Num_col_read, int Tile_width, int Tile_height, float main_start, float main_end, float hidden_start, float hidden_end)
 {
 	this->Id = ID;
 
@@ -15,6 +15,12 @@ CTileMap::CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Map_
 	
 	this->Tile_Width = Tile_width;
 	this->Tile_Height = Tile_height;
+
+	this->mainStart_x = main_start;
+	this->mainEnd_x = main_end;
+
+	this->hiddenStart_x = hidden_start;
+	this->hiddenEnd_x = hidden_end;
 
 	LoadMap();
 	Load();

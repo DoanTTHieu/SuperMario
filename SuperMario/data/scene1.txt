@@ -987,10 +987,10 @@
 # MARIO
 #0	1380	360	1
 #0	2256	0	1
-0	1	0	1
+#0	1	0	1
 #0	530	0	1
 #0	1900	0	1
-#0	2660	350	1
+0	2660	350	1
 #0	2003	300	1
 
 #=========================LAST ITEM====================
@@ -1191,6 +1191,7 @@
 #50	300	398	0	400	150	1
 #50	300	98	0	380	150	2	2320	384#ra
 #50	2256	100	12	2288	150	2	2096	464
+#type	texture		data	     data/row data/col text_r  text_c  tile_w	tile_h	start.x	end.x	start.x end.x #primary	#hidden
 
 [TILEMAP]
-100	map\test.png	map\test.txt	27	210	9	11	16	16
+100	map\test.png	map\test.txt	27	210	9	11	16	16	0	2816	2832	3360

@@ -3,7 +3,7 @@
 #include <d3d9.h>
 #include "Utils.h"
 #include "Game.h"
-#include "Mario.h"
+//#include "Mario.h"
 
 #define HUD_HEIGHT		30
 #define CAMERA_SPEED_X	 0.065f

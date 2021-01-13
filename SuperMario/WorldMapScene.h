@@ -17,6 +17,8 @@ class CWorldMapScene : public CScene
 protected:
 	CMario* player = nullptr;					// A play scene has to have player, right? 
 	CTileMap* map = nullptr;
+	LPCAMERA cam = nullptr;
+
 	LPHUD hud;
 	vector<CGameObject*> listObj;
 	void _ParseSection_TEXTURES(string line);

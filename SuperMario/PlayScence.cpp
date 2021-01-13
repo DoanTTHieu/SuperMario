@@ -267,7 +267,7 @@ void CPlayScene::_ParseSection_TILE_MAP(string line)
 
 	//DebugOut(L"--> %s\n",ToWSTR(line).c_str());
 
-	if (tokens.size() < 9) return; // skip invalid lines - an object set must have at least id, x, y
+	if (tokens.size() < 13) return; // skip invalid lines - an object set must have at least id, x, y
 
 	int ID = atoi(tokens[0].c_str());
 
@@ -280,8 +280,12 @@ void CPlayScene::_ParseSection_TILE_MAP(string line)
 	int Num_col_read = atoi(tokens[6].c_str());
 	int Tile_width = atoi(tokens[7].c_str());
 	int Tile_height = atoi(tokens[8].c_str());
+	float main_start = strtof(tokens[9].c_str(), NULL);
+	float main_end = strtof(tokens[10].c_str(), NULL);
+	float hidden_start = strtof(tokens[11].c_str(), NULL);
+	float hidden_end = strtof(tokens[12].c_str(), NULL);
 
-	map = new CTileMap(ID, FilePath_tex.c_str(), FilePath_data.c_str(), Map_width, Map_height, Num_row_read, Num_col_read, Tile_width, Tile_height);
+	map = new CTileMap(ID, FilePath_tex.c_str(), FilePath_data.c_str(), Map_width, Map_height, Num_row_read, Num_col_read, Tile_width, Tile_height, main_start, main_end, hidden_start, hidden_end);
 }
 //load object/ textures/ sprites -> animations
 void CPlayScene::Load()
@@ -527,11 +531,14 @@ void CPlayScene::Update(ULONGLONG dt)
 		CMario::GetInstance()->SetPosition(start.x, playerPos.y);
 	if (playerPos.x > end.x)
 		CMario::GetInstance()->SetPosition(end.x, playerPos.y);*/
+
+	//DebugOut(L"map: %d\n", map->GetMapHeight());
+
 	if(!player->inHiddenArea)
-		cam->Update({ cx,cy }, { 0,0 }, { float(2816- SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
+		cam->Update({ cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(/*map->GetMapHeight()*/432 - SCREEN_HEIGHT + 64) }, player->isFlying);
 	else
-		cam->Update({ cx,cy }, { 2832,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT+64) }, player->isFlying);
-	DebugOut(L"map: %d\n", map->GetMapHeight());
+		cam->Update({ cx,cy }, { map->hiddenStart_x,0 }, { float(/*map->GetMapWidth()*/3360 - SCREEN_WIDTH) , float(/*map->GetMapHeight()*/ 432 - SCREEN_HEIGHT+64) }, player->isFlying);
+	
 
 	//effect endscene
 	if (player->isAutoGo && player->IsOutOfCamera())
@@ -548,7 +555,7 @@ void CPlayScene::Update(ULONGLONG dt)
 
 void CPlayScene::Render()
 {
-	map->Draw();
+	if(map)map->Draw();
 	for (size_t i = 0; i < listObj.size(); i++)
 		if (listObj.at(i) != NULL)
 			listObj[i]->Render();
@@ -584,7 +591,7 @@ void CPlayScene::Unload()
 
 	player = NULL;
 	delete hud;
-	delete cam;
+	//delete cam;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
 

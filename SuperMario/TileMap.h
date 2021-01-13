@@ -17,12 +17,18 @@ class CTileMap
 	int num_row_read, num_col_read;
 	int Tile_Width, Tile_Height;
 	int Id;
-
 	int tilemap[300][300];
 
 public:
-	CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Num_Rows, int  Num_Cols, int Num_row_read, int Num_col_read, int Tile_width = 16, int Tile_height = 16);
+	float mainStart_x;
+	float mainEnd_x;
+	float hiddenStart_x;
+	float hiddenEnd_x;
+
+	CTileMap(int ID, LPCWSTR FilePath_tex, LPCWSTR FilePath_data, int Num_Rows, int  Num_Cols, int Num_row_read, int Num_col_read, int Tile_width , int Tile_height, float main_start, float main_end, float hidden_start, float hidden_end);
 	~CTileMap();
+
+
 
 	void Load();
 	void LoadMap();

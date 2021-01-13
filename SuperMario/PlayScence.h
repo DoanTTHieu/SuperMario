@@ -22,7 +22,7 @@ class CPlayScene : public CScene
 protected:
 	CMario* player = nullptr;					// A play scene has to have player, right? 
 	CTileMap* map = nullptr;
-	LPCAMERA cam;
+	LPCAMERA cam = nullptr;
 	LPHUD hud;
 
 	CTimer* playTimer = new CTimer(PLAY_TIME * MINISEC_PER_SEC);

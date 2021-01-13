@@ -35,11 +35,6 @@ void CCamera::Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, 
 		if (position.x < start.x)
 			position.x = start.x;
 
-		if (playerPos.x < start.x)
-			CMario::GetInstance()->SetPosition(start.x, playerPos.y);
-		if (playerPos.x > end.x)
-			CMario::GetInstance()->SetPosition(end.x, playerPos.y);
-
 		if (lockUpdateY)
 		{
 			CGame::GetInstance()->SetCamPosX(position.x);
