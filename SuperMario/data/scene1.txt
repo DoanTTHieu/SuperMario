@@ -1194,4 +1194,4 @@
 #type	texture		data	     data/row data/col text_r  text_c  tile_w	tile_h	start.x	end.x	start.x end.x #primary	#hidden
 
 [TILEMAP]
-100	map\test.png	map\test.txt	27	210	9	11	16	16	0	2816	2832	3360
+100	map\test.png	map\test.txt	27	210	9	11	16	16	0	2832	2832	3360

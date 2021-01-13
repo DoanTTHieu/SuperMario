@@ -513,31 +513,45 @@ void CPlayScene::Update(ULONGLONG dt)
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
-	//if (player->GetState() == MState::Die)
-	//	cam->LockUpdate();
-	//if(cam->IsLockUpdate() && player->GetState() != MState::Die)
-	//	cam->UnlockUpdate();
-	/*if (player->inHiddenArea)
-		cam->LockUpdateY();
-	if (cam->IsLockUpdateY() && !player->inHiddenArea)
-		cam->UnlockUpdateY();*/
+	if (player->GetState() == MState::Die)
+		cam->LockUpdate();
+	if(cam->IsLockUpdate() && player->GetState() != MState::Die)
+		cam->UnlockUpdate();
+
 	DebugOut(L"cx: %f\n", cx);
 	DebugOut(L"cy: %f\n", cy);
-	//thieu dieu kien inHiddenArea = false -> cho gia tri int = 1 -> port -> *-1
-	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2 - 226) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
-	
-	//mario ko di ra khoi map
-	/*if (playerPos.x < start.x)
-		CMario::GetInstance()->SetPosition(start.x, playerPos.y);
-	if (playerPos.x > end.x)
-		CMario::GetInstance()->SetPosition(end.x, playerPos.y);*/
 
-	//DebugOut(L"map: %d\n", map->GetMapHeight());
-
-	if(!player->inHiddenArea)
-		cam->Update({ cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(/*map->GetMapHeight()*/432 - SCREEN_HEIGHT + 64) }, player->isFlying);
+	if (!player->inHiddenArea)
+	{
+		/*if (this->id == ID_SCENE_4)
+		{*/
+			//chay nhanh hon cam thi cam theo mario
+			// chay cham thi cam day rot xuong ho-> phai xet dieu kien ben tree MARIO KO DI RA KHOI MAP
+			// chay cho toi khi mainStart thi dung
+			// vao man la bat dau chay
+			/*CGame::GetInstance()->SetCamPosY(250);
+			cam->Move(dt);*/
+		/*}
+		else */
+		DebugOut(L"dt: %d\n", dt);
+			cam->Update({ cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
+		
+		//xet mario khong ra khoi MAP CHINH
+		if (player->x < map->mainStart_x)
+			player->SetPosition(map->mainStart_x, cy);
+		if (!player->isAutoGo && player->x > map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2)
+			player->SetPosition(map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2, cy);
+	}
 	else
-		cam->Update({ cx,cy }, { map->hiddenStart_x,0 }, { float(/*map->GetMapWidth()*/3360 - SCREEN_WIDTH) , float(/*map->GetMapHeight()*/ 432 - SCREEN_HEIGHT+64) }, player->isFlying);
+	{
+		cam->Update({ cx,cy }, { map->hiddenStart_x,0 }, { float(map->hiddenEnd_x/*3360*/ - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
+		
+		//xet mario khong ra khoi MAP AN
+		if (player->x < map->hiddenStart_x)
+			player->SetPosition(map->hiddenStart_x, cy);
+		if (player->x > map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2)
+			player->SetPosition(map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2, cy);
+	}
 	
 
 	//effect endscene

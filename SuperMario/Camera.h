@@ -6,7 +6,7 @@
 //#include "Mario.h"
 
 #define HUD_HEIGHT		30
-#define CAMERA_SPEED_X	 0.065f
+#define CAMERA_SPEED_X	 0.06f
 
 class CCamera
 {
@@ -25,6 +25,13 @@ public:
 	~CCamera() {}
 	static CCamera* GetInstance();
 	void Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying);
+
+	float GetSpeedX() { return vx; }
+	void SetSpeedX(float x) { vx = x; }
+	void Move(ULONGLONG dt)
+	{
+		position.x += CAMERA_SPEED_X * dt;
+	}
 
 	int GetWidth() { return width; }
 	int GetHeight() { return height; }

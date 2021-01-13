@@ -1,5 +1,7 @@
 #pragma once
 #define ID_SCENE_WORLD_MAP	4
+#define ID_SCENE_1			1
+#define ID_SCENE_4			2
 
 #define PLAY_TIME		300
 #define MINISEC_PER_SEC	1000
