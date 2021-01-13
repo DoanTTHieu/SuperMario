@@ -5,8 +5,6 @@
 
 class CSpeedBar: public CGameObject
 {
-	//LPANIMATION_SET bar;
-	//int ani;
 	float temp = (MARIO_RUN_SPEED_THRESH - MARIO_WALKING_SPEED) / 7;
 
 public:

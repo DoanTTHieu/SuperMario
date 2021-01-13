@@ -86,8 +86,6 @@ CMario::~CMario()
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 {
 	CGameObject::Update(dt);
-	DebugOut(L"x: %f\n", x);
-	DebugOut(L"y: %f\n", y);
 	x += dx;
 	y += dy;
 	for (int i = 0; i < coObj->size(); i++)
@@ -127,7 +125,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 
 void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJECT>* coItem, vector<LPGAMEOBJECT>* listEffect)
 {
-	
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
 
@@ -281,7 +278,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		case Type::PIPE:
 			groundObjs.push_back(coObj->at(i));
 			break;
-
 		case Type::PIRANHA_PLANT:
 		case Type::VENUS_FIRE_TRAP:
 		case Type::VENUS_FIRE_BALL:
@@ -393,17 +389,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			//if (this->IsAABB(coObj->at(i)))
 				coObj->at(i)->SetState(STATE_OFF);
 			break;
-		//case Type::PORTAL:
-		//	//if (this->IsCollidingWithObject(coObj->at(i)))
-		//	if(this->IsAABB(coObj->at(i)))
-		//	{
-		//		CPortal* portal = dynamic_cast<CPortal*>(coObj->at(i));
-		//		SetPosition(portal->GetDestination().x, portal->GetDestination().y);
-		//		DebugOut(L"aaaaaaaaaaaaaaaaaaaaaaaaaa: %d\n", this->inHiddenArea);
-		//		this->inHiddenArea = !this->inHiddenArea;
-		//		//CGame::GetInstance()->SwitchScene(portal->GetSceneId());
-		//	}
-		//	break;
 		}
 	}
 
@@ -454,8 +439,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			//hidden map
 			if (e->ny != 0)
 			{
-				if (e->ny > 0)
-					vy = 0;
 				if (e->obj->GetType() == Type::PIPE)
 				{
 					CPipe* pipe = dynamic_cast<CPipe*>(e->obj);
@@ -465,35 +448,15 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 						{
 							this->inHiddenArea = !this->inHiddenArea;
 							SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);
-							
 						}
 						else if (!pipe->GetDirection() && this->canGoThroughPipe_Down)
 						{
 							this->inHiddenArea = !this->inHiddenArea;
 							SetPosition(pipe->GetDestination().x, pipe->GetDestination().y);	
 						}
-						
 					}
-
 				}
 			}
-
-			//if (dynamic_cast<CBrick*>(e->obj))
-			//{
-			//	CBrick* brick = dynamic_cast<CBrick*>(e->obj);
-			//	if (brick->GetBrickType() == BrickType::bronze && brick->GetState() == BRICK_STATE_HIDDEN)
-			//	{
-			//		/*if(e->nx!=0 || e->ny!=0)*/
-			//		{
-			//			x += dx;
-			//			y += dy;
-			//			AddCoin();
-			//			AddScore(100);
-			//			brick->SetState(STATE_DESTROYED);
-			//		}
-			//	}
-			//}
-
 
 			if (e->ny > 0)
 			{
@@ -502,13 +465,17 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 					if (brick->GetBrickType() != BrickType::question_broken)
 					{
+						if (brick->GetBrickType() == BrickType::bronze)
+						{
+							vy = 0;
+						}
 						if (brick->GetItemRemaining() == 1)
 						{
 							if (brick->GetBrickType() == BrickType::question)
 								//brick->SetState(STATE_BROKEN);
 								brick->SetBrickType(BrickType::question_broken);
-							else
-								brick->SetState(STATE_DESTROYED);
+							//else
+								//brick->SetState(STATE_DESTROYED);
 						}
 						if (brick->containItem == 2)
 						{
@@ -520,7 +487,8 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 							listEffect->push_back(effect);
 						}
 						brick->SetState(STATE_BEING_TOSSED);
-						brick->sl--;
+						if(brick->GetItemRemaining()>0)
+							brick->sl--;
 					}
 
 				}
@@ -535,6 +503,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 				}
 
 			}
+
 			if (e->nx != 0)
 			{
 				//ko di xuyen qua duoc ne
@@ -1343,10 +1312,6 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 					break;
 				}
 				AddScore(1000);
-				//float bx, by;
-				//item->GetPosition(bx, by);
-				//CGameObject* effect = new CScoreEffect({ bx, by }, 100);
-				//listEffect->push_back(effect);
 				
 			}
 			coItem->at(i)->SetState(STATE_DESTROYED);

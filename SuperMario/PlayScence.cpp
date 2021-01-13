@@ -395,7 +395,6 @@ void CPlayScene::Update(ULONGLONG dt)
 		}
 	}
 
-
 	//xoa ra khoi list Item
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
@@ -437,7 +436,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	player->Update(dt, &listObj, &listItem, &listEffect);
 
 
-
+	//them dan cho mario
 	for (size_t i = 0; i < player->listBullet.size(); i++)
 	{
 		if (player->listBullet[i]->GetState() == STATE_DESTROYED)
@@ -458,6 +457,7 @@ void CPlayScene::Update(ULONGLONG dt)
 			i--;
 		}
 
+	//them effect
 	for (size_t i = 0; i < listEffect.size(); i++)
 	{
 		listEffect[i]->Update(dt);
@@ -486,7 +486,6 @@ void CPlayScene::Update(ULONGLONG dt)
 			i--;
 		}
 	}
-
 	for (size_t i = 0; i < listItem.size(); i++)
 	{
 		if (listItem[i]->GetState() == STATE_DESTROYED|| (listItem[i]->IsOutOfCamera() && listItem[i]->GetType()==Type::ITEM))
@@ -503,32 +502,45 @@ void CPlayScene::Update(ULONGLONG dt)
 			i--;
 		}
 	}
+
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
-	if (player->GetState() == MState::Die)
-		cam->LockUpdate();
-	if(cam->IsLockUpdate() && player->GetState() != MState::Die)
-		cam->UnlockUpdate();
-	if (player->inHiddenArea)
+	//if (player->GetState() == MState::Die)
+	//	cam->LockUpdate();
+	//if(cam->IsLockUpdate() && player->GetState() != MState::Die)
+	//	cam->UnlockUpdate();
+	/*if (player->inHiddenArea)
 		cam->LockUpdateY();
 	if (cam->IsLockUpdateY() && !player->inHiddenArea)
-		cam->UnlockUpdateY();
-
+		cam->UnlockUpdateY();*/
+	DebugOut(L"cx: %f\n", cx);
+	DebugOut(L"cy: %f\n", cy);
 	//thieu dieu kien inHiddenArea = false -> cho gia tri int = 1 -> port -> *-1
-	cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2-226) , float(map->GetMapHeight()-14 *16 - SCREEN_HEIGHT+64) /*(float)200*/ }, player->isFlying);
-	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() /*- SCREEN_WIDTH * 2*/-226) , float(0/*map->GetMapHeight()*/ /*- SCREEN_HEIGHT+64*/) }, player->isFlying);
-	//DebugOut(L"map: %d\n", map->GetMapHeight());
+	//cam->Update({ cx,cy }, { 0,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH * 2 - 226) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
 	
+	//mario ko di ra khoi map
+	/*if (playerPos.x < start.x)
+		CMario::GetInstance()->SetPosition(start.x, playerPos.y);
+	if (playerPos.x > end.x)
+		CMario::GetInstance()->SetPosition(end.x, playerPos.y);*/
+	if(!player->inHiddenArea)
+		cam->Update({ cx,cy }, { 0,0 }, { float(2816- SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
+	else
+		cam->Update({ cx,cy }, { 2832,0 }, { float(map->GetMapWidth() - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT+64) }, player->isFlying);
+	DebugOut(L"map: %d\n", map->GetMapHeight());
+
+	//effect endscene
 	if (player->isAutoGo && player->IsOutOfCamera())
 	{
 		CGameObject* effect = new CEffect({ 2640, 270 }, EffectType::text);
 		listEffect.push_back(effect);
 	}
 
+	//chuyen scene
 	if(player->canSwitchScene)
 		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
 
@@ -578,7 +590,6 @@ void CPlayScene::Unload()
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 {
-	DebugOut(L"777777777777777777777777\n");
 	DebugOut(L"[INFO] KeyDown: %d\n", KeyCode);
 
 	CMario* mario = ((CPlayScene*)scence)->GetPlayer();

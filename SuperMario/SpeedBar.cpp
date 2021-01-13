@@ -3,7 +3,6 @@
 
 
 CSpeedBar::CSpeedBar() {
-	//bar = CAnimationSets::GetInstance()->Get(1121);
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(1121));
 }
 
@@ -32,5 +31,4 @@ void CSpeedBar::Render(float x, float y, float vx)
 	else
 		ani = 0;
 	animation_set->at(ani)->Render(x, y);
-	//animation_set->at(1)->Render(x, y);
 }

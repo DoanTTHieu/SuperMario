@@ -3,6 +3,7 @@
 #include <d3d9.h>
 #include "Utils.h"
 #include "Game.h"
+#include "Mario.h"
 
 #define HUD_HEIGHT		30
 #define CAMERA_SPEED_X	 0.065f
@@ -15,9 +16,10 @@ private:
 
 	int width;
 	int height;
-
+	float vx;
 	bool lockUpdate;
 	bool lockUpdateY;
+	bool lockUpdateVx;
 public:
 	CCamera();
 	~CCamera() {}
@@ -34,6 +36,10 @@ public:
 	bool IsLockUpdateY() { return lockUpdateY; }
 	void LockUpdateY() { lockUpdateY = true; }
 	void UnlockUpdateY() { lockUpdateY = false; }
+
+	bool IsLockUpdateVx() { return lockUpdateVx; }
+	void LockUpdateVx() { lockUpdateVx = true; }
+	void UnlockUpdateVx() { lockUpdateVx = false; }
 };
 
 typedef CCamera* LPCAMERA;
