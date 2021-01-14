@@ -147,7 +147,7 @@ enum WM_Obj_Type
 #define MARIO_JUMP_DEFLECT_SPEED		0.1f
 #define MARIO_GRAVITY					0.0005f
 #define GOOMBA_GRAVITY					0.0005f
-#define KOOPA_GRAVITY					0.005f
+#define KOOPA_GRAVITY					0.0004f
 
 #define MARIO_FALLING_SPEED_Y			0.45f
 #define MARIO_DIE_DEFLECT_SPEED			0.5f

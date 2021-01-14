@@ -8,16 +8,19 @@
 
 #define KOOPAS_WALKING_SPEED	0.03f;
 #define KOOPAS_SPEED_Y			0.16f;
+#define RED_KOOPAS_SPEED_Y		0.06f;
 #define KOOPAS_DIE_MOVE_SPEED	0.2f;
 
+#define KOOPAS_LIMIT_Y		100.0f
 
 #define KOOPAS_BBOX_WIDTH 15
 #define KOOPAS_BBOX_HEIGHT 26
 #define KOOPAS_BBOX_HEIGHT_DIE 15
 
-#define KOOPAS_STATE_WALKING	100
-#define KOOPAS_STATE_IDLE		200
-#define KOOPAS_STATE_DIE_MOVE	300 
+#define KOOPAS_STATE_WALKING		100
+#define KOOPAS_STATE_IDLE			200
+#define KOOPAS_STATE_DIE_MOVE		300
+#define KOOPAS_STATE_WALKING_DOWN	400
 
 #define KOOPAS_ANI_WALKING_LEFT		0
 #define KOOPAS_ANI_WALKING_RIGHT	1
@@ -43,9 +46,6 @@ class CKoopas : public CEnemy
 	D3DXVECTOR2 end = { -1,-1 };
 
 public:
-	
-
-
 	bool checkSupine = false;
 	bool isBeingHeld = false;
 	bool checkDone = false;
@@ -57,7 +57,7 @@ public:
 	CTimer* koopasTimer = new CTimer(KOOPAS_TIME_IDLE- KOOPAS_TIME_RELIFE);
 
 	CKoopas();
-	CKoopas(int x);
+	CKoopas(int type, float x, float y);
 	virtual void SetState(int state);
 
 	virtual void GetBoundingBox(float& left, float& top, float& right, float& bottom);

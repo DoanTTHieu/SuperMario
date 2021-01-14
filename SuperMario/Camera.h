@@ -3,7 +3,6 @@
 #include <d3d9.h>
 #include "Utils.h"
 #include "Game.h"
-//#include "Mario.h"
 
 #define HUD_HEIGHT		30
 #define CAMERA_SPEED_X	 0.06f
@@ -30,10 +29,6 @@ public:
 
 	void SetSpeedX(float x) { vx = x; }
 	void ResetPosition() { position.x = 0; position.y = 0; }
-	void Move(ULONGLONG dt)
-	{
-		position.x += CAMERA_SPEED_X * dt;
-	}
 
 	int GetWidth() { return width; }
 	int GetHeight() { return height; }

@@ -10,19 +10,23 @@ CKoopas::CKoopas()
 	SetState(KOOPAS_STATE_IDLE);
 }
 
-CKoopas::CKoopas(int x)
+CKoopas::CKoopas(int t, float x, float y)
 {
 	type = Type::KOOPAS;
-	Ktype = x;
+	Ktype = t;
 	colidingGround = NULL;
 	SetState(KOOPAS_STATE_WALKING);
+	this->start_x = x;
+	this->start_y = y;
 }
 
 
 void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-	
+	DebugOut(L"x: %f\n", start_x);
+	DebugOut(L"y: %f\n", start_y);
+
 	if (koopasTimer->IsTimeUp() && !idleTimer->IsTimeUp())
 	{
 		koopasTimer->Stop();
@@ -140,12 +144,23 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					this->x = gr - 5.5f;//them de cho rua khoi bi lac
 				this->vx = -vx;
 			}
-
 		}
 
-
-		vy += KOOPA_GRAVITY * dt;
+		DebugOut(L"vvvvv: %f\n", vy);
 		
+		if(Ktype != KoopaType::Red_paratroopa)
+			vy += KOOPA_GRAVITY * dt;
+		if (Ktype == KoopaType::Red_paratroopa && GetState() == KOOPAS_STATE_WALKING && y < (start_y - KOOPAS_LIMIT_Y))
+		{
+			y = start_y - KOOPAS_LIMIT_Y +2;
+			SetState(KOOPAS_STATE_WALKING_DOWN);
+		}
+		if (Ktype == KoopaType::Red_paratroopa && GetState() == KOOPAS_STATE_WALKING_DOWN && y > start_y)
+		{
+			y = start_y - 2;
+			SetState(KOOPAS_STATE_WALKING);
+		}
+
 		vector<LPGAMEOBJECT> groundObjs;
 
 		for (int i = 0; i < coObjects->size(); i++)
@@ -185,7 +200,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 
 			// block every object first!
 			x += min_tx * dx + nx * 0.4f;
-			y += min_ty * dy + ny * 0.6f;
+			y += min_ty * dy + ny * 0.25f;
 
 			if (ny != 0) 
 			{
@@ -193,7 +208,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				if (ny < 0)
 				{
 					colidingGround = objectY;
-					if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
+					if (Ktype == KoopaType::Green_paratroopa/* || Ktype == KoopaType::Red_paratroopa*/)
 					{
 						vy = -KOOPAS_SPEED_Y;
 					}
@@ -373,6 +388,7 @@ void CKoopas::Render()
 		}
 		break;
 	case KOOPAS_STATE_WALKING:
+	case KOOPAS_STATE_WALKING_DOWN:
 		if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
 		{
 			if (vx > 0)
@@ -393,7 +409,7 @@ void CKoopas::Render()
 		}
 		break;
 	default:
-		ani = KOOPAS_ANI_WALKING_RIGHT;
+		ani = KOOPAS_ANI_WALKING_LEFT;
 		break;
 	}
 
@@ -431,11 +447,15 @@ void CKoopas::SetState(int state)
 		vy = 0;
 		break;
 	case KOOPAS_STATE_WALKING:
-		vx = -KOOPAS_WALKING_SPEED;
-		if (Ktype == KoopaType::Green_paratroopa || Ktype == KoopaType::Red_paratroopa)
-		{
+		if(Ktype != KoopaType::Red_paratroopa)
+			vx = -KOOPAS_WALKING_SPEED;
+		if (Ktype == KoopaType::Green_paratroopa)
 			vy = -KOOPAS_SPEED_Y;
-		}
+		if(Ktype == KoopaType::Red_paratroopa)
+			vy = -RED_KOOPAS_SPEED_Y;
+		break;
+	case KOOPAS_STATE_WALKING_DOWN:
+		vy = RED_KOOPAS_SPEED_Y;
 		break;
 	default:
 		break;

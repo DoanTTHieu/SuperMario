@@ -195,7 +195,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_KOOPAS: 
 	{
 		int type = atoi(tokens[4].c_str());
-		obj = new CKoopas(type);
+		obj = new CKoopas(type, x,y);
 	}
 	break;
 	case OBJECT_TYPE_PORTAL:
@@ -542,15 +542,18 @@ void CPlayScene::Update(ULONGLONG dt)
 		//xet mario khong ra khoi MAP AN
 		if (player->x < map->hiddenStart_x)
 			player->SetPosition(map->hiddenStart_x, cy);
-		if (player->x > map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2)
+		if (!player->isAutoGo && player->x > map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2)
 			player->SetPosition(map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2, cy);
 	}
 	
-
 	//effect endscene
 	if (player->isAutoGo && player->IsOutOfCamera())
 	{
-		CGameObject* effect = new CEffect({ 2640, 270 }, EffectType::text);
+		CGameObject* effect;
+		if (!player->inHiddenArea)
+			effect = new CEffect({ map->mainEnd_x - (SCREEN_WIDTH / 2) - 48, 270 }, EffectType::text);
+		else
+			effect = new CEffect({ map->hiddenEnd_x - (SCREEN_WIDTH / 2) - 48, 270 }, EffectType::text);
 		listEffect.push_back(effect);
 	}
 
@@ -598,7 +601,7 @@ void CPlayScene::Unload()
 
 	player = NULL;
 	delete hud;
-	cam->ResetPosition();
+	if(cam) cam->ResetPosition();
 	//delete cam;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }

@@ -127,7 +127,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-
+	DebugOut(L"mario: %f\n", x);
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
@@ -326,7 +326,10 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 							if (koopas->GetKoopaType() == KoopaType::Green_paratroopa)
 								koopas->SetKoopaType(KoopaType::Green_troopa);
 							if (koopas->GetKoopaType() == KoopaType::Red_paratroopa)
+							{
 								koopas->SetKoopaType(KoopaType::Red_troopa);
+								koopas->SetState(KOOPAS_STATE_WALKING);
+							}
 						}
 						else
 						{
@@ -501,7 +504,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 						y += dy;
 					}
 				}
-
 			}
 
 			if (e->nx != 0)
@@ -525,7 +527,6 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 							else
 								state = MState::Walk_left;
 						}
-
 					}
 				}
 				else

@@ -11,6 +11,7 @@ CBrick::CBrick(float x, float y, int type, int typeItem, int sl)
 	this->type = Type::BRICK;
 	this->x = x;
 	this->y = y;
+	this->start_x = x;
 	this->start_y = y;
 	this->containItem = typeItem;
 	this->sl = sl;
