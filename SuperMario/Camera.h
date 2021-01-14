@@ -18,16 +18,18 @@ private:
 	int height;
 	float vx;
 	bool lockUpdate;
-	bool lockUpdateY;
 	bool lockUpdateVx;
 public:
 	CCamera();
 	~CCamera() {}
 	static CCamera* GetInstance();
-	void Update(D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying);
+	void Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying);
 
+	float GetPositionX() { return position.x; }
 	float GetSpeedX() { return vx; }
+
 	void SetSpeedX(float x) { vx = x; }
+	void ResetPosition() { position.x = 0; position.y = 0; }
 	void Move(ULONGLONG dt)
 	{
 		position.x += CAMERA_SPEED_X * dt;
@@ -39,10 +41,6 @@ public:
 	bool IsLockUpdate() { return lockUpdate; }
 	void LockUpdate() { lockUpdate = true; }
 	void UnlockUpdate() { lockUpdate = false; }
-
-	bool IsLockUpdateY() { return lockUpdateY; }
-	void LockUpdateY() { lockUpdateY = true; }
-	void UnlockUpdateY() { lockUpdateY = false; }
 
 	bool IsLockUpdateVx() { return lockUpdateVx; }
 	void LockUpdateVx() { lockUpdateVx = true; }

@@ -143,6 +143,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		}
 
 		obj = CMario::GetInstance();
+		obj->SetPosition(x, y);
 		if(CMario::GetInstance()->tail)
 			CMario::GetInstance()->tail->SetAnimationSet(CAnimationSets::GetInstance()->Get(1));
 		player = (CMario*)obj;
@@ -151,7 +152,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		player->SetStage(this->id);
 		player->Refresh();
 
-		player->SetPosition(x, y);
+		//player->SetPosition(x, y);
 		hud = new CHUD();
 
 		DebugOut(L"[INFO] Player object created!\n");
@@ -518,33 +519,25 @@ void CPlayScene::Update(ULONGLONG dt)
 	if(cam->IsLockUpdate() && player->GetState() != MState::Die)
 		cam->UnlockUpdate();
 
-	DebugOut(L"cx: %f\n", cx);
-	DebugOut(L"cy: %f\n", cy);
-
 	if (!player->inHiddenArea)
 	{
-		/*if (this->id == ID_SCENE_4)
-		{*/
-			//chay nhanh hon cam thi cam theo mario
-			// chay cham thi cam day rot xuong ho-> phai xet dieu kien ben tree MARIO KO DI RA KHOI MAP
-			// chay cho toi khi mainStart thi dung
-			// vao man la bat dau chay
-			/*CGame::GetInstance()->SetCamPosY(250);
-			cam->Move(dt);*/
-		/*}
-		else */
-		DebugOut(L"dt: %d\n", dt);
-			cam->Update({ cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
-		
+		if (this->id == ID_SCENE_4)
+			cam->UnlockUpdateVx();
+		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
+
 		//xet mario khong ra khoi MAP CHINH
-		if (player->x < map->mainStart_x)
+		if (cam->IsLockUpdateVx() && player->x < map->mainStart_x)
 			player->SetPosition(map->mainStart_x, cy);
+		if (!cam->IsLockUpdateVx() && player->x < cam->GetPositionX())
+			player->SetPosition(cam->GetPositionX(), cy);
 		if (!player->isAutoGo && player->x > map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2)
 			player->SetPosition(map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2, cy);
 	}
 	else
 	{
-		cam->Update({ cx,cy }, { map->hiddenStart_x,0 }, { float(map->hiddenEnd_x/*3360*/ - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
+		if (!cam->IsLockUpdateVx())
+			cam->LockUpdateVx();
+		cam->Update(dt, { cx,cy }, { map->hiddenStart_x,0 }, { float(map->hiddenEnd_x/*3360*/ - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
 		
 		//xet mario khong ra khoi MAP AN
 		if (player->x < map->hiddenStart_x)
@@ -605,6 +598,7 @@ void CPlayScene::Unload()
 
 	player = NULL;
 	delete hud;
+	cam->ResetPosition();
 	//delete cam;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
 }
