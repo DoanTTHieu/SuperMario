@@ -4,7 +4,7 @@
 
 CLastItem::CLastItem() {
 	this->type = Type::LAST_ITEM;
-	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(32));
+	//this->SetAnimationSet(CAnimationSets::GetInstance()->Get(33));
 }
 
 CLastItem::~CLastItem()
@@ -20,7 +20,7 @@ void CLastItem::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 void CLastItem::Render()
 {
 	animation_set->at(0)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CLastItem::GetBoundingBox(float& l, float& t, float& r, float& b)

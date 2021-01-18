@@ -3,23 +3,29 @@
 #include "Textures.h"
 #include "Scence.h"
 #include "GameObject.h"
-#include "Mario.h"
 #include "TileMap.h"
-#include "Ground.h"
-#include "Effect.h"
 #include "HUD.h"
 #include "Camera.h"
-#include "MapPoint.h"
-#include "WorldMapObject.h"
+#include "Timer.h"
+#include "Animations.h"
 
-class CWorldMapScene : public CScene
+#define NEXT_TIMER 10000
+
+#define INTRO_SCENE_ANI_BG		0
+#define INTRO_SCENE_ANI_1PLAYER	1
+#define INTRO_SCENE_ANI_2PLAYER	2
+
+class CIntroScene : public CScene
 {
 protected:
-	CMario* player = nullptr;		// A play scene has to have player, right? 
-	CTileMap* map = nullptr;
-	LPCAMERA cam = nullptr;
 
-	LPHUD hud;
+	//truoc khi chon man
+	// sau khi chon man
+	CTileMap* map = nullptr;
+	int phase = 0;
+	bool option;
+	LPANIMATION_SET aniBG;
+
 	vector<CGameObject*> listObj;
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
@@ -28,27 +34,29 @@ protected:
 	void _ParseSection_OBJECTS(string line);
 	void _ParseSection_TILE_MAP(string line);
 
-
 public:
-	CWorldMapScene(int id, LPCWSTR filePath);
+	//CIntroScene() {};
 
+	~CIntroScene() {};
+	CIntroScene(int id, LPCWSTR filePath);
+
+	CTimer* nextTimer = new CTimer(NEXT_TIMER);
+	void NextPhase();
+	void NextOption();
 	virtual void Load();
 	virtual void Update(ULONGLONG dt);
 	virtual void Render();
 	virtual void Unload();
 
-	CMario* GetPlayer() { return player; }
-
 	//friend class CPlayScenceKeyHandler;
 };
 
-class CWorldMapScenceKeyHandler : public CScenceKeyHandler
+class CIntroScenceKeyHandler : public CScenceKeyHandler
 {
 public:
 
-	virtual void KeyState(BYTE* states);
+	virtual void KeyState(BYTE* states) {};
 	virtual void OnKeyDown(int KeyCode);
 	virtual void OnKeyUp(int KeyCode) {};
-	CWorldMapScenceKeyHandler(CScene* s) :CScenceKeyHandler(s) {};
+	CIntroScenceKeyHandler(CScene* s) :CScenceKeyHandler(s) {};
 };
-

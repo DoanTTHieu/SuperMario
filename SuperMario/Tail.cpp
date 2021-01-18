@@ -63,7 +63,6 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 						//brick->SetState(STATE_DESTROYED);
 						if (!brick->isBroken)
 						{
-							
 							if (brick->containItem == 3)
 							{
 								CGameObject* obj = new CP_Switch(brick->start_x, brick->start_y-16);

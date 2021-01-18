@@ -1,4 +1,13 @@
 #pragma once
+
+//GAME
+#define SCREEN_WIDTH 272
+#define SCREEN_HEIGHT 256
+//#define SCREEN_WIDTH 1500
+////#define SCREEN_HEIGHT 600
+//#define SCREEN_HEIGHT 900
+#define KEYBOARD_BUFFER_SIZE 1024
+
 #define ID_SCENE_WORLD_MAP	4
 #define ID_SCENE_1			1
 #define ID_SCENE_4			2
@@ -36,6 +45,7 @@ enum Type
 	LAST_ITEM = 14,
 	P_SWITCH = 15,
 	WM_OBJECT = 16,
+	INTRO_OBJ = 17,
 };
 
 enum MState
@@ -131,7 +141,8 @@ enum WM_Obj_Type
 #define OBJECT_WORLD_MAP_OBJ		52
 
 
-#define OBJECT_TYPE_LAST_ITEM			100
+#define OBJECT_TYPE_LAST_ITEM		100
+#define OBJECT_CURTAIN				101
 
 #define MAX_SCENE_LINE 1024
 

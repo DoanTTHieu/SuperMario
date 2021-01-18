@@ -6,6 +6,7 @@
 
 #include "PlayScence.h"
 #include "WorldMapScene.h"
+#include "IntroScene.h"
 
 #include "Define.h"
 
@@ -344,6 +345,8 @@ void CGame::_ParseSection_SCENES(string line)
 	LPSCENE scene = nullptr;
 	if (id == ID_SCENE_WORLD_MAP)
 		scene = new CWorldMapScene(id, path);
+	else if (id == 3)
+		scene = new CIntroScene(id, path);
 	else 
 		scene = new CPlayScene(id, path);
 	scenes[id] = scene;

@@ -470,6 +470,18 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 					{
 						if (brick->GetBrickType() == BrickType::bronze)
 						{
+							if (!brick->isBroken && GetLevel()>Level::Small)
+							{
+								if (brick->containItem == 3)
+								{
+									CGameObject* obj = new CP_Switch(brick->start_x, brick->start_y - 16);
+									coObj->push_back(obj);
+									brick->SetBrickType(BrickType::question_broken);
+								}
+								else 
+									brick->SetState(STATE_BROKEN);
+								AddScore(10);
+							}
 							vy = 0;
 						}
 						if (brick->GetItemRemaining() == 1)

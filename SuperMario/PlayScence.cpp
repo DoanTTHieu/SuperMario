@@ -551,9 +551,9 @@ void CPlayScene::Update(ULONGLONG dt)
 	{
 		CGameObject* effect;
 		if (!player->inHiddenArea)
-			effect = new CEffect({ map->mainEnd_x - (SCREEN_WIDTH / 2) - 48, 270 }, EffectType::text);
+			effect = new CEffect({ map->mainEnd_x - (SCREEN_WIDTH / 2) - 68, 270 }, EffectType::text);
 		else
-			effect = new CEffect({ map->hiddenEnd_x - (SCREEN_WIDTH / 2) - 48, 270 }, EffectType::text);
+			effect = new CEffect({ map->hiddenEnd_x - (SCREEN_WIDTH / 2) - 68, 270 }, EffectType::text);
 		listEffect.push_back(effect);
 	}
 
