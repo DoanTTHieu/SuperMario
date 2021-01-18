@@ -1,13 +1,14 @@
 #pragma once
 #include "GameObject.h"
 #include "Timer.h"
+#include "Animations.h"
 
 #define ANI_FIREBALL_EFFECT					0
 #define ANI_BRONZE_BRICK_BROKEN_EFFECT		1
 
 
 #define EFFECT_TIME		120
-#define EFFECT_TIMER	2000
+#define EFFECT_TIMER	3000
 enum EffectType
 {
 	fireBall = 01,
@@ -23,6 +24,7 @@ protected:
 
 	ULONGLONG startEffect;
 	int effectType;
+	LPANIMATION_SET aniCard;
 public:
 	CEffect(D3DXVECTOR2 position, int type);
 	~CEffect();

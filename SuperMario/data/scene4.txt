@@ -558,6 +558,16 @@
 # tier_7
 1127	2	65	66	72	58
 
+#=======BLACK AND WHITE ITEM IN BOX=======
+# star
+1130	239	39	255	55	56
+# mushroom
+1131	191	39	207	55	56
+# flower
+1132	215	39	231	55	56
+# empty
+1133	167	39	183	55	56
+
 # ani_id	sprite1_id	time1	sprite2_id	time2	...
 [ANIMATIONS]
 
@@ -791,7 +801,7 @@
 403	451	35	452	35	453	35	454	35
 
 #end scene text
-406	461	1200	462	800
+406	461	1200	462	1800
 
 #Score
 421	421	100
@@ -955,6 +965,20 @@
 # tier_7
 1127	1127	150	1126	150
 
+# ====== BLACK AND WHITE ITEM IN BOX ======
+# normal star
+1130	1130	100
+# flicker star
+1131	1130	350	1133	150
+# nomal mushroom
+1132	1131	100
+# flicker mushroom
+1133	1131	350	1133	150
+# flower
+1134	1132	100
+# flicker flower
+1135	1132	350	1133	150
+
 #
 # id	ani1	ani2	ani3
 #
@@ -1008,6 +1032,9 @@
 1101	1101
 #SPEED BAR
 1121	1120	1121	1122	1123	1124	1125	1126	1127
+#CARD
+#1130	1130	1131	1132	1133	1134	1135
+1130	1130	1132	1134
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type

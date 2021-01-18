@@ -15,6 +15,7 @@ class CHUD
 {
 	LPANIMATION_SET board;
 	LPSPRITE background;
+	LPANIMATION_SET card;
 
 	//LPDIRECT3DTEXTURE9 texBackground;
 	CText text;

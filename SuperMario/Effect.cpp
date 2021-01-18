@@ -1,10 +1,12 @@
 #include "Effect.h"
+#include "Mario.h"
 
 CEffect::CEffect(D3DXVECTOR2 position, int type)
 {
 	this->effectType = type;
 	x = position.x;
 	y = position.y;
+	aniCard = CAnimationSets::GetInstance()->Get(1130);
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(41));
 	if(effectType == EffectType::fireBall)
 		startEffect = GetTickCount64();
@@ -46,4 +48,9 @@ void CEffect::Render()
 		break;
 	}
 	animation_set->at(ani)->Render(x, y);
+	if (animation_set->at(ani)->GetCurrentFrame() == 1)
+	{
+		int n = CMario::GetInstance()->cards.size();
+		aniCard->at(CMario::GetInstance()->cards.at(n-1))->Render(x + 128, y + 24);
+	}
 }

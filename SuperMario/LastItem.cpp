@@ -4,7 +4,7 @@
 
 CLastItem::CLastItem() {
 	this->type = Type::LAST_ITEM;
-	//this->SetAnimationSet(CAnimationSets::GetInstance()->Get(33));
+	isEaten = false;
 }
 
 CLastItem::~CLastItem()
@@ -19,6 +19,10 @@ void CLastItem::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 }
 void CLastItem::Render()
 {
+	// animation_set->at(0)->GetCurrentFrame()
+	//0: star
+	//1: mushroom
+	//2: flower
 	animation_set->at(0)->Render(x, y);
 	//RenderBoundingBox();
 }

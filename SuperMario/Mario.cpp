@@ -1294,6 +1294,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 		{
 			if (coItem->at(i)->GetType() == Type::LAST_ITEM)
 			{
+				cards.push_back(coItem->at(i)->animation_set->at(0)->GetCurrentFrame());
 				SetState(MState::Walk_right);
 				isAutoGo = true;
 			}
@@ -1302,7 +1303,7 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 				AddCoin();
 				AddScore(100);
 			}
-			else if (coItem->at(i)->GetType() == Type::BRICK)
+			else if (coItem->at(i)->GetType() == Type::BRICK)//brick khi chuyen thanh tien
 			{
 				AddCoin();
 				AddScore(100);

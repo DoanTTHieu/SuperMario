@@ -20,11 +20,6 @@ class CMario : public CGameObject
 	ULONGLONG untouchable_start;
 	
 	D3DXVECTOR2 WM_position = { -1,-1 };
-	vector<LPGAMEOBJECT> interactableObject;
-	//vector< LPGAMEOBJECT> listEffect;
-	
-	/*CTail* tail = new CTail();*/
-
 
 	CKoopas* koopas = new CKoopas();
 
@@ -34,12 +29,11 @@ class CMario : public CGameObject
 		return bullet;
 	}
 
-
-
 public:
 	static CMario* GetInstance();
 	CTail* tail = CTail::GetInstance();
 	vector< LPGAMEOBJECT> listBullet;
+	vector<int> cards;
 
 	CMario(float x = 0.0f, float y = 0.0f);
 	~CMario();
