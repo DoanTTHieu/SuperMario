@@ -154,6 +154,9 @@
     <ClInclude Include="IntroObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lift.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="brick.ico">
@@ -297,6 +300,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IntroObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lift.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

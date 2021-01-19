@@ -51,11 +51,7 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 				{
 					if (brick->GetItemRemaining() == 1 && brick->GetBrickType() == BrickType::question)
 					{
-						//if (brick->GetBrickType() == BrickType::question)
-							//brick->SetState(STATE_BROKEN);
-							brick->SetBrickType(BrickType::question_broken);
-						/*else
-							brick->SetState(STATE_DESTROYED);*/
+						brick->SetBrickType(BrickType::question_broken);
 					}
 					if (brick->GetBrickType() != BrickType::bronze)
 						brick->SetState(STATE_BEING_TOSSED);
@@ -63,7 +59,7 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 						//brick->SetState(STATE_DESTROYED);
 						if (!brick->isBroken)
 						{
-							if (brick->containItem == 3)
+							if (brick->containItem == CONTAIN_PSWITCH)
 							{
 								CGameObject* obj = new CP_Switch(brick->start_x, brick->start_y-16);
 								coObjects->push_back(obj);
@@ -73,7 +69,7 @@ void CTail::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects, D3DXVECTOR2 pl
 								brick->SetState(STATE_BROKEN);
 							CMario::GetInstance()->AddScore(10);
 						}
-					if (brick->containItem == 2)
+					if (brick->containItem == CONTAIN_COIN)
 					{
 						CMario::GetInstance()->AddScore(100);
 						CMario::GetInstance()->AddCoin();

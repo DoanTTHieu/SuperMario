@@ -132,6 +132,7 @@
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Koopas.cpp" />
     <ClCompile Include="LastItem.cpp" />
+    <ClCompile Include="Lift.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MapPoint.cpp" />
     <ClCompile Include="Mario.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Koopas.h" />
     <ClInclude Include="LastItem.h" />
+    <ClInclude Include="Lift.h" />
     <ClInclude Include="MapPoint.h" />
     <ClInclude Include="Mario.h" />
     <ClInclude Include="Pipe.h" />

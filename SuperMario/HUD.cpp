@@ -27,7 +27,7 @@ char* IntToChar(int value, int len = 10)
 
 void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime, int stage)
 {
-	background->Draw(position.x+ MARGINLEFT, position.y+192);
+	background->Draw(position.x, position.y+192);
 
 	board->at(0)->Render(position.x + MARGINLEFT, position.y + 192/*218*//*+ 432*/);
 

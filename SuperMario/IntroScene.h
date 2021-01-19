@@ -14,6 +14,7 @@
 #define INTRO_SCENE_ANI_BG		0
 #define INTRO_SCENE_ANI_1PLAYER	1
 #define INTRO_SCENE_ANI_2PLAYER	2
+#define INTRO_SCENE_ANI_3NUMBER	3
 
 class CIntroScene : public CScene
 {

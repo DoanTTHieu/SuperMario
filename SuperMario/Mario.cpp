@@ -127,7 +127,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	DebugOut(L"mario: %f\n", x);
+	//DebugOut(L"mario: %f\n", x);
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 
@@ -266,7 +266,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		}
 	}
 
-
+	//CHIA LIST GACH
 	vector<LPGAMEOBJECT> groundObjs;
 
 	for (int i = 0; i < coObj->size(); i++)
@@ -276,6 +276,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 		case Type::BRICK:
 		case Type::GROUND:
 		case Type::PIPE:
+		case Type::LIFT:
 			groundObjs.push_back(coObj->at(i));
 			break;
 		case Type::PIRANHA_PLANT:
@@ -465,45 +466,84 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 			{
 				if (e->obj->GetType() == Type::BRICK)
 				{
+					vy = 0;
 					CBrick* brick = dynamic_cast<CBrick*>(e->obj);
 					if (brick->GetBrickType() != BrickType::question_broken)
 					{
 						if (brick->GetBrickType() == BrickType::bronze)
 						{
-							if (!brick->isBroken && GetLevel()>Level::Small)
+							if (!brick->isBroken)
 							{
-								if (brick->containItem == 3)
+								switch (brick->containItem)
+								{
+								case CONTAIN_PSWITCH://p_switch
 								{
 									CGameObject* obj = new CP_Switch(brick->start_x, brick->start_y - 16);
 									coObj->push_back(obj);
 									brick->SetBrickType(BrickType::question_broken);
+									brick->SetState(STATE_BEING_TOSSED);
+									break;
 								}
-								else 
-									brick->SetState(STATE_BROKEN);
-								AddScore(10);
+								case CONTAIN_COIN://coin
+								{
+									vy = 0.2;
+									brick->SetState(STATE_BEING_TOSSED);
+									AddScore(100);
+									AddCoin();
+									float bx, by;
+									brick->GetPosition(bx, by);
+									CGameObject* effect = new CCoinEffect({ bx, by });
+									listEffect->push_back(effect);
+									if (brick->GetItemRemaining() > 0)
+										brick->sl--;
+									if (brick->GetItemRemaining() == 0 && GetLevel() > Level::Small)
+										brick->SetState(STATE_BROKEN);
+									break;
+								}
+								case CONTAIN_ITEM:
+								{
+									brick->SetState(STATE_BEING_TOSSED);
+									if (brick->GetItemRemaining() > 0)
+										brick->sl--;
+									if (brick->GetItemRemaining() == 0 && GetLevel() > Level::Small)
+										brick->SetState(STATE_BROKEN);
+									break;
+								}
+								case CONTAIN_NULL:
+								{
+									brick->SetState(STATE_BEING_TOSSED);
+									if (brick->GetItemRemaining() == 0 && GetLevel() > Level::Small)
+										brick->SetState(STATE_BROKEN);
+									AddScore(10);
+									break;
+								}
+								default:
+									break;
+								}
 							}
-							vy = 0;
 						}
-						if (brick->GetItemRemaining() == 1)
+						else
 						{
-							if (brick->GetBrickType() == BrickType::question)
-								//brick->SetState(STATE_BROKEN);
-								brick->SetBrickType(BrickType::question_broken);
-							//else
-								//brick->SetState(STATE_DESTROYED);
+							if (brick->GetItemRemaining() == 1)
+							{
+								if (brick->GetBrickType() == BrickType::question)
+									brick->SetBrickType(BrickType::question_broken);
+								//else
+									//brick->SetState(STATE_DESTROYED);
+							}
+							if (brick->containItem == 2)
+							{
+								AddScore(100);
+								AddCoin();
+								float bx, by;
+								brick->GetPosition(bx, by);
+								CGameObject* effect = new CCoinEffect({ bx, by });
+								listEffect->push_back(effect);
+							}
+							brick->SetState(STATE_BEING_TOSSED);
+							if (brick->GetItemRemaining() > 0)
+								brick->sl--;
 						}
-						if (brick->containItem == 2)
-						{
-							AddScore(100);
-							AddCoin();
-							float bx, by;
-							brick->GetPosition(bx, by);
-							CGameObject* effect = new CCoinEffect({ bx, by });
-							listEffect->push_back(effect);
-						}
-						brick->SetState(STATE_BEING_TOSSED);
-						if(brick->GetItemRemaining()>0)
-							brick->sl--;
 					}
 
 				}
@@ -516,6 +556,12 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 						y += dy;
 					}
 				}
+				
+			}
+			if (e->ny <0 && e->obj->GetType() == Type::LIFT)
+			{
+				e->obj->SetState(LIFT_STATE_GO_DOWN);
+				vy= e->obj->vy;
 			}
 
 			if (e->nx != 0)

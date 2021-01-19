@@ -10,6 +10,12 @@
 #chose player
 #back ground
 200	516	226	772	413	0
+#number 3
+201	194	363	236	404	1
+202	240	363	282	404	1
+203	287	363	329	404	1
+204	333	363	375	404	1
+
 #1 player
 300	30	307	37	331	1
 #2 player
@@ -23,6 +29,7 @@
 #===chose player
 #back ground
 200	200	100
+201	201	200	202	200	203	200	204	200	204	200	203	200	202	200	201	200
 300	300	100
 400	400	100
 
@@ -33,7 +40,7 @@
 #curtain
 1	100	101
 #chose player
-2	200	300	400
+2	200	300	400	201
 
 [OBJECTS]
 # type	x	y	ani_set_id	extra_settings per object type

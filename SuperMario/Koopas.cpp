@@ -24,8 +24,6 @@ CKoopas::CKoopas(int t, float x, float y)
 void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt, coObjects);
-	DebugOut(L"x: %f\n", start_x);
-	DebugOut(L"y: %f\n", start_y);
 
 	if (koopasTimer->IsTimeUp() && !idleTimer->IsTimeUp())
 	{
@@ -145,8 +143,6 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				this->vx = -vx;
 			}
 		}
-
-		DebugOut(L"vvvvv: %f\n", vy);
 		
 		if(Ktype != KoopaType::Red_paratroopa)
 			vy += KOOPA_GRAVITY * dt;
@@ -275,6 +271,15 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 					if (e->nx != 0)
 					{
 						vx = -vx;
+					}
+				}
+				else if (e->obj->GetType() == Type::KOOPAS)
+				{
+					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
+					if (e->nx != 0)
+					{
+						vx = -vx;
+						koopas->vx = -vx;
 					}
 				}
 				else if (dynamic_cast<CEnemy*>(e->obj) && state == KOOPAS_STATE_DIE_MOVE)

@@ -288,6 +288,7 @@ void CIntroScene::Render()
 		break;
 	case 1:
 		aniBG->at(INTRO_SCENE_ANI_BG)->Render(0, 0);
+		aniBG->at(INTRO_SCENE_ANI_3NUMBER)->Render(110, 95);
 		if(!option)
 			aniBG->at(INTRO_SCENE_ANI_1PLAYER)->Render(70, 144);
 		else

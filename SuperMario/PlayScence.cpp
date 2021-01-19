@@ -14,6 +14,7 @@
 #include "ScoreEffect.h"
 #include "LastItem.h"
 #include "P_Switch.h"
+#include "Lift.h"
 
 using namespace std;
 
@@ -181,6 +182,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 		obj = new CBrick( x,y , btype, contain, sl); 
 	}
 	break;
+	case OBJECT_TYPE_LIFT:
+		obj = new CLift();
+		break;
 	case OBJECT_TYPE_VENUS_FIRE_TRAP:
 	{
 		int t = atoi(tokens[4].c_str());
@@ -248,6 +252,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Type::PIRANHA_PLANT:
 	case Type::KOOPAS:
 	case Type::GOOMBA:
+	case Type::LIFT:
 		listObj.push_back(obj);
 		break;
 	case Type::COIN:
@@ -291,6 +296,8 @@ void CPlayScene::_ParseSection_TILE_MAP(string line)
 //load object/ textures/ sprites -> animations
 void CPlayScene::Load()
 {
+	if (playTimer)
+		playTimer->Reset();
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
 
 	ifstream f;

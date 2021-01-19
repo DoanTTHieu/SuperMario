@@ -116,7 +116,7 @@ void CBrick::SetState(int state)
 	}
 		break;
 	case STATE_BEING_TOSSED:
-		if(containItem==1 && sl==1)
+		if(containItem== CONTAIN_ITEM && sl==1)
 			diddropItem = true;
 		vy = -0.2f;
 		DebugOut(L"CONTAIN: %d \n", sl);

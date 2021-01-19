@@ -5,7 +5,7 @@
 #include "Game.h"
 
 #define HUD_HEIGHT		30
-#define CAMERA_SPEED_X	 0.06f
+#define CAMERA_SPEED_X	 0.04f
 
 class CCamera
 {

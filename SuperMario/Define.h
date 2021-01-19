@@ -23,29 +23,29 @@ enum Type
 	GROUND = 02,
 	BRICK = 03,
 	PIPE = 04,
-
+	LIFT = 05,
 	//enemy
-	GOOMBA = 05,
-	KOOPAS = 06,
-	PIRANHA_PLANT = 07,
-	VENUS_FIRE_TRAP = 8,
+	GOOMBA = 06,
+	KOOPAS = 07,
+	PIRANHA_PLANT = 8,
+	VENUS_FIRE_TRAP = 9,
 
 	//item and coin
-	ITEM = 9,
-	COIN = 10,
+	ITEM = 10,
+	COIN = 11,
 
 	//weapon
-	VENUS_FIRE_BALL = 11,
+	VENUS_FIRE_BALL = 12,
 
 	//
-	PORTAL = 12,
-	MAP_POINT = 13,
+	PORTAL = 13,
+	MAP_POINT = 14,
 
 	//end Scene
-	LAST_ITEM = 14,
-	P_SWITCH = 15,
-	WM_OBJECT = 16,
-	INTRO_OBJ = 17,
+	LAST_ITEM = 15,
+	P_SWITCH = 16,
+	WM_OBJECT = 17,
+	INTRO_OBJ = 18,
 };
 
 enum MState
@@ -115,6 +115,11 @@ enum WM_Obj_Type
 #define BRICK_BBOX_WIDTH  16
 #define BRICK_BBOX_HEIGHT 16
 
+#define CONTAIN_PSWITCH	3
+#define CONTAIN_COIN	2
+#define CONTAIN_ITEM	1
+#define CONTAIN_NULL	0
+
 //play scene
 #define SCENE_SECTION_UNKNOWN -1
 #define SCENE_SECTION_TEXTURES 2
@@ -130,6 +135,9 @@ enum WM_Obj_Type
 #define OBJECT_TYPE_GROUND			2
 #define OBJECT_TYPE_PIPE			3
 #define OBJECT_TYPE_COIN			4
+
+#define OBJECT_TYPE_LIFT			5
+
 //enemy
 #define OBJECT_TYPE_GOOMBA			11
 #define OBJECT_TYPE_KOOPAS			12
@@ -285,3 +293,13 @@ enum WM_Obj_Type
 #define PLANT_BBOX_HIGH					32
 //plant speed
 #define PLANT_SPEED_Y		0.05f;
+
+//LIFT
+
+#define LIFT_BBOX_WIDTH  48
+#define LIFT_BBOX_HEIGHT 16
+
+#define LIFT_STATE_GO_LEFT	0
+#define LIFT_STATE_GO_DOWN	1
+
+#define LIFT_SPEED_X	0.04f
