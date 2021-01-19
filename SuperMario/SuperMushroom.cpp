@@ -1,11 +1,12 @@
 #include "SuperMushroom.h"
 #include "Ground.h"
 #include "Brick.h"
-CSuperMushroom::CSuperMushroom(D3DXVECTOR2 position) {
+CSuperMushroom::CSuperMushroom(D3DXVECTOR2 position, int t) {
 	this->x = position.x;
 	this->y = position.y;
 	//ani
-	itemID = ItemID::superMushroom;
+	//itemID = ItemID::superMushroom;
+	itemID = t;
 	this->type = Type::ITEM;
 	vx = -0.05f;
 }
@@ -14,6 +15,15 @@ CSuperMushroom::~CSuperMushroom()
 
 }
 
+void CSuperMushroom::Render()
+{
+	if (itemID == ItemID::upMushroom)
+		ani = UP_MUSHROOM_ANI;
+	else
+		ani = SUPERMUSHROOM_ANI;
+	animation_set->at(ani)->Render(x, y);
+	//RenderBoundingBox();
+}
 
 void CSuperMushroom::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {

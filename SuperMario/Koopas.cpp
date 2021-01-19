@@ -273,7 +273,7 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 						vx = -vx;
 					}
 				}
-				else if (e->obj->GetType() == Type::KOOPAS)
+				else if (e->obj->GetType() == Type::KOOPAS && e->obj->GetState()== KOOPAS_STATE_WALKING && state == KOOPAS_STATE_WALKING)
 				{
 					CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 					if (e->nx != 0)

@@ -33,7 +33,12 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 	if (state == STATE_DESTROYED || state == EState::DIE_BY_ATTACK)
 		left = top = right = bottom = 0;
 	else if (state == EState::DIE_BY_CRUSH)
+	{
 		top = y + 7;
+		left = x;
+		right = x + GOOMBA_BBOX_WIDTH;
+		bottom = y + GOOMBA_BBOX_HEIGHT;
+	}
 	else if (Gtype == GoombaType::red_para)
 	{
 		top = y;
@@ -167,11 +172,8 @@ void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 			}
 			else if (e->obj->GetType() == Type::KOOPAS)
 			{
-				CKoopas* koopas = dynamic_cast<CKoopas*>(e->obj);
 				if (e->nx != 0)
-				{
 					x += dx;
-				}
 			}
 		}
 	}
@@ -199,7 +201,7 @@ void CGoomba::Render()
 
 	animation_set->at(ani)->Render(x, y);
 
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)

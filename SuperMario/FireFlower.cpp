@@ -17,6 +17,12 @@ CFireFlower::~CFireFlower()
 }
 
 
+void CFireFlower::Render()
+{
+	animation_set->at(itemID)->Render(x, y);
+	//RenderBoundingBox();
+}
+
 void CFireFlower::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CItem::Update(dt, coObjects);

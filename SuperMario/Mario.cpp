@@ -1359,6 +1359,9 @@ void CMario::CollideWithItem(vector<LPGAMEOBJECT>* coItem)
 				CItem* item = dynamic_cast<CItem*>(coItem->at(i));
 				switch (item->GetItemID())
 				{
+				case ItemID::upMushroom:
+					this->AddLife();
+					break;
 				case ItemID::superLeaf:
 					this->SetPosition(x, y - 1.0f);
 					this->SetLevel(Level::Raccoon);

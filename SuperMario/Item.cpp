@@ -15,15 +15,6 @@ CItem::~CItem()
 void CItem::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 {
 	CGameObject::Update(dt);
-	//if (disapperTimer->IsTimeUp())
-	//	SetState(STATE_DESTROYED);
-}
-
-void CItem::Render()
-{
-	//animation
-	animation_set->at(itemID)->Render(x, y);
-	//RenderBoundingBox();
 }
 
 void CItem::GetBoundingBox(float& l, float& t, float& r, float& b)
@@ -38,6 +29,3 @@ void CItem::GetBoundingBox(float& l, float& t, float& r, float& b)
 		b = y + BRICK_BBOX_HEIGHT;
 	}	
 }
-
-
-//state_destroyed

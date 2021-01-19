@@ -371,11 +371,18 @@ void CPlayScene::Update(ULONGLONG dt)
 				brick->diddropItem = false;
 				//RANDOM ITEM
 				CItem* item;
-				if(player->GetLevel()>=Level::Big)
-					item = new CSuperLeaf({ brick->x, brick->y - 16 });
-				else 
-					item = new CSuperMushroom({ brick->x, brick->y - 16 });
-				if(item!=NULL)
+				if (brick->containItem == 4)
+				{
+					item = new CSuperMushroom({ brick->x, brick->y - 16 }, ItemID::upMushroom);
+				}
+				else
+				{
+					if (player->GetLevel() >= Level::Big)
+						item = new CSuperLeaf({ brick->x, brick->y - 16 });
+					else
+						item = new CSuperMushroom({ brick->x, brick->y - 16 }, ItemID::superMushroom);
+				}
+				if (item != NULL)
 					listItem.push_back(item);
 			}
 		}

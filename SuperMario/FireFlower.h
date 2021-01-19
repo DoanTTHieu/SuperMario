@@ -9,5 +9,5 @@ public:
 	~CFireFlower();
 
 	virtual void Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects);
-
+	virtual void Render();
 };
