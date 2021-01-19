@@ -16,7 +16,6 @@ class CItem :
 	public CGameObject {
 public:
 	int itemID;
-public:
 	CItem();
 	~CItem();
 	
