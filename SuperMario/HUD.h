@@ -9,7 +9,7 @@
 #include "Text.h"
 #include "SpeedBar.h"
 
-#define MARGINLEFT 10
+
 
 class CHUD
 {

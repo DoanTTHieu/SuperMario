@@ -15,6 +15,7 @@
 #include "LastItem.h"
 #include "P_Switch.h"
 #include "Lift.h"
+#include "BoomerangBrother.h"
 
 using namespace std;
 
@@ -185,6 +186,9 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case OBJECT_TYPE_LIFT:
 		obj = new CLift();
 		break;
+	case OBJECT_TYPE_BOOMERANG_BROTHER:
+		obj = new CBoomerangBrother(x,y);
+		break;
 	case OBJECT_TYPE_VENUS_FIRE_TRAP:
 	{
 		int t = atoi(tokens[4].c_str());
@@ -253,6 +257,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 	case Type::KOOPAS:
 	case Type::GOOMBA:
 	case Type::LIFT:
+	case Type::BOOMERANG_BROTHER:
 		listObj.push_back(obj);
 		break;
 	case Type::COIN:
@@ -438,7 +443,7 @@ void CPlayScene::Update(ULONGLONG dt)
 			CPlant* plant = dynamic_cast<CPlant*>(listObj[i]);
 			plant->Update(dt, &listObj, { l,t,r,b });
 		}
-		if (listObj[i]->GetType() == Type::P_SWITCH)
+		else if (listObj[i]->GetType() == Type::P_SWITCH)
 		{
 			CP_Switch* PSwitch = dynamic_cast<CP_Switch*>(listObj[i]);
 			PSwitch->Update(dt, &listObj, &listItem);
@@ -455,7 +460,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	player->Update(dt, &listObj, &listItem, &listEffect);
 
 
-	//them dan cho mario
+	//them effect dan cho mario
 	for (size_t i = 0; i < player->listBullet.size(); i++)
 	{
 		if (player->listBullet[i]->GetState() == STATE_DESTROYED)

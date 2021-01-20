@@ -48,7 +48,7 @@ void CEffect::Render()
 		break;
 	}
 	animation_set->at(ani)->Render(x, y);
-	if (animation_set->at(ani)->GetCurrentFrame() == 1)
+	if (effectType == EffectType::text && animation_set->at(ani)->GetCurrentFrame() == 1)
 	{
 		int n = CMario::GetInstance()->cards.size();
 		aniCard->at(CMario::GetInstance()->cards.at(n-1))->Render(x + 128, y + 24);

@@ -53,19 +53,13 @@ void CGoomba::GetBoundingBox(float& left, float& top, float& right, float& botto
 		right = x + GOOMBA_BBOX_WIDTH;
 		bottom = y + GOOMBA_BBOX_HEIGHT;
 	}
-
-		
 }
 
 void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
-{
-
-	////
-	//// TO-DO: make sure Goomba can interact with the world and to each of them too!
-	//// 
-
+{ 
 	CGameObject::Update(dt);
 	vy += GOOMBA_GRAVITY  * dt;
+	//ani khi chet
 	if (state == EState::DIE_BY_CRUSH && dieByCrushTimer->IsTimeUp())
 	{
 		dieByCrushTimer->Stop();
@@ -89,9 +83,7 @@ void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 		}
 		if (state == RED_PARA_STATE_JUMP_HIGH && isOnGround)
 			SetState(EState::WALK);
-
 	}
-
 
 	vector<LPCOLLISIONEVENT> coEvents;
 	vector<LPCOLLISIONEVENT> coEventsResult;
@@ -110,10 +102,8 @@ void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 		float rdx = 0;
 		float rdy = 0;
 
-		// TODO: This is a very ugly designed function!!!!
 		FilterCollision(coEvents, coEventsResult, min_tx, min_ty, nx, ny, rdx, rdy);
 
-		// block every object first!
 		y += min_ty * dy + ny * 0.4f;
 		x += min_tx * dx + nx * 0.25f;
 
@@ -128,12 +118,8 @@ void CGoomba::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj)
 			}
 		}
 
-		//
-		// Collision logic with other objects
-		//
 		for (UINT i = 0; i < coEventsResult.size(); i++)
 		{
-			//DebugOut(L"EVENT: %d\n", coEventsResult.size());
 			LPCOLLISIONEVENT e = coEventsResult[i];
 
 			if (e->obj->GetType() == Type::GROUND)
@@ -201,7 +187,7 @@ void CGoomba::Render()
 
 	animation_set->at(ani)->Render(x, y);
 
-	//RenderBoundingBox();
+	RenderBoundingBox();
 }
 
 void CGoomba::SetState(int state)

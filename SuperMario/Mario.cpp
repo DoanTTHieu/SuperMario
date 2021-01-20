@@ -20,6 +20,7 @@
 #include "CoinEffect.h"
 #include "ScoreEffect.h"
 #include "P_Switch.h"
+#include "BoomerangBrother.h"
 
 CMario* CMario::__instance = nullptr;
 
@@ -314,6 +315,55 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 				}
 			}
 			break;
+
+		case Type::BOOMERANG_BROTHER:
+		{
+			CBoomerangBrother* brother = dynamic_cast<CBoomerangBrother*>(coObj->at(i));
+
+			for (size_t i = 0; i < brother->listBoomerang.size(); i++)
+			{
+				if (untouchable == 0 && GetState() != MState::Die)
+				{
+					if (this->IsAABB(brother->listBoomerang[i]))
+					{
+						this->UpdateLevel();
+						brother->listBoomerang[i]->SetState(STATE_DESTROYED);
+					}
+				}
+			}
+
+			for (size_t i = 0; i < brother->listBoomerang.size(); i++)
+				if (brother->listBoomerang[i]->GetState() == STATE_DESTROYED || brother->listBoomerang[i]->IsOutOfCamera())
+				{
+					brother->listBoomerang.erase(brother->listBoomerang.begin() + i);
+					i--;
+				}
+
+			if (untouchable == 0 && GetState() != MState::Die)
+			{
+				if (this->IsCollidingWithObjectNy_1(coObj->at(i)))
+				{
+					if (coObj->at(i)->GetState() != STATE_DESTROYED && coObj->at(i)->GetState() != EState::DIE_BY_CRUSH && coObj->at(i)->GetState() != EState::DIE_BY_ATTACK)
+					{
+						brother->DieByCrush();
+						AddScore(100);
+						float bx, by;
+						brother->GetPosition(bx, by);
+						CGameObject* effect = new CScoreEffect({ bx, by }, 100);
+						listEffect->push_back(effect);
+						vy = -0.2f;
+					}
+				}
+				else
+				{
+					if (this->IsAABB(coObj->at(i)))
+					{
+						UpdateLevel();
+					}
+				}
+			}
+		}
+			break;
 		case Type::KOOPAS:
 			if (untouchable == 0 && GetState() != MState::Die)
 			{
@@ -424,7 +474,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 
 		// block every object first!
 		x += min_tx * dx + nx * 0.4f;
-		y += min_ty * dy + ny * 0.25f;
+		y += min_ty * dy + ny * 0.15f;
 
 		if (ny == -1)
 		{
@@ -531,7 +581,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 								//else
 									//brick->SetState(STATE_DESTROYED);
 							}
-							if (brick->containItem == 2)
+							if (brick->containItem == CONTAIN_COIN)
 							{
 								AddScore(100);
 								AddCoin();

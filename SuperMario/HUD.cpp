@@ -27,24 +27,24 @@ char* IntToChar(int value, int len = 10)
 
 void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime, int stage)
 {
-	background->Draw(position.x, position.y+192);
+	background->Draw(position.x, position.y + board_margin_y);
 
-	board->at(0)->Render(position.x + MARGINLEFT, position.y + 192/*218*//*+ 432*/);
+	board->at(0)->Render(position.x + MARGINLEFT, position.y + board_margin_y);
 
 	// scores
-	text.Render(IntToChar(player->GetScore(), 7), { position.x+100 + MARGINLEFT, /*448*/ position.y+207 });
+	text.Render(IntToChar(player->GetScore(), 7), { position.x + score_margin_x, position.y + score_margin_y });
 
 	// money
 	int coin = player->GetCoin();
 	string strCoin = to_string(coin);
 	int length = strCoin.length();
-	text.Render(IntToChar(player->GetCoin(), length), { position.x+140 + MARGINLEFT, position.y + 199 /*439*/ });
+	text.Render(IntToChar(player->GetCoin(), length), { position.x+ time_margin_x, position.y + money_margin_y });
 
 	// player's life
-	text.Render(IntToChar(player->GetLife(), 1), { position.x+ 38 + MARGINLEFT, position.y + 207/*448*/});
+	text.Render(IntToChar(player->GetLife(), 1), { position.x+ left_margin_x, position.y + score_margin_y });
 
 	// time
-	text.Render(IntToChar(remainingTime, 3), { position.x + 141 + MARGINLEFT, position.y + 207 });
+	text.Render(IntToChar(remainingTime, 3), { position.x + time_margin_x, position.y + score_margin_y });
 
 	// item
 	for (size_t i = 0; i < player->cards.size(); i++)
@@ -52,20 +52,20 @@ void CHUD::Render(D3DXVECTOR2 position, CMario * player, int remainingTime, int 
 		switch (i)
 		{
 		case 0:
-			card->at(player->cards.at(i))->Render(position.x + 141 + MARGINLEFT + 23, position.y + 198);
+			card->at(player->cards.at(i))->Render(position.x + card_1_margin_x, position.y + card_margin_y);
 			break;
 		case 1:
-			card->at(player->cards.at(i))->Render(position.x + 141 + MARGINLEFT + 47, position.y + 198);
+			card->at(player->cards.at(i))->Render(position.x + card_2_margin_x, position.y + card_margin_y);
 			break;
 		case 2:
-			card->at(player->cards.at(i))->Render(position.x + 141 + MARGINLEFT + 71, position.y + 198);
+			card->at(player->cards.at(i))->Render(position.x + card_3_margin_x, position.y + card_margin_y);
 			break;
 		}
 	}
 	//world map
-	text.Render(IntToChar(stage, 1), { position.x + 38 + MARGINLEFT, position.y + 199 });
+	text.Render(IntToChar(1, 1), { position.x + left_margin_x, position.y + money_margin_y });
 
 	//speedbar
-	speedBar->Render(position.x+51 + MARGINLEFT, position.y + 199, player->vx);
+	speedBar->Render(position.x+ speedbar_margin_x, position.y + money_margin_y, player->vx);
 }
 

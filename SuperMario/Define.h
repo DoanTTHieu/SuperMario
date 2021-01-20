@@ -29,6 +29,7 @@ enum Type
 	KOOPAS = 07,
 	PIRANHA_PLANT = 8,
 	VENUS_FIRE_TRAP = 9,
+	BOOMERANG_BROTHER = 19,
 
 	//item and coin
 	ITEM = 10,
@@ -139,10 +140,12 @@ enum WM_Obj_Type
 #define OBJECT_TYPE_LIFT			5
 
 //enemy
-#define OBJECT_TYPE_GOOMBA			11
-#define OBJECT_TYPE_KOOPAS			12
-#define OBJECT_TYPE_VENUS_FIRE_TRAP	13
-#define OBJECT_TYPE_PIRANHA_PLANT	14
+#define OBJECT_TYPE_GOOMBA				11
+#define OBJECT_TYPE_KOOPAS				12
+#define OBJECT_TYPE_VENUS_FIRE_TRAP		13
+#define OBJECT_TYPE_PIRANHA_PLANT		14
+#define OBJECT_TYPE_BOOMERANG_BROTHER	15
+
 //
 #define OBJECT_TYPE_PORTAL			50
 #define OBJECT_MAP_POINT			51
@@ -303,3 +306,35 @@ enum WM_Obj_Type
 #define LIFT_STATE_GO_DOWN	1
 
 #define LIFT_SPEED_X	0.04f
+
+
+//================================  HUD ============================
+#define MARGINLEFT			10
+
+#define board_margin_y		192
+
+#define score_margin_x		110
+#define score_margin_y		207
+
+#define time_margin_x		150
+
+#define money_margin_y		199
+
+#define speedbar_margin_x	61
+
+#define left_margin_x		48
+
+#define card_1_margin_x		174
+#define card_2_margin_x		199
+#define card_3_margin_x		222
+#define card_margin_y		198
+
+
+//BOOMERANG
+
+#define BOOMERANG_BBOX_WIDTH	16
+#define BOOMERANG_BBOX_HEIGHT	16
+
+#define BOOMERANG_GRAVITY		0.0008f
+#define BOOMERANG_SPEED_X		0.1f
+#define BOOMERANG_SPEED_Y		0.15f
