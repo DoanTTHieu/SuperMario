@@ -178,6 +178,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] GOOMBA object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_COIN:
@@ -196,6 +197,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] COIN object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_LAST_ITEM:
@@ -214,6 +216,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] LAST_ITEM object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_BRICK: 
@@ -235,6 +238,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] BRICK object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_LIFT:
@@ -253,6 +257,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] LIFT object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_BOOMERANG_BROTHER:
@@ -271,6 +276,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] _BROTHER object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_VENUS_FIRE_TRAP:
@@ -290,6 +296,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] FIRE_TRAP object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PIRANHA_PLANT:
@@ -308,6 +315,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] _PIRANHA_PLANT object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_KOOPAS: 
@@ -327,6 +335,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] KOOPAS object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PORTAL:
@@ -350,6 +359,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] PORTAL object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_GROUND:
@@ -371,6 +381,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] GROUND object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PIPE:
@@ -394,6 +405,7 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
+		DebugOut(L"[INFO] PIPE object created!\n");
 		break;
 	}
 	default:
@@ -431,20 +443,23 @@ void CPlayScene::_ParseSection_TILE_MAP(string line)
 	float hidden_end = strtof(tokens[12].c_str(), NULL);
 
 	map = new CTileMap(ID, FilePath_tex.c_str(), FilePath_data.c_str(), Map_height, Map_width, Num_row_read, Num_col_read, Tile_width, Tile_height, main_start, main_end, hidden_start, hidden_end);
+	if (map)
+	{
+		gridMoving = new CGrid(map->GetNumsCols(), map->GetNumsRows(), CELL_WIDTH, CELL_HEIGHT);
+		gridStatic = new CGrid(map->GetNumsCols(), map->GetNumsRows(), CELL_WIDTH, CELL_HEIGHT);
+		DebugOut(L"create GRID\n");
+	}
 	DebugOut(L"[INFO] DONE LOAD MAP! \n");
 }
 //load object/ textures/ sprites -> animations
 void CPlayScene::Load()
 {
-
-
 	if (playTimer)
 		playTimer->Reset();
 	DebugOut(L"[INFO] Start loading scene resources from : %s \n", sceneFilePath);
 
-	ifstream f, fs;
+	ifstream f;
 	f.open(sceneFilePath);
-	//fs.open("out.txt");
 
 	// current resource section flag
 	int section = SCENE_SECTION_UNKNOWN;
@@ -491,12 +506,7 @@ void CPlayScene::Load()
 	f.close();
 
 	CTextures::GetInstance()->Add(ID_TEX_BBOX, L"textures\\bbox.png", D3DCOLOR_XRGB(255, 255, 255));
-	if (map)
-	{
-		gridMoving = new CGrid(map->GetNumsCols(), map->GetNumsRows());
-		gridStatic = new CGrid(map->GetNumsCols(), map->GetNumsRows());
-	}
-
+	
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
 
@@ -539,6 +549,8 @@ void CPlayScene::Update(ULONGLONG dt)
 					listItem.push_back(item);
 			}
 		}
+		//if (listObj[i]->GetType() == Type::COIN|| listObj[i]->GetType() == Type::LAST_ITEM)
+		//	listItem.push_back(listObj[i]);
 	}
 
 	//xoa ra khoi list object
@@ -679,6 +691,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	// skip the rest if scene was already unloaded (Mario::Update might trigger PlayScene::Unload)
 	if (player == NULL) return;
 
+#pragma region Xu ly camera va ngan mario ko roi ra khoi map
 	// Update camera to follow mario
 	float cx, cy;
 	player->GetPosition(cx, cy);
@@ -713,7 +726,8 @@ void CPlayScene::Update(ULONGLONG dt)
 		if (!player->isAutoGo && player->x > map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2)
 			player->SetPosition(map->hiddenEnd_x - MARIO_BIG_BBOX_WIDTH * 2, cy);
 	}
-	
+#pragma endregion
+
 	//effect endscene
 	if (player->isAutoGo && player->IsOutOfCamera())
 	{
@@ -725,12 +739,12 @@ void CPlayScene::Update(ULONGLONG dt)
 		listEffect.push_back(effect);
 	}
 
+	gridMoving->UpdateGrid(listMoving);
 	//chuyen scene
 	if(player->canSwitchScene)
 		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
 
-	gridMoving->UpdateGrid(listMoving);
-
+	
 }
 
 void CPlayScene::Render()
@@ -780,6 +794,7 @@ void CPlayScene::Unload()
 
 void CPlayScene::GetObjectGrid()
 {
+	listItem.clear();
 	listObj.clear();
 	listGet.clear();
 
@@ -788,7 +803,10 @@ void CPlayScene::GetObjectGrid()
 
 	for (UINT i = 0; i < listGet.size(); i++)
 	{
-		listObj.push_back(listGet[i]);
+		if (listGet[i]->GetType() == Type::COIN|| listGet[i]->GetType() == Type::LAST_ITEM)
+			listItem.push_back(listGet[i]);
+		else
+			listObj.push_back(listGet[i]);
 	}
 }
 

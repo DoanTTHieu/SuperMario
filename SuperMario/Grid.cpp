@@ -61,9 +61,8 @@ void CGrid::GetObjFromGrid(vector<LPGAMEOBJECT>& list)
 {
 	int firstCol = (int)(CGame::GetInstance()->GetCamPosX() / (cell_width * 16));
 	int lastCol = ceil((CGame::GetInstance()->GetCamPosX() + SCREEN_WIDTH) / (cell_width * 16));
-	int totalRow = this->map_height / cell_height;
 
-	for (int i = 0; i < totalRow; i++)
+	for (int i = 0; i < nums_row; i++)
 	{
 		for (int j = firstCol; j < lastCol; j++)
 		{
