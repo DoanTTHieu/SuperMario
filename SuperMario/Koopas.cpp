@@ -144,8 +144,14 @@ void CKoopas::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 			}
 		}
 		
-		if(Ktype != KoopaType::Red_paratroopa)
-			vy += KOOPA_GRAVITY * dt;
+		if (GetState() == KOOPAS_ANI_DIE_MOVE)
+			vy += KOOPA_GRAVITY*10 * dt;
+		else
+		{
+			if (Ktype != KoopaType::Red_paratroopa)
+				vy += KOOPA_GRAVITY * dt;
+		}
+
 		if (Ktype == KoopaType::Red_paratroopa && GetState() == KOOPAS_STATE_WALKING && y < (start_y - KOOPAS_LIMIT_Y))
 		{
 			y = start_y - KOOPAS_LIMIT_Y +2;

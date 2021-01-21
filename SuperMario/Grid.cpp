@@ -34,6 +34,9 @@ void CGrid::UpdateGrid(vector<LPGAMEOBJECT> list)
 	{
 		float l, t, r, b;
 		list[i]->GetBoundingBox(l, t, r, b);
+		if (b > (map_height * 16) || l<0 || r>(map_width * 16))
+			list[i]->SetState(STATE_DESTROYED);
+
 		int top = int(t / (cell_height * 16));
 		int bot = ceil(b / (cell_height * 16));
 		int left = int(l / (cell_width * 16));
