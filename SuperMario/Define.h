@@ -3,12 +3,16 @@
 //GAME
 #define SCREEN_WIDTH 272
 #define SCREEN_HEIGHT 256
+
+#define CELL_WIDTH		8
+#define CELL_HEIGHT		6
 //#define SCREEN_WIDTH 1500
 ////#define SCREEN_HEIGHT 600
 //#define SCREEN_HEIGHT 900
 #define KEYBOARD_BUFFER_SIZE 1024
 
 #define ID_SCENE_WORLD_MAP	4
+#define ID_SCENE_INTRO		3
 #define ID_SCENE_1			1
 #define ID_SCENE_4			2
 

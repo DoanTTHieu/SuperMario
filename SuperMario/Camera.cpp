@@ -54,4 +54,4 @@ CCamera* CCamera::GetInstance()
 		__instance = new CCamera();
 
 	return __instance;
-}
+ }

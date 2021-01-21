@@ -16,7 +16,7 @@
 #include "SuperLeaf.h"
 #include "HUD.h"
 #include "Camera.h"
-
+#include "Grid.h"
 class CPlayScene : public CScene
 {
 protected:
@@ -25,13 +25,21 @@ protected:
 	LPCAMERA cam = nullptr;
 	LPHUD hud;
 
+	LPGRIG gridMoving;
+	LPGRIG gridStatic;
+
 	CTimer* playTimer = new CTimer(PLAY_TIME * MINISEC_PER_SEC);
 	int remainingTime=0;
 
-	vector<CGameObject*> listObj;
-	vector<CGameObject*> listEnemy;
-	vector<CGameObject*> listItem;
-	vector<CGameObject*> listEffect;
+	vector<LPGAMEOBJECT> listObj;
+
+	vector<LPGAMEOBJECT> listItem;
+	vector<LPGAMEOBJECT> listEffect;
+	
+	vector<LPGAMEOBJECT> listMoving;
+	vector<LPGAMEOBJECT> listStatic;
+	
+	vector<LPGAMEOBJECT> listGet;
 
 	void _ParseSection_TEXTURES(string line);
 	void _ParseSection_SPRITES(string line);
@@ -49,6 +57,7 @@ public:
 	virtual void Update(ULONGLONG dt);
 	virtual void Render();
 	virtual void Unload();
+	void GetObjectGrid();
 
 	CMario* GetPlayer() { return player; }
 
