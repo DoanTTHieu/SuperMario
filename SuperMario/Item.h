@@ -1,9 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Timer.h"
-
-#define ITEM_GRAVITY			0.0003f
-#define ITEM_DISAPPEAR_TIME		5000
+#include "Define.h"
 
 enum ItemID
 {

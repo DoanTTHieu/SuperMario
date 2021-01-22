@@ -3,10 +3,6 @@
 # include "Define.h"
 #include "Utils.h"
 
-#define PIECE_GRAVITY		0.0008f
-#define PIECE_SPEED_X		0.03f
-#define PIECE_SPEED_Y		0.1f
-
 class CBronzeBrickPiece : public CGameObject
 {
 public:

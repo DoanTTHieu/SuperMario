@@ -2,8 +2,8 @@
 #include"GameObject.h"
 #include"Game.h"
 #include"Utils.h"
-#define CELL_WIDTH	8
-#define CELL_HEIGHT 6
+#include "Define.h"
+
 class CGrid
 {
 	int map_width;

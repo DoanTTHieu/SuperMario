@@ -4,13 +4,6 @@
 #include "Timer.h"
 #include "Brick.h"
 
-#define P_SWITCH_ANI_ON			0
-#define P_SWITCH_ANI_OFF		1
-#define STATE_BEING_TOSSED		0
-#define STATE_ON				1
-#define STATE_OFF				2
-
-#define TIME_CHANGE			12000
 class CP_Switch : public CGameObject
 {
 

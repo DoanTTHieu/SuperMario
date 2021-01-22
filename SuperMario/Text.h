@@ -6,17 +6,7 @@
 #include "Game.h"
 #include "Utils.h"
 #include "map"
-
-# define No_0 1110
-# define No_1 1111
-# define No_2 1112
-# define No_3 1113
-# define No_4 1114
-# define No_5 1115
-# define No_6 1116
-# define No_7 1117
-# define No_8 1118
-# define No_9 1119
+#include "Define.h"
 
 class CText
 {

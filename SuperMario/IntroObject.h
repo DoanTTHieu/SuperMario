@@ -2,9 +2,6 @@
 #include "GameObject.h"
 #include "Define.h"
 
-#define CURTAIN_ANI_OPEN			0
-#define CURTAIN_ANI_CLOSE			1
-
 class CIntroObject :public CGameObject
 {
 public:

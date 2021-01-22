@@ -3,11 +3,6 @@
 #include "Define.h"
 #include "Timer.h"
 
-#define STATE_HIDDEN		5
-#define STATE_ATTACK		6
-#define STATE_MOVING_UP		7
-#define STATE_MOVING_DOWN	8
-
 class CPlant : public CEnemy
 {
 

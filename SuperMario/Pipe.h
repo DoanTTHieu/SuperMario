@@ -2,14 +2,6 @@
 #include "GameObject.h"
 #include "Define.h"
 
-#define PIPE_ANI_LONG		0
-#define PIPE_ANI_SHORT		1
-#define BLACK_ANI_SHORT		2
-
-#define PIPE_BBOX_WIDTH			32
-#define PIPE_BBOX_HEIGHT_LONG	48
-#define PIPE_BBOX_HEIGHT_SHORT	32
-
 enum PipeType {
 	pipe_Long = 1,
 	pipe_Short = 2,

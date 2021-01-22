@@ -2,7 +2,6 @@
 #include "GameObject.h"
 #include "Define.h"
 
-#define KILL_ENEMY	200
 class CTail :
 	public CGameObject
 {

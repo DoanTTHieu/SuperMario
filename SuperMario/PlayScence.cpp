@@ -799,8 +799,8 @@ void CPlayScene::GetObjectGrid()
 	listObj.clear();
 	listGet.clear();
 
-	gridStatic->GetObjFromGrid(listGet);
 	gridMoving->GetObjFromGrid(listGet);
+	gridStatic->GetObjFromGrid(listGet);
 
 	for (UINT i = 0; i < listGet.size(); i++)
 	{

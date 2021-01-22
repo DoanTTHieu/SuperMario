@@ -2,9 +2,6 @@
 #include "GameObject.h"
 #include "Define.h"
 
-#define BOOMERANG_LIMIT				128
-#define BOOMERANG_STATE_RETURN		1
-#define BOOMERANG_STATE_NORMAL		2
 class CBoomerang :
 	public CGameObject
 {

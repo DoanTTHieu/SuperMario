@@ -2,9 +2,6 @@
 #include "GameObject.h"
 #include "Define.h"
 
-//#define BRICK_BBOX_WIDTH  16
-//#define BRICK_BBOX_HEIGHT 16
-
 class CGround :public CGameObject
 {
 	int width;

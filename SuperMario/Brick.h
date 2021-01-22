@@ -2,17 +2,6 @@
 #include "GameObject.h"
 # include "Define.h"
 
-//#define BRICK_BBOX_WIDTH  16
-//#define BRICK_BBOX_HEIGHT 15
-
-#define BRICK_ANI_NORMAL		0
-#define BRICK_ANI_BROKEN		1
-#define BRICK_ANI_HIDDEN		2
-#define STATE_BEING_TOSSED		0
-#define STATE_NORMAL			1
-#define STATE_BROKEN			2
-#define BRICK_STATE_HIDDEN		3
-
 class CBrick : public CGameObject
 {
 

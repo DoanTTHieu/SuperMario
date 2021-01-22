@@ -1,10 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Timer.h"
-
-
-#define COIN_SPEED_Y	0.08
-#define TIME_SCORE_EFFECT 400
+#include "Define.h"
 
 class CScoreEffect :
 	public CGameObject

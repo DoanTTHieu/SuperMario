@@ -2,8 +2,6 @@
 #include <d3dx9math.h>
 #include "GameObject.h"
 
-#define POINT_WIDTH		16
-#define POINT_HEIGHT	16
 class CMapPoint : public CGameObject
 {
 	bool hasPortal;

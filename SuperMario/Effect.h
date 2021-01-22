@@ -3,12 +3,6 @@
 #include "Timer.h"
 #include "Animations.h"
 
-#define ANI_FIREBALL_EFFECT					0
-#define ANI_BRONZE_BRICK_BROKEN_EFFECT		1
-
-
-#define EFFECT_TIME		120
-#define EFFECT_TIMER	3000
 enum EffectType
 {
 	fireBall = 01,

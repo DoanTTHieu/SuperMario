@@ -1,9 +1,6 @@
 #pragma once
 #include "Item.h"
 
-#define SUPERMUSHROOM_ANI	0
-#define UP_MUSHROOM_ANI		5
-
 class CSuperMushroom :
 	public CItem
 {

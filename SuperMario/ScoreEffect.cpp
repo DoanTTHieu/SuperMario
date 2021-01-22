@@ -7,7 +7,7 @@ CScoreEffect::CScoreEffect(D3DXVECTOR2 position, int score)
 	x = position.x;
 	y = position.y;
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(42));
-	vy = -COIN_SPEED_Y;
+	vy = -EFFECT_COIN_SPEED_Y;
 	effectTimer->Start();
 }
 

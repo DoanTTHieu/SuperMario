@@ -2,9 +2,6 @@
 #include "GameObject.h"
 #include "Timer.h"
 
-
-#define COIN_SPEED_Y	0.2
-//#define TIME_DEFAULT 200
 class CCoinEffect :
 	public CGameObject
 {
