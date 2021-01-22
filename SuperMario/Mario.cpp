@@ -678,7 +678,9 @@ void CMario::Render()
 		//con lua
 		if (GetLevel() == Level::Fire)
 		{
-			if (isFalling)
+			if (isAutoGo)
+				ani = FIRE_ANI_WALK_RIGHT;
+			else if (isFalling)
 			{
 				if (nx > 0)
 					ani = FIRE_ANI_FALL_RIGHT;
@@ -823,7 +825,9 @@ void CMario::Render()
 		//con raccoon
 		else if (GetLevel() == Level::Raccoon)
 		{
-			if (isFalling)
+			if (isAutoGo)
+				ani = RACCOON_ANI_WALK_RIGHT;
+			else if (isFalling)
 			{
 				if (isWaggingTail)
 				{
@@ -1004,7 +1008,9 @@ void CMario::Render()
 		//con lon
 		else if (GetLevel() == Level::Big)
 		{
-			if (isFalling)
+			if (isAutoGo)
+				ani = MARIO_ANI_WALK_RIGHT;
+			else if (isFalling)
 			{
 				if (nx > 0)
 					ani = MARIO_ANI_FALL_RIGHT;
@@ -1133,7 +1139,9 @@ void CMario::Render()
 		//con nho
 		else
 		{
-			if (isFalling)
+			if (isAutoGo)
+				ani = mario_ANI_WALK_RIGHT;
+			else if (isFalling)
 			{
 				if (nx > 0)
 					ani = mario_ANI_JUMP_RIGHT;
