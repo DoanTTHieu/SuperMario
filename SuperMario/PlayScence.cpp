@@ -724,6 +724,9 @@ void CPlayScene::Update(ULONGLONG dt)
 	{
 		if (this->id == ID_SCENE_4)
 			cam->UnlockUpdateVx();
+		if (player->keyLockCam)
+			cam->LockUpdateVx();
+
 		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 
 		//xet mario khong ra khoi MAP CHINH
@@ -789,7 +792,11 @@ void CPlayScene::Render()
 {
 	if (map)map->Draw();
 	for (size_t i = 0; i < listObj.size(); i++)
-		if (listObj.at(i) != NULL)
+		/*if (listObj.at(i) != NULL)*/
+		if(listObj.at(i)->GetType()!=Type::VENUS_FIRE_BALL || listObj.at(i)->GetType() != Type::LIFT || listObj.at(i)->GetType() != Type::BOOMERANG_BROTHER)
+			listObj[i]->Render();
+	for (size_t i = 0; i < listObj.size(); i++)
+		if (listObj.at(i)->GetType() == Type::VENUS_FIRE_BALL || listObj.at(i)->GetType() == Type::LIFT|| listObj.at(i)->GetType() == Type::BOOMERANG_BROTHER)
 			listObj[i]->Render();
 	for (size_t i = 0; i < listItem.size(); i++)
 		if (listItem.at(i) != NULL)
@@ -877,6 +884,9 @@ void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)
 	case DIK_4:
 		mario->FireMario();
 		CGame::GetInstance()->cam_x = 0;
+		break;
+	case DIK_SPACE:
+		mario->keyLockCam = !mario->keyLockCam;
 		break;
 	case DIK_A:
 		if (!mario->isAttack)

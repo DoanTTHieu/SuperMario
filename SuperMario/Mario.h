@@ -73,6 +73,7 @@ public:
 	bool canGoThroughPipe_Up;
 	bool canGoThroughPipe_Down;
 
+	bool keyLockCam = false;
 	LPGAMEOBJECT colidingGround;
 
 	CTimer* flyTimer = new CTimer(TIME_FLY);
