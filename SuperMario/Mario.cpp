@@ -128,7 +128,7 @@ void CMario::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObj, vector<LPGAMEOBJE
 {
 	// Calculate dx, dy 
 	CGameObject::Update(dt);
-	DebugOut(L"mario: %f\n", x);
+	//DebugOut(L"mario: %f\n", x);
 	// Simple fall down
 	vy += MARIO_GRAVITY * dt;
 

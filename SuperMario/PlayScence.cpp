@@ -197,7 +197,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] COIN object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_LAST_ITEM:
@@ -216,7 +215,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] LAST_ITEM object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_BRICK: 
@@ -238,7 +236,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] BRICK object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_LIFT:
@@ -257,7 +254,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] LIFT object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_BOOMERANG_BROTHER:
@@ -276,7 +272,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] _BROTHER object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_VENUS_FIRE_TRAP:
@@ -296,7 +291,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] FIRE_TRAP object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PIRANHA_PLANT:
@@ -315,7 +309,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] _PIRANHA_PLANT object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_KOOPAS: 
@@ -335,7 +328,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] KOOPAS object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PORTAL:
@@ -359,7 +351,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] PORTAL object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_GROUND:
@@ -381,7 +372,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] GROUND object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_PIPE:
@@ -549,8 +539,6 @@ void CPlayScene::Update(ULONGLONG dt)
 					listItem.push_back(item);
 			}
 		}
-		//if (listObj[i]->GetType() == Type::COIN|| listObj[i]->GetType() == Type::LAST_ITEM)
-		//	listItem.push_back(listObj[i]);
 	}
 
 	//xoa ra khoi list object
@@ -620,6 +608,19 @@ void CPlayScene::Update(ULONGLONG dt)
 	////mario
 	player->Update(dt, &listObj, &listItem, &listEffect);
 
+	for (size_t i = 0; i < listObj.size(); i++)
+	{
+		if (listObj[i]->GetType() == Type::P_SWITCH)
+		{
+			listStatic.push_back(listObj[i]);
+			gridStatic->pushNewObjIntoGrid(listObj[i]);
+		}
+		if (listObj[i]->GetType() == Type::VENUS_FIRE_BALL)
+		{
+			listMoving.push_back(listObj[i]);
+			gridMoving->pushNewObjIntoGrid(listObj[i]);
+		}
+	}
 
 	//them effect dan cho mario
 	for (size_t i = 0; i < player->listBullet.size(); i++)

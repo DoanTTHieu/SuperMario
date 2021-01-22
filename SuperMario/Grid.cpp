@@ -49,6 +49,21 @@ void CGrid::UpdateGrid(vector<LPGAMEOBJECT> list)
 	}
 }
 
+void CGrid::pushNewObjIntoGrid(LPGAMEOBJECT obj)
+{
+	float t,l,r,b;
+	obj->GetBoundingBox(l, t, r, b);
+	int top = int(t / (cell_height * 16));
+	int bot = ceil(b / (cell_height * 16));
+	int left = int(l / (cell_width * 16));
+	int right = ceil(r / (cell_width * 16));
+
+	if (obj->GetState() != STATE_DESTROYED)
+		for (int row = top; row < bot; row++)
+			for (int col = left; col < right; col++)
+				cells[row][col].push_back(obj);
+}
+
 void CGrid::pushObjIntoGrid(LPGAMEOBJECT obj, int row, int col)
 {
 	cells[row][col].push_back(obj);

@@ -27,6 +27,7 @@ public:
 
 	void GetObjFromGrid(vector<LPGAMEOBJECT>& list);
 	void pushObjIntoGrid(LPGAMEOBJECT obj, int row, int col);
+	void pushNewObjIntoGrid(LPGAMEOBJECT obj);
 };
 typedef CGrid* LPGRIG;
 

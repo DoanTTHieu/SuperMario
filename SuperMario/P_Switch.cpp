@@ -45,7 +45,6 @@ void CP_Switch::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* objects, vector<LPGAM
 {
 	CGameObject::Update(dt);
 	vector<LPGAMEOBJECT> bronzeBricks;
-
 	if (checkTurn)
 	{
 		checkTurn = false;

@@ -137,6 +137,7 @@ void CBullet::Render()
 
 void CBullet::SetState(int state)
 {
+	CGameObject::SetState(state);
 	if (state == STATE_DESTROYED)
 		vx = vy = 0;
 }
