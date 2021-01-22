@@ -731,6 +731,8 @@ void CPlayScene::Update(ULONGLONG dt)
 			player->SetPosition(map->mainStart_x, cy);
 		if (!cam->IsLockUpdateVx() && player->x < cam->GetPositionX())
 			player->SetPosition(cam->GetPositionX(), cy);
+		if (!cam->IsLockUpdateVx() && player->x > cam->GetPositionX() + SCREEN_WIDTH - MARIO_BIG_BBOX_WIDTH)
+			player->SetPosition(cam->GetPositionX() + SCREEN_WIDTH - MARIO_BIG_BBOX_WIDTH, cy);
 		if (!player->isAutoGo && player->x > map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2)
 			player->SetPosition(map->mainEnd_x - MARIO_BIG_BBOX_WIDTH*2, cy);
 	}

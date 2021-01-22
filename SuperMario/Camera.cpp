@@ -21,8 +21,8 @@ void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3D
 	if (!lockUpdateVx)
 	{
 		position.x += CAMERA_SPEED_X * dt;
-		if (position.x < (playerPos.x - width / 2 + 16))
-			position.x = playerPos.x - width / 2 + 16;
+		//if (position.x < (playerPos.x - width / 2 + 16))
+		//	position.x = playerPos.x - width / 2 + 16;
 	}
 	else
 	{

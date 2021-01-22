@@ -336,7 +336,7 @@ enum EState
 #define LIFT_STATE_GO_LEFT	0
 #define LIFT_STATE_GO_DOWN	1
 
-#define LIFT_SPEED_X	0.04f
+#define LIFT_SPEED_X	0.02f
 
 
 //================================  HUD ============================
@@ -476,7 +476,7 @@ enum EState
 
 //CAMERA
 #define HUD_HEIGHT		30
-#define CAMERA_SPEED_X	 0.03f
+#define CAMERA_SPEED_X	 0.02f
 
 //COIN
 #define COIN_SPEED_Y	0.2
