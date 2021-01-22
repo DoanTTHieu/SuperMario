@@ -724,7 +724,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	{
 		if (this->id == ID_SCENE_4)
 			cam->UnlockUpdateVx();
-		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying);
+		cam->Update(dt, { cx,cy }, { 0,0 }, { float(map->mainEnd_x - SCREEN_WIDTH) , float(map->GetMapHeight() - SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 
 		//xet mario khong ra khoi MAP CHINH
 		if (cam->IsLockUpdateVx() && player->x < map->mainStart_x)
@@ -738,7 +738,7 @@ void CPlayScene::Update(ULONGLONG dt)
 	{
 		if (!cam->IsLockUpdateVx())
 			cam->LockUpdateVx();
-		cam->Update(dt, { cx,cy }, { map->hiddenStart_x,0 }, { float(map->hiddenEnd_x/*3360*/ - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying);
+		cam->Update(dt, { cx,cy }, { map->hiddenStart_x,0 }, { float(map->hiddenEnd_x/*3360*/ - SCREEN_WIDTH) , float(map->GetMapHeight()- SCREEN_HEIGHT + 64) }, player->isFlying, player->isOnGround);
 		
 		//xet mario khong ra khoi MAP AN
 		if (player->x < map->hiddenStart_x)

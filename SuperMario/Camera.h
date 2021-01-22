@@ -16,10 +16,11 @@ private:
 	bool lockUpdate;
 	bool lockUpdateVx;
 public:
+	bool lockY;
 	CCamera();
 	~CCamera() {}
 	static CCamera* GetInstance();
-	void Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying);
+	void Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying, bool isOnGround);
 
 	float GetPositionX() { return position.x; }
 	float GetSpeedX() { return vx; }

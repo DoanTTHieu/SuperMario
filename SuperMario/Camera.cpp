@@ -9,11 +9,12 @@ CCamera::CCamera()
 	width = SCREEN_WIDTH;
 	lockUpdate = false;
 	lockUpdateVx = true;
+	lockY = true;
 	position = { 0,0 };
 	CGame::GetInstance()->SetCamPos(0, 250);
 }
 
-void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying)
+void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3DXVECTOR2 end, bool isFlying, bool isOnGround)
 {
 	if (lockUpdate)
 		return;
@@ -34,22 +35,25 @@ void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3D
 	if (position.x < start.x)
 		position.x = start.x;
 
+	if (playerPos.y < end.y && isFlying)
+		lockY = false;
+	if (playerPos.y > end.y && isOnGround)
+		lockY = true;
+
 	if (isFlying)
 	{
 		if (int(playerPos.y - height / 2 + 32) < end.y)
 			position.y = int(playerPos.y - height / 2 + 32);
 	}
-	//else if (isFalling)
-	//{
-	//	if (playerPos.y > end.y)
-	//		position.y = end.y;
-	//	else if (playerPos.y < end.y)
-	//		position.y = int(playerPos.y - height / 2 + 32);
-	//}
-	else if (playerPos.y < end.y - 64)
-		position.y = int(playerPos.y - height / 2 + 32);
-	else
+	else if (!lockY)
+	{
+		if (int(playerPos.y - height / 2 + 32) < end.y)
+			position.y = int(playerPos.y - height / 2 + 32);
+	}
+	else if (lockY)
+	{
 		position.y = end.y;
+	}
 
 	if (position.y < start.y)
 		position.y = start.y;
