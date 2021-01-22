@@ -80,6 +80,9 @@ void CGrid::GetObjFromGrid(vector<LPGAMEOBJECT>& list)
 	int firstCol = (int)(CGame::GetInstance()->GetCamPosX() / (cell_width * 16));
 	int lastCol = ceil((CGame::GetInstance()->GetCamPosX() + SCREEN_WIDTH) / (cell_width * 16));
 
+	firstCol = (firstCol > 1) ? firstCol - 1 : firstCol;
+	lastCol = (lastCol < nums_col) ? lastCol + 1 : lastCol;
+
 	for (int i = 0; i < nums_row; i++)
 	{
 		for (int j = firstCol; j < lastCol; j++)
