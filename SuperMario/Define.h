@@ -1,24 +1,6 @@
 #pragma once
 
-//GAME
-#define SCREEN_WIDTH 272
-#define SCREEN_HEIGHT 256
-
-#define CELL_WIDTH		8
-#define CELL_HEIGHT		6
-//#define SCREEN_WIDTH 1500
-////#define SCREEN_HEIGHT 600
-//#define SCREEN_HEIGHT 900
-#define KEYBOARD_BUFFER_SIZE 1024
-
-#define ID_SCENE_WORLD_MAP	4
-#define ID_SCENE_INTRO		3
-#define ID_SCENE_1			1
-#define ID_SCENE_4			2
-
-#define PLAY_TIME		300
-#define MINISEC_PER_SEC	1000
-
+//ENUM
 enum Type
 {
 	MARIO = 01,
@@ -114,12 +96,57 @@ enum WM_Obj_Type
 	help = 02,
 	guard = 03
 };
+//ENEMY
+enum EState
+{
+	WALK = 01,
+	DIE_BY_CRUSH = 02,
+	DIE_BY_ATTACK = 03,
+	DESTROYED = 04,
+	FLY = 05
+	//JUMP = 02,
+	//ATTACK = 03,
+	//STOP = 04,
+	//SIT = 05,
+};
+#define TIME_DIE_BY_CRUSH		300
+
+//GAME
+#define SCREEN_WIDTH 272
+#define SCREEN_HEIGHT 256
+
+#define CELL_WIDTH		8
+#define CELL_HEIGHT		6
+
+#define KEYBOARD_BUFFER_SIZE 1024
+
+#define ID_SCENE_WORLD_MAP	4
+#define ID_SCENE_INTRO		3
+#define ID_SCENE_1			1
+#define ID_SCENE_4			2
+
+#define PLAY_TIME		300
+#define MINISEC_PER_SEC	1000
 
 #define STATE_DESTROYED				99
 //brick
 #define BRICK_BBOX_WIDTH  16
 #define BRICK_BBOX_HEIGHT 16
 
+#define BRICK_ANI_NORMAL		0
+#define BRICK_ANI_BROKEN		1
+#define BRICK_ANI_HIDDEN		2
+#define STATE_BEING_TOSSED		0
+#define STATE_NORMAL			1
+#define STATE_BROKEN			2
+#define BRICK_STATE_HIDDEN		3
+
+//BRONZE BRICK PIECE
+#define PIECE_GRAVITY		0.0008f
+#define PIECE_SPEED_X		0.03f
+#define PIECE_SPEED_Y		0.1f
+
+//
 #define CONTAIN_PSWITCH	3
 #define CONTAIN_COIN	2
 #define CONTAIN_ITEM	1
@@ -375,24 +402,8 @@ enum WM_Obj_Type
 #define ANI_FIREBALL_EFFECT					0
 #define ANI_BRONZE_BRICK_BROKEN_EFFECT		1
 
-
 #define EFFECT_TIME		120
 #define EFFECT_TIMER	3000
-
-//ENEMY
-enum EState
-{
-	WALK = 01,
-	DIE_BY_CRUSH = 02,
-	DIE_BY_ATTACK = 03,
-	DESTROYED = 04,
-	FLY = 05
-	//JUMP = 02,
-	//ATTACK = 03,
-	//STOP = 04,
-	//SIT = 05,
-};
-#define TIME_DIE_BY_CRUSH		300
 
 //KOOPAS
 
@@ -455,29 +466,9 @@ enum EState
 #define BROTHER_ANI_ATTACK_LEFT		6
 #define BROTHER_ANI_DIE_LEFT		7
 
-//BRICK
-
-//#define BRICK_BBOX_WIDTH  16
-//#define BRICK_BBOX_HEIGHT 15
-
-#define BRICK_ANI_NORMAL		0
-#define BRICK_ANI_BROKEN		1
-#define BRICK_ANI_HIDDEN		2
-#define STATE_BEING_TOSSED		0
-#define STATE_NORMAL			1
-#define STATE_BROKEN			2
-#define BRICK_STATE_HIDDEN		3
-
-//BRONZE BRICK PIECE
-#define PIECE_GRAVITY		0.0008f
-#define PIECE_SPEED_X		0.03f
-#define PIECE_SPEED_Y		0.1f
-
 //BULLET
 #define BULLET_BBOX_WIDTH	8
 #define BULLET_BBOX_HEIGHT	8
-//#define BULLET_GRAVITY		0.00005f
-//#define BULLET_SPEED_X		0.08f
 #define BULLET_GRAVITY		0.0008f
 #define BULLET_SPEED_X		0.2f
 #define BULLET_SPEED_Y		0.15f
@@ -488,9 +479,7 @@ enum EState
 #define CAMERA_SPEED_X	 0.03f
 
 //COIN
-
 #define COIN_SPEED_Y	0.2
-//#define TIME_DEFAULT 200
 
 //grid
 #define CELL_WIDTH	8
@@ -503,6 +492,8 @@ enum EState
 //Item
 #define ITEM_GRAVITY			0.0003f
 #define ITEM_DISAPPEAR_TIME		5000
+
+#define ITEM_SPEED_Y	0.05f
 
 //MAP POINT
 #define POINT_WIDTH		16
@@ -528,12 +519,10 @@ enum EState
 
 //piranha plant
 #define PLANT_PIRANHA_ANI_FACE_UP_LEFT			0
-
 #define PIRANHA_PLANT_TIME_HIDDEN		1500
 #define PIRANHA_PLANT_TIME_ATTACK		1500
 
 //plant
-
 #define STATE_HIDDEN		5
 #define STATE_ATTACK		6
 #define STATE_MOVING_UP		7
@@ -551,7 +540,6 @@ enum EState
 #define LEAF_SPEED_FALL	0.03f
 
 //super mushroom
-
 #define SUPERMUSHROOM_ANI	0
 #define UP_MUSHROOM_ANI		5
 

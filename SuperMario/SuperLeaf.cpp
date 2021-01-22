@@ -16,6 +16,7 @@ CSuperLeaf::CSuperLeaf(D3DXVECTOR2 position) {
 	this->type = Type::ITEM;
 	vy = -LEAF_SPEED_Y;
 	isFalling = false;
+	isInCam = false;
 }
 CSuperLeaf::~CSuperLeaf()
 {

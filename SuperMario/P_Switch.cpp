@@ -10,6 +10,7 @@ CP_Switch::CP_Switch(float x, float y)
 	this->start_y = y;
 	state = STATE_ON;
 	this->SetAnimationSet(CAnimationSets::GetInstance()->Get(15));
+	this->isInCam = false;
 }
 CP_Switch::~CP_Switch()
 {

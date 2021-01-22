@@ -1,6 +1,7 @@
 #include "SuperMushroom.h"
 #include "Ground.h"
 #include "Brick.h"
+
 CSuperMushroom::CSuperMushroom(D3DXVECTOR2 position, int t) {
 	this->x = position.x;
 	this->y = position.y;
@@ -8,7 +9,8 @@ CSuperMushroom::CSuperMushroom(D3DXVECTOR2 position, int t) {
 	//itemID = ItemID::superMushroom;
 	itemID = t;
 	this->type = Type::ITEM;
-	vx = -0.05f;
+	isInCam = false;
+	vx = -ITEM_SPEED_Y;
 }
 CSuperMushroom::~CSuperMushroom()
 {
@@ -82,11 +84,8 @@ void CSuperMushroom::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 				if (e->nx != 0)
 					vx = -this->vx;
 			}
-
 		}
 	}
 
 	for (UINT i = 0; i < coEvents.size(); i++) delete coEvents[i];
-
-
 }

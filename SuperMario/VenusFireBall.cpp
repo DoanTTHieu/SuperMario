@@ -5,6 +5,7 @@ CVenusFireBall::CVenusFireBall(D3DXVECTOR2 position, int nx, int zoneOfMario) :C
 {
 	this->zone = zoneOfMario;
 	this->type = Type::VENUS_FIRE_BALL;
+	this->isInCam = false;
 }
 
 void CVenusFireBall::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
@@ -16,9 +17,7 @@ void CVenusFireBall::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 	y += dy;
 	
 	if (IsOutOfCamera())
-	{
 		state = STATE_DESTROYED;
-	}
 }
 
 CVenusFireBall::~CVenusFireBall()

@@ -31,7 +31,7 @@ CPlayScene::CPlayScene(int id, LPCWSTR filePath) :
 	See scene1.txt, scene2.txt for detail format specification
 */
 
-
+#pragma region PARSESECTION	AND LOAD
 void CPlayScene::_ParseSection_TEXTURES(string line)
 {
 	vector<string> tokens = split(line);
@@ -178,7 +178,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridMoving->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] GOOMBA object created!\n");
 		break;
 	}
 	case OBJECT_TYPE_COIN:
@@ -395,7 +394,6 @@ void CPlayScene::_ParseSection_OBJECTS(string line)
 			for (int col = left; col < right; col++)
 				gridStatic->pushObjIntoGrid(obj, row, col);
 		}
-		DebugOut(L"[INFO] PIPE object created!\n");
 		break;
 	}
 	default:
@@ -499,6 +497,7 @@ void CPlayScene::Load()
 	
 	DebugOut(L"[INFO] Done loading scene resources %s\n", sceneFilePath);
 }
+#pragma endregion
 
 void CPlayScene::Update(ULONGLONG dt)
 {
@@ -508,8 +507,12 @@ void CPlayScene::Update(ULONGLONG dt)
 
 	if(player->GetState()!=MState::Die)
 		this->remainingTime = PLAY_TIME - (int)((GetTickCount64() - playTimer->GetStartTime())/ MINISEC_PER_SEC);
-	
-#pragma region ROI ITEM va xu ly tien bien thanh gach va gach thanh tien
+	if (this->remainingTime < 0)
+	{
+		player->SetState(MState::Die);
+		this->remainingTime = 0;
+	}
+
 	//duyet list object
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
@@ -536,11 +539,15 @@ void CPlayScene::Update(ULONGLONG dt)
 						item = new CSuperMushroom({ brick->x, brick->y - 16 }, ItemID::superMushroom);
 				}
 				if (item != NULL)
+				{
 					listItem.push_back(item);
+					/*listMoving.push_back(listObj[i]);
+					gridMoving->pushNewObjIntoGrid(listObj[i]);*/
+				}
 			}
 		}
 	}
-
+#pragma region xu ly tien bien thanh gach va gach thanh tien
 	//xoa ra khoi list object
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
@@ -610,17 +617,29 @@ void CPlayScene::Update(ULONGLONG dt)
 
 	for (size_t i = 0; i < listObj.size(); i++)
 	{
-		if (listObj[i]->GetType() == Type::P_SWITCH)
+		if (listObj[i]->GetType() == Type::P_SWITCH && !listObj[i]->isInCam)
 		{
+			listObj[i]->isInCam = true;
 			listStatic.push_back(listObj[i]);
 			gridStatic->pushNewObjIntoGrid(listObj[i]);
 		}
-		if (listObj[i]->GetType() == Type::VENUS_FIRE_BALL)
+		if (listObj[i]->GetType() == Type::VENUS_FIRE_BALL && !listObj[i]->isInCam)
 		{
+			listObj[i]->isInCam = true;
 			listMoving.push_back(listObj[i]);
 			gridMoving->pushNewObjIntoGrid(listObj[i]);
 		}
 	}
+	for (size_t i = 0; i < listItem.size(); i++)
+	{
+		if (!listItem[i]->isInCam)
+		{
+			listItem[i]->isInCam = true;
+			listMoving.push_back(listItem[i]);
+			gridMoving->pushNewObjIntoGrid(listItem[i]);
+		}
+	}
+
 
 	//them effect dan cho mario
 	for (size_t i = 0; i < player->listBullet.size(); i++)
@@ -744,8 +763,24 @@ void CPlayScene::Update(ULONGLONG dt)
 	//chuyen scene
 	if(player->canSwitchScene)
 		CGame::GetInstance()->SwitchScene(ID_SCENE_WORLD_MAP);
+}
 
-	
+void CPlayScene::GetObjectGrid()
+{
+	listItem.clear();
+	listObj.clear();
+	listGet.clear();
+
+	gridMoving->GetObjFromGrid(listGet);
+	gridStatic->GetObjFromGrid(listGet);
+
+	for (UINT i = 0; i < listGet.size(); i++)
+	{
+		if (listGet[i]->GetType() == Type::COIN || listGet[i]->GetType() == Type::LAST_ITEM|| listGet[i]->GetType() == Type::ITEM)
+			listItem.push_back(listGet[i]);
+		else
+			listObj.push_back(listGet[i]);
+	}
 }
 
 void CPlayScene::Render()
@@ -791,24 +826,6 @@ void CPlayScene::Unload()
 	if(cam) cam->ResetPosition();
 	//delete cam;
 	DebugOut(L"[INFO] Scene %s unloaded! \n", sceneFilePath);
-}
-
-void CPlayScene::GetObjectGrid()
-{
-	listItem.clear();
-	listObj.clear();
-	listGet.clear();
-
-	gridMoving->GetObjFromGrid(listGet);
-	gridStatic->GetObjFromGrid(listGet);
-
-	for (UINT i = 0; i < listGet.size(); i++)
-	{
-		if (listGet[i]->GetType() == Type::COIN|| listGet[i]->GetType() == Type::LAST_ITEM)
-			listItem.push_back(listGet[i]);
-		else
-			listObj.push_back(listGet[i]);
-	}
 }
 
 void CPlayScenceKeyHandler::OnKeyDown(int KeyCode)

@@ -9,7 +9,8 @@ CFireFlower::CFireFlower(D3DXVECTOR2 position) {
 	//ani
 	itemID = ItemID::fireFlower;
 	this->type = Type::ITEM;
-	vx = -0.05f;
+	isInCam = false;
+	vx = -ITEM_SPEED_Y;
 }
 CFireFlower::~CFireFlower()
 {
