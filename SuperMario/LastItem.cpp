@@ -24,7 +24,7 @@ void CLastItem::Render()
 	//1: mushroom
 	//2: flower
 	animation_set->at(0)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CLastItem::GetBoundingBox(float& l, float& t, float& r, float& b)

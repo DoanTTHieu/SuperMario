@@ -15,7 +15,7 @@ CPortal::CPortal(float l, float t, float r, float b, int scene_id, D3DXVECTOR2 d
 
 void CPortal::Render()
 {
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
 
 void CPortal::GetBoundingBox(float& l, float& t, float& r, float& b)

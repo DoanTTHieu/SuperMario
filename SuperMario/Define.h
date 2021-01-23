@@ -115,6 +115,7 @@ enum EState
 #define SCREEN_WIDTH 272
 #define SCREEN_HEIGHT 256
 
+#define HUD_HEIGHT	32
 #define CELL_WIDTH		8
 #define CELL_HEIGHT		6
 

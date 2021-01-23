@@ -39,5 +39,5 @@ void CCoinEffect::Update(ULONGLONG dt, vector<LPGAMEOBJECT>* coObjects)
 void CCoinEffect::Render()
 {
 	animation_set->at(1)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }

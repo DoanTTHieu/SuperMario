@@ -5,7 +5,7 @@ CCamera* CCamera::__instance = nullptr;
 CCamera::CCamera()
 {
 	vx = 0;
-	height = SCREEN_HEIGHT-32;
+	height = SCREEN_HEIGHT- HUD_HEIGHT;
 	width = SCREEN_WIDTH;
 	lockUpdate = false;
 	lockUpdateVx = true;
@@ -26,7 +26,7 @@ void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3D
 	}
 	else
 	{
-		position.x = playerPos.x - width / 2 + 16;
+		position.x = playerPos.x - width / 2 + MARIO_BIG_BBOX_WIDTH;
 	}
 
 	// Check if camera out of world screen
@@ -42,13 +42,13 @@ void CCamera::Update(ULONGLONG dt, D3DXVECTOR2 playerPos, D3DXVECTOR2 start, D3D
 
 	if (isFlying)
 	{
-		if (int(playerPos.y - height / 2 + 32) < end.y)
-			position.y = int(playerPos.y - height / 2 + 32);
+		if (int(playerPos.y - height / 2 + HUD_HEIGHT) < end.y)
+			position.y = int(playerPos.y - height / 2 + HUD_HEIGHT);
 	}
 	else if (!lockY)
 	{
-		if (int(playerPos.y - height / 2 + 32) < end.y)
-			position.y = int(playerPos.y - height / 2 + 32);
+		if (int(playerPos.y - height / 2 + HUD_HEIGHT) < end.y)
+			position.y = int(playerPos.y - height / 2 + HUD_HEIGHT);
 	}
 	else if (lockY)
 	{

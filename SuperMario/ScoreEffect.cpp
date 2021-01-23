@@ -49,5 +49,5 @@ void CScoreEffect::Render()
 		ani = 7;
 	else ani = 8;
 	animation_set->at(ani)->Render(x, y);
-	RenderBoundingBox();
+	//RenderBoundingBox();
 }
